@@ -12,12 +12,12 @@ public class UserService {
 
     public Future<Void> register(String username, String password) {
         return store.findUser(username)
-                .otherwiseEmpty() // den to brike, ginetai null
+                .otherwiseEmpty()
                 .compose(user -> {
                     if (user == null) {
                         return store.insert(new User(username, password));
                     } else {
-                        return Future.failedFuture(new IllegalArgumentException("User already exists")); // user found
+                        return Future.failedFuture(new IllegalArgumentException("User already exists"));
                     }
                 });
     }
@@ -45,11 +45,12 @@ public class UserService {
                 });
     }
 
-    public Future<User> update(String username, String currentPassword, String newPassword) {
+    public Future<Void> update(String username, String currentPassword, String newPassword) {
         return store.findUser(username)
                 .compose(user -> {
                     if (user.matches(currentPassword)) {
-                        return store.updateUser(user.username(), newPassword);
+                        return store.deleteUser(user)
+                                .compose(newUser -> store.insert(new User(username, newPassword)));
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("passwords do not match"));
                     }

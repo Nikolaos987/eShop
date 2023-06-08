@@ -8,6 +8,4 @@ public interface UsersStore {
     Future<User> findUser(String username);
 
     Future<Void> deleteUser(User user);
-
-    Future<User> updateUser(String username, String password);
 }

@@ -15,13 +15,13 @@ public class UsersStoreBinary implements UsersStore {
 
     @Override
     public Future<Void> insert(User user) {
-        return vertx.fileSystem().open(BIN_PATH, new OpenOptions().setAppend(true)) //.setTruncateExisting(true)
+        return vertx.fileSystem().open(BIN_PATH, new OpenOptions().setAppend(true))
                 .onSuccess(file -> {
                     Buffer buffer = Buffer.buffer();
-                    buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
-                    buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
-                    buffer.appendBytes(user.username().getBytes());    // username data
-                    buffer.appendBytes(user.password().getBytes());    // password data
+                    buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());
+                    buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());
+                    buffer.appendBytes(user.username().getBytes());
+                    buffer.appendBytes(user.password().getBytes());
                     file.write(buffer);
                     file.close();
                 })
@@ -35,69 +35,16 @@ public class UsersStoreBinary implements UsersStore {
                 .compose(file -> readNextUser(file, 0, username));
     }
 
-//    @Override
-//    public Future<Void> deleteUser(User user) {
-//        System.out.println("\nfrom deleteUser");
-//        return vertx.fileSystem().open(BIN_PATH, new OpenOptions().setAppend(false))
-//                .onSuccess(file -> {
-//                    Buffer buffer = Buffer.buffer();
-//                    readNextUser2(file, 0, user.username(), buffer)
-//                            .onSuccess(buff -> {
-//                                vertx.fileSystem().delete(BIN_PATH);
-//                                vertx.fileSystem().writeFile(BIN_PATH, buff);
-//                            });
-//                })
-//                .mapEmpty();
-//    }
-
-    @Override
-    public Future<User> updateUser(String username, String newPassword) {
-        return vertx.fileSystem().open(BIN_PATH, new OpenOptions())
-                .onSuccess(file -> {
-                    Buffer buffer = Buffer.buffer();
-                    readNextUser3(file, 0, username, newPassword, buffer)
-                            .onSuccess(buff -> {
-                                vertx.fileSystem().delete(BIN_PATH);
-                                vertx.fileSystem().writeFile(BIN_PATH, buff);
-                            });
-                })
-                .mapEmpty();
-    }
-
-
     @Override
     public Future<Void> deleteUser(User user) {
-        return vertx.fileSystem().open(BIN_PATH, new OpenOptions())
-                .compose(v -> {
-                    return vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true))
-                            .compose(temp -> {
-                                Buffer buffer = Buffer.buffer();
-                                return readNextUser2(v, temp,  0, user.username(), buffer);
-                            });
-                })
-//                .compose(buffer -> vertx.fileSystem().open(TEMP_PATH, new OpenOptions())
-//                        .compose(d -> d.write(buffer)))
-                .compose(v -> vertx.fileSystem().delete(BIN_PATH))
-                .compose(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
-                .compose(v -> vertx.fileSystem().delete(TEMP_PATH));
-    }
-
-
-    //-------------------------METHODS-------------------------\\
-
-    public Future<Void> copyToNew(AsyncFile file, User user) {
-        return vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)) //.setTruncateExisting(true)
-                .onSuccess(f -> {
-                    Buffer buffer = Buffer.buffer();
-                    buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
-                    buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
-                    buffer.appendBytes(user.username().getBytes());    // username data
-                    buffer.appendBytes(user.password().getBytes());    // password data
-                    file.write(buffer);
-                    file.close();
-                })
+        return CompositeFuture.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
+                .compose(temp -> copyTo(temp.resultAt(0), temp.resultAt(1),  0, user.username()))
+                .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH))
+                .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
+                .onSuccess(v -> vertx.fileSystem().delete(TEMP_PATH))
                 .mapEmpty();
     }
+
 
     public static Future<User> readNextUser(AsyncFile file, final int currentPosition, String username) {
         return file.read(Buffer.buffer(), 0, currentPosition, 2)
@@ -133,7 +80,7 @@ public class UsersStoreBinary implements UsersStore {
                 });
     }
 
-    public static Future<Buffer> readNextUser2(AsyncFile file, AsyncFile temp, final int currentPosition, String username, Buffer buffer) {
+    public static Future<User> copyTo(AsyncFile file, AsyncFile temp, final int currentPosition, String username) {
         return file.read(Buffer.buffer(), 0, currentPosition, 2)
                 .map(totalSizeBuf -> {
                     ReadResult readResult = new ReadResult();
@@ -159,125 +106,25 @@ public class UsersStoreBinary implements UsersStore {
                 .compose(readResult -> {
                     User user = new User(readResult.username, readResult.password);
                     if (readResult.currentPosition == file.sizeBlocking()) {
-                        if (readResult.username.equals(username))
-                            return Future.succeededFuture(buffer);
-                        else {
-                            buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
-                            buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
-                            buffer.appendBytes(user.username().getBytes());    // username data
-                            buffer.appendBytes(user.password().getBytes());    // password data
+                        if (!readResult.username.equals(username)) {
+                            Buffer buffer = Buffer.buffer();
+                            buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());
+                            buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());
+                            buffer.appendBytes(user.username().getBytes());
+                            buffer.appendBytes(user.password().getBytes());
                             temp.write(buffer);
-                            return Future.succeededFuture(buffer);
                         }
+                        return Future.succeededFuture(user);
                     } else if (readResult.username.equals(username)) {
-                        return readNextUser2(file, temp, readResult.currentPosition, username, Buffer.buffer());
+                        return copyTo(file, temp, readResult.currentPosition, username);
                     } else {
-
-                        buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
-                        buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
-                        buffer.appendBytes(user.username().getBytes());    // username data
-                        buffer.appendBytes(user.password().getBytes());    // password data
+                        Buffer buffer = Buffer.buffer();
+                        buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());
+                        buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());
+                        buffer.appendBytes(user.username().getBytes());
+                        buffer.appendBytes(user.password().getBytes());
                         temp.write(buffer);
-                        return readNextUser2(file, temp, readResult.currentPosition, username, Buffer.buffer());
-                    }
-
-                });
-    }
-
-//    public static Future<User> deleteNextUser(AsyncFile file, final int currentPosition, String username) {
-//        return file.read(Buffer.buffer(), 0, currentPosition, 2)
-//                .map(totalSizeBuf -> {
-//                    ReadResult readResult = new ReadResult();
-//                    readResult.startIndex = currentPosition;
-//                    readResult.currentPosition = currentPosition + 2;
-//                    readResult.totalLength = totalSizeBuf.getBytes()[0];
-//                    readResult.usernameLength = totalSizeBuf.getBytes()[1];
-//                    return readResult;
-//                })
-//                .compose(readResult -> file.read(Buffer.buffer(), 0, readResult.currentPosition, readResult.usernameLength).map(usernameBuf -> {
-//                    readResult.currentPosition = readResult.currentPosition + readResult.usernameLength;
-//                    readResult.username = new String(usernameBuf.getBytes());
-//                    return readResult;
-//                }))
-//                .compose(readResult -> file.read(Buffer.buffer(), 0, readResult.currentPosition, readResult.totalLength - readResult.usernameLength).map(passwordBuf -> {
-//                    readResult.currentPosition = readResult.currentPosition + (readResult.totalLength - readResult.usernameLength);
-//                    readResult.password = new String(passwordBuf.getBytes());
-//                    return readResult;
-//                }))
-//                .onSuccess(readResult -> {
-//                    System.out.println(readResult.username + " " + readResult.password);
-//                })
-//                .compose(readResult -> {
-//                    User user = new User(readResult.username, readResult.password);
-//                    Buffer buffer = Buffer.buffer();
-//
-//                    if (readResult.currentPosition == file.sizeBlocking()) {
-//
-//                    } else if (username.equals(readResult.username)) {
-//
-//                    } else {
-//                        vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true));
-//                        buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
-//                        buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
-//                        buffer.appendBytes(user.username().getBytes());    // username data
-//                        buffer.appendBytes(user.password().getBytes());    // password data
-//                        file.write(buffer);
-//                        file.close();
-//                    }
-//                });
-//    }
-
-
-    public static Future<Buffer> readNextUser3(AsyncFile file, final int currentPosition, String username, String newPassword, Buffer buffer) {
-        return file.read(Buffer.buffer(), 0, currentPosition, 2)
-                .map(totalSizeBuf -> {
-                    ReadResult readResult = new ReadResult();
-                    readResult.startIndex = currentPosition;
-                    readResult.currentPosition = currentPosition + 2;
-                    readResult.totalLength = totalSizeBuf.getBytes()[0];
-                    readResult.usernameLength = totalSizeBuf.getBytes()[1];
-                    return readResult;
-                })
-                .compose(readResult -> file.read(Buffer.buffer(), 0, readResult.currentPosition, readResult.usernameLength).map(usernameBuf -> {
-                    readResult.currentPosition = readResult.currentPosition + readResult.usernameLength;
-                    readResult.username = new String(usernameBuf.getBytes());
-                    return readResult;
-                }))
-                .compose(readResult -> file.read(Buffer.buffer(), 0, readResult.currentPosition, readResult.totalLength - readResult.usernameLength).map(passwordBuf -> {
-                    readResult.currentPosition = readResult.currentPosition + (readResult.totalLength - readResult.usernameLength);
-                    readResult.password = new String(passwordBuf.getBytes());
-                    return readResult;
-                }))
-                .onSuccess(readResult -> {
-                    System.out.println(readResult.username + " " + readResult.password);
-                })
-                .compose(readResult -> {
-                    User user = new User(readResult.username, readResult.password);
-                    if (readResult.currentPosition == file.sizeBlocking()) {
-                        if (readResult.username.equals(username))
-                            return Future.succeededFuture(buffer);
-                        else {
-                            buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
-                            buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
-                            buffer.appendBytes(user.username().getBytes());    // username data
-                            buffer.appendBytes(user.password().getBytes());    // password data
-                            return Future.succeededFuture(buffer);
-                        }
-                    } else if (readResult.username.equals(username)) {
-                        buffer.appendByte(Integer.valueOf(user.username().length() + newPassword.length()).byteValue());   // user total size
-                        buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
-                        buffer.appendBytes(user.username().getBytes());    // username data
-                        buffer.appendBytes(newPassword.getBytes());    // password data
-                        return readNextUser3(file, readResult.currentPosition, username, newPassword, buffer);
-                    } else {
-//                        Buffer buffer = Buffer.buffer();
-                        buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
-                        buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
-                        buffer.appendBytes(user.username().getBytes());    // username data
-                        buffer.appendBytes(user.password().getBytes());    // password data
-//                        file.write(buffer);
-//                        file.close();
-                        return readNextUser3(file, readResult.currentPosition, username, newPassword, buffer);
+                        return copyTo(file, temp, readResult.currentPosition, username);
                     }
                 });
     }

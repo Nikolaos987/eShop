@@ -31,9 +31,4 @@ public class InMemoryUsersStore implements UsersStore {
         return Future.succeededFuture();
     }
 
-    @Override
-    public Future<User> updateUser(String username, String newPassword) {
-        return null;
-    }
-
 }

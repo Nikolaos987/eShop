@@ -9,17 +9,8 @@ public final class Users {
     private String username;
     private String password;
 
-//    List<JsonObject> array = new ArrayList<>();
     JsonObject jsonObject = new JsonObject();
     JsonArray jsonArray = new JsonArray();
-
-//    public Users(Buffer b) {
-//        this.username = b.toJsonObject().getValue("username").toString();
-//        this.password = b.toJsonObject().getValue("password").toString();
-//        jsonObject.put("username", username);
-//        jsonObject.put("password", password);
-//        jsonArray.add(jsonObject);
-//    }
 
     public Users() {
 
