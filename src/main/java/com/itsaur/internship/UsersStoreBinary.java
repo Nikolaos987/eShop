@@ -75,9 +75,7 @@ public class UsersStoreBinary implements UsersStore {
                     readResult.password = new String(passwordBuf.getBytes());
                     return readResult;
                 }))
-                .onSuccess(readResult -> {
-                    System.out.println(readResult.username + " " + readResult.password);
-                })
+                .onSuccess(readResult -> System.out.println(readResult.username + " " + readResult.password))
                 .compose(readResult -> {
                     User user = new User(readResult.username, readResult.password);
                     if (readResult.username.equals(username)) {
@@ -110,24 +108,23 @@ public class UsersStoreBinary implements UsersStore {
                     readResult.password = new String(passwordBuf.getBytes());
                     return readResult;
                 }))
-                .onSuccess(readResult -> {
-                    System.out.println(readResult.username + " " + readResult.password);
-                })
+                .onSuccess(readResult -> System.out.println(readResult.username + " " + readResult.password))
                 .compose(readResult -> {
                     User user = new User(readResult.username, readResult.password);
-                    if (readResult.currentPosition == file.sizeBlocking()) {
-                        if (readResult.username.equals(username)) {
-                            writeTo(temp, password, user);
-                        } else {
+                    if (readResult.currentPosition != file.sizeBlocking()) {
+                        if (!readResult.username.equals(username)) {
                             writeTo(temp, user);
+                        } else {
+                            writeTo(temp, password, user);
                         }
-                        return Future.succeededFuture(user);
-                    } else if (readResult.username.equals(username)) {
-                        writeTo(temp, password, user);
                         return copyModifiedTo(file, temp, readResult.currentPosition, username, password);
                     } else {
-                        writeTo(temp, user);
-                        return copyModifiedTo(file, temp, readResult.currentPosition, username, password);
+                        if (!readResult.username.equals(username)) {
+                            writeTo(temp, user);
+                        } else {
+                            writeTo(temp, password, user);
+                        }
+                        return Future.succeededFuture();
                     }
                 });
     }
@@ -152,21 +149,19 @@ public class UsersStoreBinary implements UsersStore {
                     readResult.password = new String(passwordBuf.getBytes());
                     return readResult;
                 }))
-                .onSuccess(readResult -> {
-                    System.out.println(readResult.username + " " + readResult.password);
-                })
+                .onSuccess(readResult -> System.out.println(readResult.username + " " + readResult.password))
                 .compose(readResult -> {
                     User user = new User(readResult.username, readResult.password);
-                    if (readResult.currentPosition == file.sizeBlocking()) {
+                    if (readResult.currentPosition != file.sizeBlocking()) {
                         if (!readResult.username.equals(username)) {
                             writeTo(temp, user);
                         }
-                        return Future.succeededFuture(user);
-                    } else if (readResult.username.equals(username)) {
                         return copyDeletedTo(file, temp, readResult.currentPosition, username);
                     } else {
-                        writeTo(temp, user);
-                        return copyDeletedTo(file, temp, readResult.currentPosition, username);
+                        if (!readResult.username.equals(username)) {
+                            writeTo(temp, user);
+                        }
+                        return Future.succeededFuture();
                     }
                 });
     }
