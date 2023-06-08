@@ -1,5 +1,6 @@
 package com.itsaur.internship;
 
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -68,11 +69,14 @@ public class UsersStoreBinary implements UsersStore {
     public Future<Void> deleteUser(User user) {
         return vertx.fileSystem().open(BIN_PATH, new OpenOptions())
                 .compose(v -> {
-                    Buffer buffer = Buffer.buffer();
-                    return readNextUser2(v, 0, user.username(), buffer);
+                    return vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true))
+                            .compose(temp -> {
+                                Buffer buffer = Buffer.buffer();
+                                return readNextUser2(v, temp,  0, user.username(), buffer);
+                            });
                 })
-                .compose(buffer -> vertx.fileSystem().open(TEMP_PATH, new OpenOptions())
-                        .compose(d -> d.write(buffer)))
+//                .compose(buffer -> vertx.fileSystem().open(TEMP_PATH, new OpenOptions())
+//                        .compose(d -> d.write(buffer)))
                 .compose(v -> vertx.fileSystem().delete(BIN_PATH))
                 .compose(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
                 .compose(v -> vertx.fileSystem().delete(TEMP_PATH));
@@ -81,9 +85,9 @@ public class UsersStoreBinary implements UsersStore {
 
     //-------------------------METHODS-------------------------\\
 
-    public Future<Void> copy(User user) {
+    public Future<Void> copyToNew(AsyncFile file, User user) {
         return vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)) //.setTruncateExisting(true)
-                .onSuccess(file -> {
+                .onSuccess(f -> {
                     Buffer buffer = Buffer.buffer();
                     buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
                     buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
@@ -129,7 +133,7 @@ public class UsersStoreBinary implements UsersStore {
                 });
     }
 
-    public static Future<Buffer> readNextUser2(AsyncFile file, final int currentPosition, String username, Buffer buffer) {
+    public static Future<Buffer> readNextUser2(AsyncFile file, AsyncFile temp, final int currentPosition, String username, Buffer buffer) {
         return file.read(Buffer.buffer(), 0, currentPosition, 2)
                 .map(totalSizeBuf -> {
                     ReadResult readResult = new ReadResult();
@@ -162,19 +166,19 @@ public class UsersStoreBinary implements UsersStore {
                             buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
                             buffer.appendBytes(user.username().getBytes());    // username data
                             buffer.appendBytes(user.password().getBytes());    // password data
+                            temp.write(buffer);
                             return Future.succeededFuture(buffer);
                         }
                     } else if (readResult.username.equals(username)) {
-                        return readNextUser2(file, readResult.currentPosition, username, buffer);
+                        return readNextUser2(file, temp, readResult.currentPosition, username, Buffer.buffer());
                     } else {
-//                        Buffer buffer = Buffer.buffer();
+
                         buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());   // user total size
                         buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());  // username size
                         buffer.appendBytes(user.username().getBytes());    // username data
                         buffer.appendBytes(user.password().getBytes());    // password data
-//                        file.write(buffer);
-//                        file.close();
-                        return readNextUser2(file, readResult.currentPosition, username, buffer);
+                        temp.write(buffer);
+                        return readNextUser2(file, temp, readResult.currentPosition, username, Buffer.buffer());
                     }
 
                 });
