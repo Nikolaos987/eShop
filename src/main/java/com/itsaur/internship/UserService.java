@@ -49,8 +49,7 @@ public class UserService {
         return store.findUser(username)
                 .compose(user -> {
                     if (user.matches(currentPassword)) {
-                        return store.deleteUser(user)
-                                .compose(newUser -> store.insert(new User(username, newPassword)));
+                        return store.updateUser(username, newPassword);
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("passwords do not match"));
                     }

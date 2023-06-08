@@ -38,7 +38,17 @@ public class UsersStoreBinary implements UsersStore {
     @Override
     public Future<Void> deleteUser(User user) {
         return CompositeFuture.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
-                .compose(temp -> copyTo(temp.resultAt(0), temp.resultAt(1),  0, user.username()))
+                .compose(temp -> copyDeletedTo(temp.resultAt(0), temp.resultAt(1),  0, user.username()))
+                .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH))
+                .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
+                .onSuccess(v -> vertx.fileSystem().delete(TEMP_PATH))
+                .mapEmpty();
+    }
+
+    @Override
+    public Future<Void> updateUser(String username, String password) {
+        return CompositeFuture.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
+                .compose(temp -> copyModifiedTo(temp.resultAt(0), temp.resultAt(1),  0, username, password))
                 .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH))
                 .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
                 .onSuccess(v -> vertx.fileSystem().delete(TEMP_PATH))
@@ -80,7 +90,49 @@ public class UsersStoreBinary implements UsersStore {
                 });
     }
 
-    public static Future<User> copyTo(AsyncFile file, AsyncFile temp, final int currentPosition, String username) {
+    public static Future<User> copyModifiedTo(AsyncFile file, AsyncFile temp, final int currentPosition, String username, String password) {
+        return file.read(Buffer.buffer(), 0, currentPosition, 2)
+                .map(totalSizeBuf -> {
+                    ReadResult readResult = new ReadResult();
+                    readResult.startIndex = currentPosition;
+                    readResult.currentPosition = currentPosition + 2;
+                    readResult.totalLength = totalSizeBuf.getBytes()[0];
+                    readResult.usernameLength = totalSizeBuf.getBytes()[1];
+                    return readResult;
+                })
+                .compose(readResult -> file.read(Buffer.buffer(), 0, readResult.currentPosition, readResult.usernameLength).map(usernameBuf -> {
+                    readResult.currentPosition = readResult.currentPosition + readResult.usernameLength;
+                    readResult.username = new String(usernameBuf.getBytes());
+                    return readResult;
+                }))
+                .compose(readResult -> file.read(Buffer.buffer(), 0, readResult.currentPosition, readResult.totalLength - readResult.usernameLength).map(passwordBuf -> {
+                    readResult.currentPosition = readResult.currentPosition + (readResult.totalLength - readResult.usernameLength);
+                    readResult.password = new String(passwordBuf.getBytes());
+                    return readResult;
+                }))
+                .onSuccess(readResult -> {
+                    System.out.println(readResult.username + " " + readResult.password);
+                })
+                .compose(readResult -> {
+                    User user = new User(readResult.username, readResult.password);
+                    if (readResult.currentPosition == file.sizeBlocking()) {
+                        if (readResult.username.equals(username)) {
+                            writeTo(temp, password, user);
+                        } else {
+                            writeTo(temp, user);
+                        }
+                        return Future.succeededFuture(user);
+                    } else if (readResult.username.equals(username)) {
+                        writeTo(temp, password, user);
+                        return copyModifiedTo(file, temp, readResult.currentPosition, username, password);
+                    } else {
+                        writeTo(temp, user);
+                        return copyModifiedTo(file, temp, readResult.currentPosition, username, password);
+                    }
+                });
+    }
+
+    public static Future<User> copyDeletedTo(AsyncFile file, AsyncFile temp, final int currentPosition, String username) {
         return file.read(Buffer.buffer(), 0, currentPosition, 2)
                 .map(totalSizeBuf -> {
                     ReadResult readResult = new ReadResult();
@@ -107,25 +159,29 @@ public class UsersStoreBinary implements UsersStore {
                     User user = new User(readResult.username, readResult.password);
                     if (readResult.currentPosition == file.sizeBlocking()) {
                         if (!readResult.username.equals(username)) {
-                            Buffer buffer = Buffer.buffer();
-                            buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());
-                            buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());
-                            buffer.appendBytes(user.username().getBytes());
-                            buffer.appendBytes(user.password().getBytes());
-                            temp.write(buffer);
+                            writeTo(temp, user);
                         }
                         return Future.succeededFuture(user);
                     } else if (readResult.username.equals(username)) {
-                        return copyTo(file, temp, readResult.currentPosition, username);
+                        return copyDeletedTo(file, temp, readResult.currentPosition, username);
                     } else {
-                        Buffer buffer = Buffer.buffer();
-                        buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());
-                        buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());
-                        buffer.appendBytes(user.username().getBytes());
-                        buffer.appendBytes(user.password().getBytes());
-                        temp.write(buffer);
-                        return copyTo(file, temp, readResult.currentPosition, username);
+                        writeTo(temp, user);
+                        return copyDeletedTo(file, temp, readResult.currentPosition, username);
                     }
                 });
+    }
+
+    private static void writeTo(AsyncFile temp, User user) {
+        String password = user.password();
+        writeTo(temp, password, user);
+    }
+
+    private static void writeTo(AsyncFile temp, String password, User user) {
+        Buffer buffer = Buffer.buffer();
+        buffer.appendByte(Integer.valueOf(user.username().length() + password.length()).byteValue());
+        buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());
+        buffer.appendBytes(user.username().getBytes());
+        buffer.appendBytes(password.getBytes());
+        temp.write(buffer);
     }
 }
