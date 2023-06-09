@@ -6,11 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InMemoryUsersStore implements UsersStore {
-    private Map<String, User> users = new HashMap<>();
+    private final Map<String, User> users = new HashMap<>()
+    {{
+        put("One", new User("One", "1"));
+        put("Two", new User("Two", "12"));
+        put("Three", new User("Three", "123"));
+        put("Four", new User("Four", "1234"));
+        put("Five", new User("Five", "12345"));
+    }};
+
 
     @Override
     public Future<Void> insert(User user) {
         users.put(user.username(), user);
+        System.out.println(users);
         return Future.succeededFuture();
     }
 
@@ -26,14 +35,16 @@ public class InMemoryUsersStore implements UsersStore {
 
     @Override
     public Future<Void> deleteUser(User user) {
-        users.remove("username", user.username());
-        users.remove("password", user.password());
+        users.remove(user.username());
+        System.out.println(users);
         return Future.succeededFuture();
     }
 
     @Override
     public Future<Void> updateUser(String username, String password) {
-        return null;
+        users.replace(username, new User(username, password));
+        System.out.println(users);
+        return Future.succeededFuture();
     }
 
 }

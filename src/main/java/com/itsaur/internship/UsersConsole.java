@@ -11,24 +11,36 @@ public class UsersConsole {
     }
 
     public Future<Void> executeCommand(String[] args) {
-        if (args[1].equals("--register")) {
-            return this.userService.register(args[2], args[3])
+        return switch (args[1]) {
+            case "--register" -> this.userService.register(args[2], args[3])
                     .onSuccess(v -> System.out.println("User registered!"))
                     .onFailure(v -> {
                         System.out.println("Failed to register user");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-        } else if (args[1].equals("--login")) {
-            return this.userService.login(args[2], args[3])
+            case "--login" -> this.userService.login(args[2], args[3])
                     .onSuccess(v -> System.out.println("User logged in!"))
                     .onFailure(v -> {
                         System.out.println("Failed to log in user");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-        } else {
-            return Future.failedFuture(new IllegalArgumentException("Invalid argument"));
-        }
+            case "--delete" -> this.userService.delete(args[2])
+                    .onSuccess(v -> System.out.println("User deleted!"))
+                    .onFailure(v -> {
+                        System.out.println("Failed to delete user");
+                        v.printStackTrace();
+                    })
+                    .mapEmpty();
+            case "--update" -> this.userService.update(args[2], args[3], args[4])
+                    .onSuccess(v -> System.out.println("User updated!"))
+                    .onFailure(v -> {
+                        System.out.println("Failed to update user");
+                        v.printStackTrace();
+                    })
+                    .mapEmpty();
+            default -> Future.failedFuture(new IllegalArgumentException("Invalid argument"));
+        };
     }
 }
