@@ -7,11 +7,11 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
-public class LoginVerticle extends AbstractVerticle {
+public class MyVerticle extends AbstractVerticle {
 
     private final UserService service;
 
-    public LoginVerticle(UserService service) {
+    public MyVerticle(UserService service) {
         this.service = service;
     }
 

@@ -9,7 +9,7 @@ public class Main {
 //        final UserService service = new UserService(new UsersStoreBinary());
 
         if (args[0].equals("--server")) {
-            vertx.deployVerticle(new LoginVerticle(
+            vertx.deployVerticle(new MyVerticle(
                     new UserService(new UsersStoreBinary()))
             );
         } else if (args[0].equals("--console")) {
