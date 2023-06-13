@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.*;
 
+//todo remove this
 public final class Users {
     private String username;
     private String password;

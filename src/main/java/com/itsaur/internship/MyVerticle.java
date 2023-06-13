@@ -7,6 +7,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
+//todo rename class
 public class MyVerticle extends AbstractVerticle {
 
     private final UserService service;
@@ -21,7 +22,7 @@ public class MyVerticle extends AbstractVerticle {
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
 
-        router.route().handler(BodyHandler.create());
+        router.route().handler(BodyHandler.create());  //todo BodyHandler is registered multiple times for all paths
         router.post("/login").handler(ctx -> {
             System.out.println();
             final JsonObject body = ctx.body().asJsonObject();

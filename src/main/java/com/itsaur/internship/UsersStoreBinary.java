@@ -9,6 +9,7 @@ import io.vertx.core.file.OpenOptions;
 public class UsersStoreBinary implements UsersStore {
 
     Vertx vertx = Vertx.vertx();
+    //todo pass them in constructor
     final String BIN_PATH = "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/bin.txt";
     final String TEMP_PATH = "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt";
 
@@ -16,13 +17,14 @@ public class UsersStoreBinary implements UsersStore {
     public Future<Void> insert(User user) {
         return vertx.fileSystem().open(BIN_PATH, new OpenOptions().setAppend(true))
                 .onSuccess(file -> {
+                    //todo use writeTo method
                     Buffer buffer = Buffer.buffer();
                     buffer.appendByte(Integer.valueOf(user.username().length() + user.password().length()).byteValue());
                     buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());
                     buffer.appendBytes(user.username().getBytes());
                     buffer.appendBytes(user.password().getBytes());
-                    file.write(buffer);
-                    file.close();
+                    file.write(buffer); //todo future need to wait for it to finish
+                    file.close(); //todo future need to wait for it to finish
                 })
                 .mapEmpty();
     }
@@ -38,9 +40,9 @@ public class UsersStoreBinary implements UsersStore {
     public Future<Void> deleteUser(User user) {
         return Future.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
                 .compose(temp -> copyDeletedTo(temp.resultAt(0), temp.resultAt(1),  0, user.username()))
-                .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH))
-                .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
-                .onSuccess(v -> vertx.fileSystem().delete(TEMP_PATH))
+                .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH)) //todo future need to wait for it to finish
+                .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH)) //todo future need to wait for it to finish
+                .onSuccess(v -> vertx.fileSystem().delete(TEMP_PATH)) //todo future need to wait for it to finish
                 .mapEmpty();
     }
 
@@ -48,13 +50,14 @@ public class UsersStoreBinary implements UsersStore {
     public Future<Void> updateUser(String username, String password) {
         return Future.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
                 .compose(temp -> copyModifiedTo(temp.resultAt(0), temp.resultAt(1),  0, username, password))
-                .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH))
-                .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
-                .onSuccess(v -> vertx.fileSystem().delete(TEMP_PATH))
+                .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH)) //todo future need to wait for it to finish
+                .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH)) //todo future need to wait for it to finish
+                .onSuccess(v -> vertx.fileSystem().delete(TEMP_PATH)) //todo future need to wait for it to finish
                 .mapEmpty();
     }
 
 
+    //todo write reusable code in order not to repeat the same code in readNextUser, copyModifiedTo and copyDeletedTo.
     public static Future<User> readNextUser(AsyncFile file, final int currentPosition, String username) {
         return file.read(Buffer.buffer(), 0, currentPosition, 2)
                 .map(totalSizeBuf -> {
