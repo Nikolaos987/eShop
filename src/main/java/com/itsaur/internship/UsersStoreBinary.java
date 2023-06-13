@@ -1,6 +1,5 @@
 package com.itsaur.internship;
 
-import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -37,7 +36,7 @@ public class UsersStoreBinary implements UsersStore {
 
     @Override
     public Future<Void> deleteUser(User user) {
-        return CompositeFuture.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
+        return Future.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
                 .compose(temp -> copyDeletedTo(temp.resultAt(0), temp.resultAt(1),  0, user.username()))
                 .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH))
                 .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
@@ -47,7 +46,7 @@ public class UsersStoreBinary implements UsersStore {
 
     @Override
     public Future<Void> updateUser(String username, String password) {
-        return CompositeFuture.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
+        return Future.all(vertx.fileSystem().open(BIN_PATH, new OpenOptions()), vertx.fileSystem().open(TEMP_PATH, new OpenOptions().setAppend(true)))
                 .compose(temp -> copyModifiedTo(temp.resultAt(0), temp.resultAt(1),  0, username, password))
                 .onSuccess(v -> vertx.fileSystem().delete(BIN_PATH))
                 .onSuccess(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
