@@ -10,15 +10,30 @@ import java.util.NoSuchElementException;
 
 public class PostgresUsersStore implements UsersStore {
     Vertx vertx = Vertx.vertx();
-    PgConnectOptions connectOptions = new PgConnectOptions()
-            .setPort(5432)
-            .setHost("localhost")
-            .setDatabase("postgres")
-            .setUser("postgres")
-            .setPassword("password");
+    private final PgConnectOptions connectOptions;
+    private final PoolOptions poolOptions;
 
-    PoolOptions poolOptions = new PoolOptions()
-            .setMaxSize(5);
+    public PostgresUsersStore(int port, String host, String db, String user, String password, int poolSize) {
+        this.connectOptions = new PgConnectOptions()
+                .setPort(port)
+                .setHost(host)
+                .setDatabase(db)
+                .setUser(user)
+                .setPassword(password);
+        this.poolOptions = new PoolOptions()
+                .setMaxSize(poolSize);
+    }
+
+    public PostgresUsersStore() {
+        this.connectOptions = new PgConnectOptions()
+                .setPort(5432)
+                .setHost("localhost")
+                .setDatabase("postgres")
+                .setUser("postgres")
+                .setPassword("password");
+        this.poolOptions = new PoolOptions()
+                .setMaxSize(5);
+    }
 
     @Override
     public Future<Void> insert(User user) {
