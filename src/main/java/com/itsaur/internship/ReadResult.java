@@ -6,7 +6,6 @@ public class ReadResult {
     public int totalLength;
     public String username;
     public String password;
-    public int startIndex;
 
     public ReadResult() {
         this.currentPosition = 0;

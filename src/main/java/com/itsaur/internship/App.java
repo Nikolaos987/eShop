@@ -7,22 +7,20 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
-//todo rename class
-public class MyVerticle extends AbstractVerticle {
+public class App extends AbstractVerticle {
 
     private final UserService service;
 
-    public MyVerticle(UserService service) {
+    public App(UserService service) {
         this.service = service;
     }
-
 
     @Override
     public void start(Promise<Void> startPromise) {
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
+        router.route().handler(BodyHandler.create());
 
-        router.route().handler(BodyHandler.create());  //todo BodyHandler is registered multiple times for all paths
         router.post("/login").handler(ctx -> {
             System.out.println();
             final JsonObject body = ctx.body().asJsonObject();
@@ -31,7 +29,6 @@ public class MyVerticle extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-
         router.post("/register").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.service.register(body.getString("username"), body.getString("password"))
@@ -39,7 +36,6 @@ public class MyVerticle extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.route().handler(BodyHandler.create());
         router.delete("/users/:username").handler(ctx -> {
             System.out.println();
             this.service.delete(ctx.pathParam("username"))
@@ -47,7 +43,6 @@ public class MyVerticle extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.route().handler(BodyHandler.create());
         router.put("/users/:username/password").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.service.update(ctx.pathParam("username"), body.getString("currentPassword"), body.getString("newPassword"))

@@ -8,15 +8,19 @@ public class Main {
 
 //        final UserService service = new UserService(new UsersStoreBinary());
 
-        if (args[0].equals("--server")) {
-            vertx.deployVerticle(new MyVerticle(
-                    new UserService(new UsersStoreBinary()))
+        switch (args[0]) {
+            case "--server" -> vertx.deployVerticle(new App(
+                    new UserService(new UsersStoreBinary("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/bin.txt",
+                            "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt")))
             );
-        } else if (args[0].equals("--console")) {
-            new UsersConsole(new UserService(
+            case "--console" -> new UsersConsole(new UserService(
                     new InMemoryUsersStore())
-            ).executeCommand(args)
+            )
+                    .executeCommand(args)
                     .onComplete(v -> System.exit(0));
+            case "--postgres" -> vertx.deployVerticle(new App(
+                    new UserService(new PostgresUsersStore())
+            ));
         }
     }
 }

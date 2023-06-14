@@ -15,6 +15,9 @@ dependencies {
     implementation 'io.vertx:vertx-core:4.4.1'
     implementation 'io.vertx:vertx-web:4.4.1'
     implementation 'io.vertx:vertx-auth-jwt:4.4.1'
+    implementation 'io.vertx:vertx-pg-client:4.4.3'
+    implementation group: 'com.ongres.scram', name: 'client', version: '2.1'
+//    implementation 'com.ongres.scram:client:2.1'
 }
 
 test {
