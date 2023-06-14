@@ -29,7 +29,6 @@ public class UsersStoreBinary implements UsersStore {
 
     @Override
     public Future<User> findUser(String username) {
-        System.out.println("from findUser");
         return vertx.fileSystem().open(BIN_PATH, new OpenOptions())
                 .compose(file -> readUser(file, 0, username));
     }

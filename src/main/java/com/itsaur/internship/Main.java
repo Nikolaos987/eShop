@@ -19,7 +19,7 @@ public class Main {
                     .executeCommand(args)
                     .onComplete(v -> System.exit(0));
             case "--postgres" -> vertx.deployVerticle(new App(
-                    new UserService(new PostgresUsersStore())
+                    new UserService(new PostgresUsersStore(5432, "localhost", "postgres", "postgres", "password", 5))
             ));
         }
     }

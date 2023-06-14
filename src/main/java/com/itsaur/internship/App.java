@@ -22,7 +22,6 @@ public class App extends AbstractVerticle {
         router.route().handler(BodyHandler.create());
 
         router.post("/login").handler(ctx -> {
-            System.out.println();
             final JsonObject body = ctx.body().asJsonObject();
             this.service.login(body.getString("username"), body.getString("password"))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user logged in"))
@@ -36,12 +35,9 @@ public class App extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.delete("/users/:username").handler(ctx -> {
-            System.out.println();
-            this.service.delete(ctx.pathParam("username"))
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user deleted"))
-                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
-        });
+        router.delete("/users/:username").handler(ctx -> this.service.delete(ctx.pathParam("username"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user deleted"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.put("/users/:username/password").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
