@@ -19,6 +19,7 @@ public class InMemoryUsersStore implements UsersStore {
     @Override
     public Future<Void> insert(User user) {
         users.put(user.username(), user);
+        printUsers(users);
         return Future.succeededFuture();
     }
 
@@ -35,13 +36,19 @@ public class InMemoryUsersStore implements UsersStore {
     @Override
     public Future<Void> deleteUser(User user) {
         users.remove(user.username());
+        printUsers(users);
         return Future.succeededFuture();
     }
 
     @Override
     public Future<Void> updateUser(String username, String password) {
         users.replace(username, new User(username, password));
+        printUsers(users);
         return Future.succeededFuture();
+    }
+
+    public void printUsers(Map<String, User> users) {
+        users.forEach((u,p) -> System.out.println(p));
     }
 
 }
