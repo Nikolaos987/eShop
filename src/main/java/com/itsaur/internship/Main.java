@@ -19,25 +19,32 @@ public class Main {
             switch (opts.method) {
                 case "server" -> {
                     if (opts.file != null) {
-                        /* Server saves to File */
+                        /* Server stores to File */
                         vertx.deployVerticle(new App(
                                 new UserService(new UsersStoreBinary(opts.file, "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt"))));
                     } else if (opts.database != null) {
-                        /* Server saves to Postgres */
+                        /* Server stores to Postgres */
                         vertx.deployVerticle(new App(
                                 new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.password, opts.poolSize))));
                     }
                 }
                 case "console" -> {
                     if (opts.database != null) {
-                        /* Console saves to Postgres */
+                        /* Console stores to Postgres */
                         new UsersConsole(new UserService(
                                 new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize))
                         )
                                 .executeCommand(opts) // args
                                 .onComplete(v -> System.exit(0));
+                    } else if (opts.file != null) {
+                        /* Console stores to File */
+                        new UsersConsole(new UserService(
+                                new UsersStoreBinary(opts.file, "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt"))
+                        )
+                                .executeCommand(opts) // args
+                                .onComplete(v -> System.exit(0));
                     } else {
-                        /* Console saves to Memory */
+                        /* Console stores to Memory */
                         new UsersConsole(new UserService(
                                 new InMemoryUsersStore())
                         )
