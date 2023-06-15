@@ -21,7 +21,7 @@ public class UsersStoreBinary implements UsersStore {
     public Future<Void> insert(User user) {
         return vertx.fileSystem().open(BIN_PATH, new OpenOptions().setAppend(true))
                 .onSuccess(file -> {
-                    writeTo(file, user);
+                    writeTo(file, user).compose(v -> Future.succeededFuture());
                     file.close();
                 })
                 .mapEmpty();
@@ -63,8 +63,7 @@ public class UsersStoreBinary implements UsersStore {
                     if (readResult.username.equals(username)) {
                         return Future.succeededFuture(user);
                     } else if (readResult.currentPosition == file.sizeBlocking()) {
-                        file.close();
-                        return Future.failedFuture(new IllegalArgumentException("User not found"));
+                        return file.close().compose(v -> Future.failedFuture(new IllegalArgumentException("User not found")));
                     } else {
                         return readUser(file, readResult.currentPosition, username);
                     }
@@ -77,19 +76,18 @@ public class UsersStoreBinary implements UsersStore {
                     User user = new User(readResult.username, readResult.password);
                     if (readResult.currentPosition != file.sizeBlocking()) {
                         if (!readResult.username.equals(username)) {
-                            writeTo(temp, user);
+                            writeTo(temp, user).compose(v -> Future.succeededFuture());
                         } else {
-                            writeTo(temp, password, user);
+                            writeTo(temp, password, user).compose(v -> Future.succeededFuture());
                         }
                         return copyModifiedTo(file, temp, readResult.currentPosition, username, password);
                     } else {
                         if (!readResult.username.equals(username)) {
-                            writeTo(temp, user);
+                            writeTo(temp, user).compose(v -> Future.succeededFuture());
                         } else {
-                            writeTo(temp, password, user);
+                            writeTo(temp, password, user).compose(v -> Future.succeededFuture());
                         }
-                        file.close();
-                        return Future.succeededFuture();
+                        return file.close().compose(v -> Future.succeededFuture());
                     }
                 });
     }
@@ -100,15 +98,14 @@ public class UsersStoreBinary implements UsersStore {
                     User user = new User(readResult.username, readResult.password);
                     if (readResult.currentPosition != file.sizeBlocking()) {
                         if (!readResult.username.equals(username)) {
-                            writeTo(temp, user);
+                            writeTo(temp, user).compose(v -> Future.succeededFuture());
                         }
                         return copyDeletedTo(file, temp, readResult.currentPosition, username);
                     } else {
                         if (!readResult.username.equals(username)) {
-                            writeTo(temp, user);
+                            writeTo(temp, user).compose(v -> Future.succeededFuture());
                         }
-                        file.close();
-                        return Future.succeededFuture();
+                        return file.close().compose(v -> Future.succeededFuture());
                     }
                 });
     }
@@ -136,17 +133,17 @@ public class UsersStoreBinary implements UsersStore {
     }
 
 
-    private static void writeTo(AsyncFile file, User user) {
+    private static Future<Void> writeTo(AsyncFile file, User user) {
         String password = user.password();
-        writeTo(file, password, user);
+        return writeTo(file, password, user);
     }
 
-    private static void writeTo(AsyncFile file, String password, User user) {
+    private static Future<Void> writeTo(AsyncFile file, String password, User user) {
         Buffer buffer = Buffer.buffer();
         buffer.appendByte(Integer.valueOf(user.username().length() + password.length()).byteValue());
         buffer.appendByte(Integer.valueOf(user.username().length()).byteValue());
         buffer.appendBytes(user.username().getBytes());
         buffer.appendBytes(password.getBytes());
-        file.write(buffer).compose(s -> Future.succeededFuture());
+        return file.write(buffer);
     }
 }
