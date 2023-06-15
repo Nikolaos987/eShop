@@ -10,30 +10,30 @@ public class UsersConsole {
         this.userService = userService;
     }
 
-    public Future<Void> executeCommand(String[] args) {
-        return switch (args[1]) {
-            case "--register" -> this.userService.register(args[2], args[3])
+    public Future<Void> executeCommand(Options options) {
+        return switch (options.operation) {
+            case "register" -> this.userService.register(options.username, options.password)
                     .onSuccess(v -> System.out.println("User registered!"))
                     .onFailure(v -> {
                         System.out.println("Failed to register user");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "--login" -> this.userService.login(args[2], args[3])
+            case "login" -> this.userService.login(options.username, options.password)
                     .onSuccess(v -> System.out.println("User logged in!"))
                     .onFailure(v -> {
                         System.out.println("Failed to log in user");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "--delete" -> this.userService.delete(args[2])
+            case "delete" -> this.userService.delete(options.username)
                     .onSuccess(v -> System.out.println("User deleted!"))
                     .onFailure(v -> {
                         System.out.println("Failed to delete user");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "--update" -> this.userService.update(args[2], args[3], args[4])
+            case "update" -> this.userService.update(options.username, options.password, options.newPassword)
                     .onSuccess(v -> System.out.println("User updated!"))
                     .onFailure(v -> {
                         System.out.println("Failed to update user");

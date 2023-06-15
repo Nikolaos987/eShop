@@ -17,6 +17,8 @@ dependencies {
     implementation 'io.vertx:vertx-auth-jwt:4.4.1'
     implementation 'io.vertx:vertx-pg-client:4.4.3'
     implementation group: 'com.ongres.scram', name: 'client', version: '2.1'
+//     implementation 'com.beust.jcommander.Parameter'
+    implementation group: 'com.beust', name: 'jcommander', version: '1.82'
 //    implementation 'com.ongres.scram:client:2.1'
 }
 

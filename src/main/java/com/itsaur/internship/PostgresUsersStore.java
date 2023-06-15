@@ -24,17 +24,6 @@ public class PostgresUsersStore implements UsersStore {
                 .setMaxSize(poolSize);
     }
 
-    public PostgresUsersStore() {
-        this.connectOptions = new PgConnectOptions()
-                .setPort(5432)
-                .setHost("localhost")
-                .setDatabase("postgres")
-                .setUser("postgres")
-                .setPassword("password");
-        this.poolOptions = new PoolOptions()
-                .setMaxSize(5);
-    }
-
     @Override
     public Future<Void> insert(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
