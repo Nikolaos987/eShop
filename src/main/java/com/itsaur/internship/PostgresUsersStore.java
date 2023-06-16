@@ -7,6 +7,7 @@ import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.*;
 
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 public class PostgresUsersStore implements UsersStore {
     Vertx vertx = Vertx.vertx();
@@ -27,10 +28,10 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> insert(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String insertQuery = "INSERT INTO users VALUES ($1, $2);";
+        String insertQuery = "INSERT INTO users VALUES ($1, $2, $3);";
         return client
                 .preparedQuery(insertQuery)
-                .execute(Tuple.of(user.username(), user.password()))
+                .execute(Tuple.of(UUID.randomUUID(), user.username(), user.password()))
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
     }
@@ -44,7 +45,8 @@ public class PostgresUsersStore implements UsersStore {
                 .execute(Tuple.of(username))
                 .compose(rows -> {
                     try {
-                        User user = new User(rows.iterator().next().getString(0), rows.iterator().next().getString(1));
+                        Row row = rows.iterator().next();
+                        User user = new User(row.getString("username"), row.getString("password"));
                         client.close();
                         return Future.succeededFuture(user);
                     } catch (NoSuchElementException e) {
