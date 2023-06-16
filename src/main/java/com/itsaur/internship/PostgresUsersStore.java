@@ -38,9 +38,9 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<User> findUser(String username) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String getQuery = "SELECT * FROM users WHERE username = $1";
+        String findQuery = "SELECT * FROM users WHERE username = $1";
         return client
-                .preparedQuery(getQuery)
+                .preparedQuery(findQuery)
                 .execute(Tuple.of(username))
                 .compose(rows -> {
                     try {
@@ -56,9 +56,9 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> deleteUser(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String insertQuery = "DELETE FROM users WHERE username = $1;";
+        String deleteQuery = "DELETE FROM users WHERE username = $1;";
         return client
-                .preparedQuery(insertQuery)
+                .preparedQuery(deleteQuery)
                 .execute(Tuple.of(user.username()))
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
@@ -67,9 +67,9 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> updateUser(String username, String password) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String insertQuery = "UPDATE users SET password = $2 WHERE username = $1;";
+        String updateQuery = "UPDATE users SET password = $2 WHERE username = $1;";
         return client
-                .preparedQuery(insertQuery)
+                .preparedQuery(updateQuery)
                 .execute(Tuple.of(username, password))
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
