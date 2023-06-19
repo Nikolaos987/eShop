@@ -18,13 +18,18 @@ public class Main {
             jc.parse(args);
             switch (opts.method) {
                 case "server" -> {
+                    if (opts.table != null) {
+                        /* Server stores to Postgres */
+                        vertx.deployVerticle(new ProductApp(
+                                new ProductService(new PostgresProductStore(opts.port, opts.host, opts.database, opts.user, opts.password, opts.poolSize))));
+                    } else
                     if (opts.file != null) {
                         /* Server stores to File */
-                        vertx.deployVerticle(new App(
+                        vertx.deployVerticle(new CustomerApp(
                                 new UserService(new UsersStoreBinary(opts.file, "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt"))));
                     } else if (opts.database != null) {
                         /* Server stores to Postgres */
-                        vertx.deployVerticle(new App(
+                        vertx.deployVerticle(new CustomerApp(
                                 new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.password, opts.poolSize))));
                     }
                 }

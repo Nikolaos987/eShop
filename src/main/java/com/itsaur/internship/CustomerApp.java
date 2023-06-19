@@ -7,12 +7,12 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
-public class App extends AbstractVerticle {
+public class CustomerApp extends AbstractVerticle {
 
-    private final UserService service;
+    private final UserService userService;
 
-    public App(UserService service) {
-        this.service = service;
+    public CustomerApp(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
@@ -23,25 +23,25 @@ public class App extends AbstractVerticle {
 
         router.post("/login").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
-            this.service.login(body.getString("username"), body.getString("password"))
+            this.userService.login(body.getString("username"), body.getString("password"))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user logged in"))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
         router.post("/register").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
-            this.service.register(body.getString("username"), body.getString("password"))
+            this.userService.register(body.getString("username"), body.getString("password"))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user registered"))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.delete("/users/:username").handler(ctx -> this.service.delete(ctx.pathParam("username"))
+        router.delete("/customer/:username").handler(ctx -> this.userService.delete(ctx.pathParam("username"))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user deleted"))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.put("/users/:username/password").handler(ctx -> {
+        router.put("/customer/:username/password").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
-            this.service.update(ctx.pathParam("username"), body.getString("currentPassword"), body.getString("newPassword"))
+            this.userService.update(ctx.pathParam("username"), body.getString("currentPassword"), body.getString("newPassword"))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user updated"))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });

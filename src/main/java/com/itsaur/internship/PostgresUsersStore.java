@@ -28,7 +28,7 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> insert(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String insertQuery = "INSERT INTO users VALUES ($1, $2, $3);";
+        String insertQuery = "INSERT INTO customer VALUES ($1, $2, $3);";
         return client
                 .preparedQuery(insertQuery)
                 .execute(Tuple.of(UUID.randomUUID(), user.username(), user.password()))
@@ -39,7 +39,7 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<User> findUser(String username) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String findQuery = "SELECT * FROM users WHERE username = $1";
+        String findQuery = "SELECT * FROM customer WHERE username = $1";
         return client
                 .preparedQuery(findQuery)
                 .execute(Tuple.of(username))
@@ -58,7 +58,7 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> deleteUser(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String deleteQuery = "DELETE FROM users WHERE username = $1;";
+        String deleteQuery = "DELETE FROM customer WHERE username = $1;";
         return client
                 .preparedQuery(deleteQuery)
                 .execute(Tuple.of(user.username()))
@@ -69,7 +69,7 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> updateUser(String username, String password) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String updateQuery = "UPDATE users SET password = $2 WHERE username = $1;";
+        String updateQuery = "UPDATE customer SET password = $2 WHERE username = $1;";
         return client
                 .preparedQuery(updateQuery)
                 .execute(Tuple.of(username, password))
