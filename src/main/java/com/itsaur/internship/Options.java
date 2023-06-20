@@ -6,9 +6,6 @@ import com.beust.jcommander.Parameters;
 @Parameters(commandDescription = "CRUD operations")
 class Options {
 
-    @Parameter(names = {"--table", "-t"}, description = "[customer / product / favourites / cart]")
-    public String table;
-
     @Parameter(names = {"--file", "-f"}, description = "the file to which the data will be saved")
     public String file;
 

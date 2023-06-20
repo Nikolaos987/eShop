@@ -6,6 +6,9 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class UsersStoreBinary implements UsersStore {
 
     private final Vertx vertx = Vertx.vertx();
@@ -53,6 +56,26 @@ public class UsersStoreBinary implements UsersStore {
                 .compose(v -> vertx.fileSystem().copy(TEMP_PATH, BIN_PATH))
                 .compose(v -> vertx.fileSystem().delete(TEMP_PATH))
                 .mapEmpty();
+    }
+
+    @Override
+    public Future<Product> findProduct(String name) {
+        return null;
+    }
+
+    @Override
+    public Future<ArrayList<Product>> filter(double price, String category) {
+        return null;
+    }
+
+    @Override
+    public Future<Void> addToCart(UUID id, int quantity) {
+        return null;
+    }
+
+    @Override
+    public Future<Void> removeQuantity(UUID id, int quantity) {
+        return null;
     }
 
 

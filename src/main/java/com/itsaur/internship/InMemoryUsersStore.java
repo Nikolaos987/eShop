@@ -2,8 +2,10 @@ package com.itsaur.internship;
 
 import io.vertx.core.Future;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class InMemoryUsersStore implements UsersStore {
     private final Map<String, User> users = new HashMap<>()
@@ -45,6 +47,26 @@ public class InMemoryUsersStore implements UsersStore {
         users.replace(username, new User(username, password));
         printUsers(users);
         return Future.succeededFuture();
+    }
+
+    @Override
+    public Future<Product> findProduct(String name) {
+        return null;
+    }
+
+    @Override
+    public Future<ArrayList<Product>> filter(double price, String category) {
+        return null;
+    }
+
+    @Override
+    public Future<Void> addToCart(UUID id, int quantity) {
+        return null;
+    }
+
+    @Override
+    public Future<Void> removeQuantity(UUID id, int quantity) {
+        return null;
     }
 
     public void printUsers(Map<String, User> users) {

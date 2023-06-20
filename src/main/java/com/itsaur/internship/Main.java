@@ -18,11 +18,6 @@ public class Main {
             jc.parse(args);
             switch (opts.method) {
                 case "server" -> {
-                    if (opts.table != null) {
-                        /* Server stores to Postgres */
-                        vertx.deployVerticle(new ProductApp(
-                                new ProductService(new PostgresProductStore(opts.port, opts.host, opts.database, opts.user, opts.password, opts.poolSize))));
-                    } else
                     if (opts.file != null) {
                         /* Server stores to File */
                         vertx.deployVerticle(new CustomerApp(
