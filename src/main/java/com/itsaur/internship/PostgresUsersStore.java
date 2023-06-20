@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-public class PostgresUsersStore implements UsersStore, ProductsStore {
+public class PostgresUsersStore implements UsersStore {
     Vertx vertx = Vertx.vertx();
     private final PgConnectOptions connectOptions;
     private final PoolOptions poolOptions;
