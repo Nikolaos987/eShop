@@ -129,12 +129,9 @@ public class PostgresUsersStore implements UsersStore {
     public Future<Void> addToCart(UUID id, int quantity) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return removeQuantity(id, quantity)
-                .compose(res -> client
-                        .preparedQuery("SELECT pid FROM cart WHERE pid = $1")
-                        .execute(Tuple.of(id))
-                        .compose(rows -> {
-//                            Row row = rows.iterator().next();
-                            if (rows.size() != 0) {
+                .compose(res -> findInCart(id, client)
+                        .compose(found -> {
+                            if (found) {
                                 return client
                                         .preparedQuery("SELECT price FROM product WHERE productid = $1")
                                         .execute(Tuple.of(id))
@@ -152,8 +149,16 @@ public class PostgresUsersStore implements UsersStore {
                         }));
     }
 
-    public Future<Boolean> findInCart(UUID id) {
-        return null;
+    public Future<Boolean> findInCart(UUID id, SqlClient client) {
+        return client
+                .preparedQuery("SELECT pid FROM cart WHERE pid = $1")
+                .execute(Tuple.of(id))
+                .compose(rows -> {
+                    if (rows.size() != 0) {
+                        return Future.succeededFuture(true);
+                    } else
+                        return Future.succeededFuture(false);
+                });
     }
 
     @Override
