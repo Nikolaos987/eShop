@@ -43,6 +43,7 @@ CREATE TABLE cart (
     pid uuid NOT NULL,
 --     uid uuid NOT NULL,
     name varchar(50),
+    price float8 NOT NULL,
     quantity int CHECK (cart.quantity>=0),
     CONSTRAINT PK_Cart PRIMARY KEY (cid),
     FOREIGN KEY (pid) REFERENCES product(productId) ON DELETE CASCADE
