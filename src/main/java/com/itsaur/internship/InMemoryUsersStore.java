@@ -70,7 +70,7 @@ public class InMemoryUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Product> checkQuantity(UUID id, int quantity) {
+    public Future<Void> checkQuantity(UUID id, int quantity) {
         return null;
     }
 

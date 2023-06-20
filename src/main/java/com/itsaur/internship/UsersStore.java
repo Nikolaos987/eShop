@@ -24,5 +24,5 @@ public interface UsersStore {
 
     Future<Void> findInCart(String name);
 
-    Future<Product> checkQuantity(UUID id, int quantity);
+    Future<Void> checkQuantity(UUID id, int quantity);
 }

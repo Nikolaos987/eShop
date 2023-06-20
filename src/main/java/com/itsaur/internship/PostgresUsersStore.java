@@ -110,6 +110,16 @@ public class PostgresUsersStore implements UsersStore {
                         products.add(product);
                     });
                     client.close();
+                    products.forEach(product -> {
+                        System.out.println("ID:\t\t\t " + product.productId() +
+                                "\nname:\t\t " + product.name() +
+                                "\ndescription: " + product.description() +
+                                "\nbrand:\t\t " + product.brand() +
+                                "\nprice:\t\t " + product.price() +
+                                "\nquantity:\t " + product.quantity() +
+                                "\ncategory:\t " + product.category());
+                        System.out.println();
+                    });
                     return Future.succeededFuture(products);
                 });
     }
@@ -118,23 +128,10 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> addToCart(UUID id, int quantity) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return removeQuantity(id, quantity)
+                .onSuccess(res -> client
                 .preparedQuery("INSERT INTO cart (pid, name, price, quantity) SELECT productid, name, price * $2, $2 FROM product WHERE productid = $1")
-                .execute(Tuple.of(id, quantity))
-                .compose(rows -> removeQuantity(id, quantity));
-
-//        return client
-//                .preparedQuery(addToCartQuery)
-//                .execute(Tuple.of(id, quantity))
-//                .compose(rows -> removeQuantity(id, quantity))
-//                .otherwiseEmpty()
-//                .compose(v -> {
-//                    if (v == null) {
-//                        return Future.failedFuture(new IllegalArgumentException("wrong"));
-//                    } else {
-//                        return Future.succeededFuture();
-//                    }
-//                });
+                .execute(Tuple.of(id, quantity)));
     }
 
     @Override
@@ -143,20 +140,23 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Product> checkQuantity(UUID id, int quantity) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
-                .preparedQuery("SELECT * FROM product WHERE productid = $1")
-                .execute(Tuple.of(id))
-                .compose(rows -> {
-                    Row row = rows.iterator().next();
-                    if (rows.iterator().next().getInteger("quantity") - quantity < 0) {
-                        return Future.failedFuture(new IllegalArgumentException("out of stock"));
-                    } else {
-                        Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
-                        return Future.succeededFuture(product);
-                    }
-                });
+    public Future<Void> checkQuantity(UUID id, int quantity) {
+        if (quantity > 0) {
+            SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+            return client
+                    .preparedQuery("SELECT * FROM product WHERE productid = $1")
+                    .execute(Tuple.of(id))
+                    .compose(rows -> {
+                        Row row = rows.iterator().next();
+                        if (row.getInteger("quantity") - quantity < 0) {
+                            return Future.failedFuture(new IllegalArgumentException("out of stock"));
+                        } else {
+                            return Future.succeededFuture();
+                        }
+                    });
+        } else {
+            return Future.failedFuture(new IllegalArgumentException("quantity can not be 0 or less"));
+        }
     }
 
     public Future<Void> removeQuantity(UUID id, int quantity) {
@@ -168,8 +168,7 @@ public class PostgresUsersStore implements UsersStore {
                 .otherwiseEmpty()
                 .compose(rows -> {
                     if (rows == null) {  // when quantity <= 0
-                        System.out.println("null");
-                        return Future.failedFuture(new IllegalArgumentException("hello"));
+                        return Future.failedFuture(new IllegalArgumentException("product is out of stock"));
                     } else {
                         return Future.succeededFuture();
                     }

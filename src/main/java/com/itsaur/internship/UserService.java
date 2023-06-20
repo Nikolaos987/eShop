@@ -78,16 +78,6 @@ public class UserService {
                     if (products == null) {
                         return Future.failedFuture(new IllegalArgumentException("products not found"));
                     } else {
-                        products.forEach(product -> {
-                            System.out.println("ID:\t\t\t " + product.productId() +
-                                    "\nname:\t\t " + product.name() +
-                                    "\ndescription: " + product.description() +
-                                    "\nbrand:\t\t " + product.brand() +
-                                    "\nprice:\t\t " + product.price() +
-                                    "\nquantity:\t " + product.quantity() +
-                                    "\ncategory:\t " + product.category());
-                            System.out.println();
-                        });
                         return Future.succeededFuture();
                     }
                 });
@@ -95,12 +85,8 @@ public class UserService {
 
     public Future<Void> cart(String name, int quantity) {
         return store.findProduct(name)
-                .compose(product -> {
-                    return store.checkQuantity(product.productId(), quantity);
-                })
-                .compose(product -> {
-                    return store.addToCart(product.productId(), quantity);
-                });
+                .compose(product -> store.checkQuantity(product.productId(), quantity)
+                        .compose(v -> store.addToCart(product.productId(), quantity)));
     }
 
 }
