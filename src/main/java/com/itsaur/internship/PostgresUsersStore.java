@@ -124,7 +124,6 @@ public class PostgresUsersStore implements UsersStore {
                 });
     }
 
-    // TODO: 19/6/23 (nikos): calculate the total price for all products in cart
     @Override
     public Future<Void> addToCart(UUID id, int quantity) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
@@ -179,6 +178,20 @@ public class PostgresUsersStore implements UsersStore {
         } else {
             return Future.failedFuture(new IllegalArgumentException("quantity can not be 0 or less"));
         }
+    }
+
+    // TODO: 20/6/23 remove products from cart after buying them
+    @Override
+    public Future<Void> buy() {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT SUM(price) FROM cart")
+                .execute()
+                .compose(res -> {
+                    float totalPrice = res.iterator().next().getFloat("sum");
+                    System.out.println("total price = $" + totalPrice);
+                    return Future.succeededFuture();
+                });
     }
 
     public Future<Void> removeQuantity(UUID id, int quantity) {

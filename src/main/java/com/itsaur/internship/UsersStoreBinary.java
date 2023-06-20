@@ -78,6 +78,11 @@ public class UsersStoreBinary implements UsersStore {
         return null;
     }
 
+    @Override
+    public Future<Void> buy() {
+        return null;
+    }
+
 
     public static Future<User> readUser(AsyncFile file, final int currentPosition, String username) {
         return next(file, currentPosition)

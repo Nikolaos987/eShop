@@ -89,4 +89,8 @@ public class UserService {
                         .compose(v -> store.addToCart(product.productId(), quantity)));
     }
 
+    public Future<Void> buyCart() {
+        return store.buy();
+    }
+
 }

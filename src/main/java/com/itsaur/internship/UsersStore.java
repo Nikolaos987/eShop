@@ -23,4 +23,6 @@ public interface UsersStore {
     Future<Void> addToCart(UUID id, int quantity);
 
     Future<Void> checkQuantity(UUID id, int quantity);
+
+    Future<Void> buy();
 }

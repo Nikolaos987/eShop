@@ -66,6 +66,12 @@ public class CustomerApp extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
+        router.get("/cart/buy").handler(ctx -> {
+            this.userService.buyCart()
+                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("all products from carts were bought"))
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
         server.requestHandler(router).listen(8084);
     }
 }

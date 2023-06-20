@@ -69,6 +69,11 @@ public class InMemoryUsersStore implements UsersStore {
         return null;
     }
 
+    @Override
+    public Future<Void> buy() {
+        return null;
+    }
+
     public void printUsers(Map<String, User> users) {
         users.forEach((u,p) -> System.out.println(p));
     }
