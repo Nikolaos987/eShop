@@ -65,11 +65,6 @@ public class InMemoryUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Void> findInCart(String name) {
-        return null;
-    }
-
-    @Override
     public Future<Void> checkQuantity(UUID id, int quantity) {
         return null;
     }
