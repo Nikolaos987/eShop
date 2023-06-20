@@ -75,8 +75,8 @@ public class UserService {
         return store.filter(price, category)
                 .otherwiseEmpty()
                 .compose(products -> {
-                    if (products.isEmpty()) {
-                        return Future.failedFuture(new IllegalArgumentException("product not found"));
+                    if (products == null) {
+                        return Future.failedFuture(new IllegalArgumentException("products not found"));
                     } else {
                         products.forEach(product -> {
                             System.out.println("ID:\t\t\t " + product.productId() +
@@ -96,7 +96,9 @@ public class UserService {
     public Future<Void> cart(String name, int quantity) {
         return store.findProduct(name)
                 .compose(product -> {
-                    store.removeQuantity(product.productId(), quantity);
+                    return store.checkQuantity(product.productId(), quantity);
+                })
+                .compose(product -> {
                     return store.addToCart(product.productId(), quantity);
                 });
     }

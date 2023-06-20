@@ -22,5 +22,7 @@ public interface UsersStore {
 
     Future<Void> addToCart(UUID id, int quantity);
 
-    Future<Void> removeQuantity(UUID id, int quantity);
+    Future<Void> findInCart(String name);
+
+    Future<Product> checkQuantity(UUID id, int quantity);
 }
