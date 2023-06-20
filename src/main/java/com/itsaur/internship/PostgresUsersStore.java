@@ -124,18 +124,35 @@ public class PostgresUsersStore implements UsersStore {
                 });
     }
 
-    // TODO: 19/6/23 (nikos): add column price and calculate the total price for all products in cart
+    // TODO: 19/6/23 (nikos): calculate the total price for all products in cart
     @Override
     public Future<Void> addToCart(UUID id, int quantity) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return removeQuantity(id, quantity)
-                .onSuccess(res -> client
-                .preparedQuery("INSERT INTO cart (pid, name, price, quantity) SELECT productid, name, price * $2, $2 FROM product WHERE productid = $1")
-                .execute(Tuple.of(id, quantity)));
+                .compose(res -> client
+                        .preparedQuery("SELECT pid FROM cart WHERE pid = $1")
+                        .execute(Tuple.of(id))
+                        .compose(rows -> {
+//                            Row row = rows.iterator().next();
+                            if (rows.size() != 0) {
+                                return client
+                                        .preparedQuery("SELECT price FROM product WHERE productid = $1")
+                                        .execute(Tuple.of(id))
+                                        .compose(price -> {
+                                            float p = price.iterator().next().getFloat("price");
+                                            return client
+                                                    .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = price + $3 * $2 WHERE pid = $1;")
+                                                    .execute(Tuple.of(id, quantity, p)).compose(r -> Future.succeededFuture());
+                                        });
+                            } else {
+                                return client
+                                        .preparedQuery("INSERT INTO cart (pid, name, price, quantity) SELECT productid, name, price * $2, $2 FROM product WHERE productid = $1")
+                                        .execute(Tuple.of(id, quantity)).compose(r -> Future.succeededFuture());
+                            }
+                        }));
     }
 
-    @Override
-    public Future<Void> findInCart(String name) {
+    public Future<Boolean> findInCart(UUID id) {
         return null;
     }
 
