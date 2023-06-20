@@ -19,7 +19,7 @@ CREATE TABLE product (
     name varchar(50) NOT NULL,
     description VARCHAR(500),
     price float8 NOT NULL,
-    quantity int CHECK (product.quantity>=0) NOT NULL,
+    quantity int /*CHECK (product.quantity>=0)*/ NOT NULL,
     brand varchar(25) NOT NULL,
     category valid_categories NOT NULL,
     PRIMARY KEY (productId)
