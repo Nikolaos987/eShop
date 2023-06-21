@@ -28,6 +28,12 @@ public class CustomerApp extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
+        router.get("/logout").handler(ctx -> {
+            this.userService.logout()
+                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user logged out"))
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
         router.post("/register").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.userService.register(body.getString("username"), body.getString("password"))

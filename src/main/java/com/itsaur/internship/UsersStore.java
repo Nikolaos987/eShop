@@ -20,9 +20,13 @@ public interface UsersStore {
 
     Future<ArrayList<Product>> filter(double price, String category);
 
-    Future<Void> addToCart(UUID id, int quantity);
+    Future<Void> addToCart(User user, UUID id, int quantity);
 
     Future<Void> checkQuantity(UUID id, int quantity);
 
     Future<Void> buy();
+
+    Future<Void> logoutUser();
+
+    Future<User> checkLoggedIn();
 }

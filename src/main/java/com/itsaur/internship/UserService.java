@@ -23,14 +23,27 @@ public class UserService {
     }
 
     public Future<User> login(String username, String password) {
-        return store.findUser(username)
-                .compose(user -> {
-                    if (user.matches(password)) {
-                        return Future.succeededFuture(user);
-                    } else {
-                        return Future.failedFuture(new IllegalArgumentException("Invalid password"));
+        return store.checkLoggedIn()
+                .otherwiseEmpty()
+                .compose(u -> {
+                    if (u == null) {
+                        return store.findUser(username)
+                                .compose(user -> {
+                                    if (user.matches(password)) {
+                                        user.remember(user);
+                                        return Future.succeededFuture(user);
+                                    } else {
+                                        return Future.failedFuture(new IllegalArgumentException("Invalid password"));
+                                    }
+                                });
                     }
+                    return Future.failedFuture(new IllegalArgumentException("Already logged in"));
                 });
+
+    }
+
+    public Future<Void> logout() {
+        return store.logoutUser();
     }
 
     public Future<Void> delete(String username) {
@@ -40,7 +53,8 @@ public class UserService {
                     if (user == null) {
                         return Future.failedFuture(new IllegalArgumentException("User was not found"));
                     } else {
-                        return store.deleteUser(user);
+                        return store.logoutUser()
+                                .onSuccess(v -> store.deleteUser(user));
                     }
                 });
     }
@@ -84,9 +98,15 @@ public class UserService {
     }
 
     public Future<Void> cart(String name, int quantity) {
-        return store.findProduct(name)
-                .compose(product -> store.checkQuantity(product.productId(), quantity)
-                        .compose(v -> store.addToCart(product.productId(), quantity)));
+        return store.checkLoggedIn().compose(u ->
+                store.findProduct(name)
+                        .compose(product -> store.checkQuantity(product.productId(), quantity)
+                                .compose(v -> {
+                                    String usr = null;
+                                    String pass = null;
+                                    User user = new User(User.pref.get("username", usr), User.pref.get("password", pass));
+                                    return store.addToCart(user, product.productId(), quantity);
+                                })));
     }
 
     public Future<Void> buyCart() {

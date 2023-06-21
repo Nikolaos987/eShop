@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TYPE valid_categories AS ENUM ('smartphone', 'mobile phone');
+-- CREATE TYPE valid_categories AS ENUM ('smartphone', 'mobile phone');
 
 /* create table users */
 DROP TABLE IF EXISTS customer CASCADE;
@@ -41,13 +41,14 @@ DROP TABLE IF EXISTS cart CASCADE;
 CREATE TABLE cart (
     cid uuid DEFAULT uuid_generate_v4(),
     pid uuid NOT NULL,
---     uid uuid NOT NULL,
+    uid uuid NOT NULL,
+    username VARCHAR(20) NOT NULL,
     name varchar(50),
     price float8 NOT NULL,
     quantity int CHECK (cart.quantity>=0),
     CONSTRAINT PK_Cart PRIMARY KEY (cid),
-    FOREIGN KEY (pid) REFERENCES product(productId) ON DELETE CASCADE
---     FOREIGN KEY (uid) REFERENCES customer(userId) ON DELETE CASCADE
+    FOREIGN KEY (pid) REFERENCES product(productId) ON DELETE CASCADE,
+    FOREIGN KEY (uid) REFERENCES customer(userId) ON DELETE CASCADE
 );
 
 

@@ -56,6 +56,25 @@ public class PostgresUsersStore implements UsersStore {
                 });
     }
 
+    public Future<Void> logoutUser() {
+        return checkLoggedIn()
+                .compose(v -> User.forget())
+                .onFailure(v -> Future.failedFuture(v.getMessage()));
+    }
+
+    @Override
+    public Future<User> checkLoggedIn() {
+        String usr = null;
+        String pass = null;
+        if (User.pref.get("username", usr) != null) {
+            String username = User.pref.get("username", usr);
+            String password = User.pref.get("password", pass);
+            User user = new User(username, password);
+            return Future.succeededFuture(user);
+        }
+        return Future.failedFuture(new IllegalArgumentException("you are not logged in"));
+    }
+
     @Override
     public Future<Void> deleteUser(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
@@ -77,8 +96,6 @@ public class PostgresUsersStore implements UsersStore {
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
     }
-
-
 
     @Override
     public Future<Product> findProduct(String name) {
@@ -125,37 +142,52 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Void> addToCart(UUID id, int quantity) {
+    public Future<Void> addToCart(User user, UUID pid, int quantity) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return removeQuantity(id, quantity)
-                .compose(res -> findInCart(id, client)
-                        .compose(found -> {
+        return removeQuantity(pid, quantity)
+                .compose(res -> findInCart(user, pid, client)
+                        .compose(found -> getUserId(user.username(), client).compose(userid -> {
                             if (found) {
                                 return client
                                         .preparedQuery("SELECT price FROM product WHERE productid = $1")
-                                        .execute(Tuple.of(id))
-                                        .compose(price -> {
-                                            float p = price.iterator().next().getFloat("price");
+                                        .execute(Tuple.of(pid))
+                                        .compose(p -> {
+                                            float price = p.iterator().next().getFloat("price");
                                             return client
-                                                    .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = price + $3 * $2 WHERE pid = $1;")
-                                                    .execute(Tuple.of(id, quantity, p)).compose(r -> Future.succeededFuture());
+                                                    .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = (price + ($3 * $2)) WHERE pid = $1 AND uid = $4;")
+                                                    .execute(Tuple.of(pid, quantity, price, userid)).compose(r -> Future.succeededFuture())
+                                                    .compose(v -> {
+                                                        System.out.println(price * quantity);
+                                                        return Future.succeededFuture();
+                                                    });
                                         });
+
                             } else {
                                 return client
-                                        .preparedQuery("INSERT INTO cart (pid, name, price, quantity) SELECT productid, name, price * $2, $2 FROM product WHERE productid = $1")
-                                        .execute(Tuple.of(id, quantity)).compose(r -> Future.succeededFuture());
+                                        .preparedQuery("INSERT INTO cart (pid, uid, username, name, price, quantity) SELECT productid, $3, $4, name, price * $2, $2 FROM product WHERE productid = $1")
+                                        .execute(Tuple.of(pid, quantity, userid, user.username())).compose(r -> Future.succeededFuture());
                             }
-                        }));
+                        })));
     }
 
-    public Future<Boolean> findInCart(UUID id, SqlClient client) {
+    public Future<UUID> getUserId(String username, SqlClient client) {
         return client
-                .preparedQuery("SELECT pid FROM cart WHERE pid = $1")
-                .execute(Tuple.of(id))
+                .preparedQuery("SELECT userid FROM customer WHERE username = $1")
+                .execute(Tuple.of(username))
+                .compose(useridRow -> {
+                    UUID userid = useridRow.iterator().next().getUUID("userid");
+                    return Future.succeededFuture(userid);
+                });
+    }
+
+    public Future<Boolean> findInCart(User user, UUID id, SqlClient client) {
+        return client
+                .preparedQuery("SELECT pid FROM cart WHERE pid = $1 AND username = $2")
+                .execute(Tuple.of(id, user.username()))
                 .compose(rows -> {
-                    if (rows.size() != 0) {
+                    if (rows.size() != 0)
                         return Future.succeededFuture(true);
-                    } else
+                    else
                         return Future.succeededFuture(false);
                 });
     }
