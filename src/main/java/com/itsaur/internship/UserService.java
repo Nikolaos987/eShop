@@ -89,7 +89,7 @@ public class UserService {
                 .otherwiseEmpty()
                 .compose(products -> {
                     if (products.size() == 0) {
-                        return Future.failedFuture(new IllegalArgumentException("products not found"));
+                        return Future.failedFuture(new IllegalArgumentException("no products found"));
                     } else {
                         return Future.succeededFuture();
                     }
@@ -107,13 +107,7 @@ public class UserService {
                 .compose(product -> {
                     if (product != null)
                         return store.checkQuantity(product.productId(), quantity)
-                                .compose(v -> {
-                                    // TODO: 22/6/23 create a method getUser in User.java for this
-                                    String usr = null;
-                                    String pass = null;
-                                    User user = new User(User.pref.get("username", usr), User.pref.get("password", pass));
-                                    return store.addToCart(user, product.productId(), quantity);
-                                });
+                                .compose(v -> store.addToCart(User.getUser(), product.productId(), quantity));
                     return Future.failedFuture(new IllegalArgumentException("product was not found"));
                 });
     }
@@ -128,9 +122,7 @@ public class UserService {
                 })
                 .compose(product -> {
                     if (product != null) {
-                        String usr = null;
-                        String pass = null;
-                        User user = new User(User.pref.get("username", usr), User.pref.get("password", pass));
+                        User user = User.getUser();
                         return store.findInCart(user, product.productId())
                                 .compose(exists -> {
                                     if (exists) {

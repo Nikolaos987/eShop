@@ -21,4 +21,10 @@ public record User(String username, String password) {
         pref.remove("password");
         return Future.succeededFuture();
     }
+
+    public static User getUser() {
+        String usr = null;
+        String pass = null;
+        return new User(User.pref.get("username", usr), User.pref.get("password", pass));
+    }
 }

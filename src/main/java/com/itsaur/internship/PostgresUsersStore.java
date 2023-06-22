@@ -150,16 +150,10 @@ public class PostgresUsersStore implements UsersStore {
         return findInCart(user, pid)
                 .compose(found -> getUserId(user.username(), client).compose(userid -> {
                     if (found) {
-                        return client
-                                .preparedQuery("SELECT price FROM product WHERE productid = $1")
-                                .execute(Tuple.of(pid))
-                                .compose(p -> {
-                                    double price = p.iterator().next().getDouble("price");
-                                    return client
-                                            .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = price + ($3 * $2) WHERE pid = $1 AND uid = $4;")
-                                            .execute(Tuple.of(pid, quantity, price, userid)).compose(r -> Future.succeededFuture())
-                                            .compose(v -> Future.succeededFuture());
-                                });
+                        return getPrice(pid).compose(price -> client
+                                        .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = price + ($3 * $2) WHERE pid = $1 AND uid = $4;")
+                                        .execute(Tuple.of(pid, quantity, price, userid)).compose(r -> Future.succeededFuture())
+                                        .compose(v -> Future.succeededFuture()));
                     } else {
                         return client
                                 .preparedQuery("INSERT INTO cart (pid, uid, username, name, price, quantity) SELECT productid, $3, $4, name, price * $2, $2 FROM product WHERE productid = $1")
@@ -178,10 +172,10 @@ public class PostgresUsersStore implements UsersStore {
                         .compose(rows -> {
                             int cartProductQuantity = rows.iterator().next().getInteger("quantity");
                             if (cartProductQuantity - quantity > 0) {
-                                return client
-                                        .preparedQuery("UPDATE cart SET quantity = quantity - $1 WHERE uid = $2 AND pid = $3")
-                                        .execute(Tuple.of(quantity, userid, productId))
-                                        .compose(v -> Future.succeededFuture());
+                                return getPrice(productId).compose(price -> client
+                                        .preparedQuery("UPDATE cart SET quantity = quantity - $1, price = price - ($1 * $4) WHERE uid = $2 AND pid = $3")
+                                        .execute(Tuple.of(quantity, userid, productId, price))
+                                        .compose(v -> Future.succeededFuture()));
                             } else {
                                 return client
                                         .preparedQuery("DELETE FROM cart WHERE uid = $1 AND pid = $2")
@@ -243,6 +237,17 @@ public class PostgresUsersStore implements UsersStore {
                         .compose(r -> Future.succeededFuture()));
 
 
+    }
+
+    public Future<Double> getPrice(UUID productId) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT price FROM product WHERE productid = $1")
+                .execute(Tuple.of(productId))
+                .compose(p -> {
+                    double price = p.iterator().next().getDouble("price");
+                    return Future.succeededFuture(price);
+                });
     }
 
     public Future<Double> totalPrice(String username) {
