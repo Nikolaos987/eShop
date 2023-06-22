@@ -72,6 +72,10 @@ public class CustomerApp extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
+        router.delete("/cart/remove/:name/:quantity").handler(ctx -> this.userService.removeCart(ctx.pathParam("name"), Integer.parseInt(ctx.pathParam("quantity")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product quantity removed from your cart"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
         server.requestHandler(router).listen(8084);
     }
 }

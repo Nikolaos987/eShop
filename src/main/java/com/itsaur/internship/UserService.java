@@ -98,12 +98,17 @@ public class UserService {
 
     public Future<Void> addCart(String name, int quantity) {
         return store.checkLoggedIn()
-                .compose(u -> store.findProduct(name))
                 .otherwiseEmpty()
+                .compose(user -> {
+                    if (user != null)
+                        return store.findProduct(name);
+                    return Future.failedFuture(new IllegalArgumentException("you are not logged-in"));
+                })
                 .compose(product -> {
                     if (product != null)
                         return store.checkQuantity(product.productId(), quantity)
                                 .compose(v -> {
+                                    // TODO: 22/6/23 create a method getUser in User.java for this
                                     String usr = null;
                                     String pass = null;
                                     User user = new User(User.pref.get("username", usr), User.pref.get("password", pass));
@@ -113,10 +118,40 @@ public class UserService {
                 });
     }
 
+    public Future<Void> removeCart(String name, int quantity) {
+        return store.checkLoggedIn()
+                .otherwiseEmpty()
+                .compose(user -> {
+                    if (user != null)
+                        return store.findProduct(name);
+                    return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
+                })
+                .compose(product -> {
+                    if (product != null) {
+                        String usr = null;
+                        String pass = null;
+                        User user = new User(User.pref.get("username", usr), User.pref.get("password", pass));
+                        return store.findInCart(user, product.productId())
+                                .compose(exists -> {
+                                    if (exists) {
+                                        return store.removeFromCart(user, product.productId(), quantity)
+                                                .compose(v -> Future.succeededFuture());
+                                    }
+                                    return Future.failedFuture(new IllegalArgumentException("product does not exist in your cart"));
+                                });
+                    }
+                    return Future.failedFuture(new IllegalArgumentException("product does not exist"));
+                });
+    }
+
     public Future<String> showCart() {
         return store.checkLoggedIn()
-                .compose(user -> store.cart(user.username()))
                 .otherwiseEmpty()
+                .compose(user -> {
+                    if (user != null)
+                        return store.cart(user.username());
+                    return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
+                })
                 .compose(cart -> {
                     if (cart != null)
                         return Future.succeededFuture(cart);
@@ -127,7 +162,12 @@ public class UserService {
 
     public Future<Void> buyCart() {
         return store.checkLoggedIn()
-                .compose(user -> store.buy(user.username()));
+                .otherwiseEmpty()
+                .compose(user -> {
+                    if (user != null)
+                        return store.buy(user.username());
+                    return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
+                });
     }
 
 }

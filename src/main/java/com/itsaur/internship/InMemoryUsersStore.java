@@ -65,6 +65,11 @@ public class InMemoryUsersStore implements UsersStore {
     }
 
     @Override
+    public Future<Boolean> findInCart(User user, UUID id) {
+        return null;
+    }
+
+    @Override
     public Future<String> cart(String username) {
         return null;
     }
@@ -85,6 +90,11 @@ public class InMemoryUsersStore implements UsersStore {
 
     @Override
     public Future<User> checkLoggedIn() {
+        return null;
+    }
+
+    @Override
+    public Future<Void> removeFromCart(User user, UUID productId, int quantity) {
         return null;
     }
 
