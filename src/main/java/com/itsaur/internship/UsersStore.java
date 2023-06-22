@@ -21,6 +21,7 @@ public interface UsersStore {
     Future<ArrayList<Product>> filter(double price, String category);
 
     Future<Void> addToCart(User user, UUID id, int quantity);
+
     Future<Boolean> findInCart(User user, UUID id);
 
     Future<String> cart(String username);

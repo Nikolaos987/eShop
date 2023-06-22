@@ -53,7 +53,7 @@ public class CustomerApp extends AbstractVerticle {
         /* for product interaction */
 
         router.get("/product/:name").handler(ctx -> this.userService.search(ctx.pathParam("name"))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product found!"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.get("/product/filter/:price/:category").handler(ctx -> this.userService.filterProducts(Double.parseDouble(ctx.pathParam("price")), ctx.pathParam("category"))

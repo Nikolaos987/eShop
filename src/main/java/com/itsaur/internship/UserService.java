@@ -42,18 +42,25 @@ public class UserService {
     }
 
     public Future<Void> logout() {
-        return store.logoutUser();
+        return store.checkLoggedIn()
+                .otherwiseEmpty()
+                .compose(u -> {
+                    if (u != null)
+                        return store.logoutUser();
+                    else
+                        return Future.failedFuture(new IllegalArgumentException("user already logged out"));
+                });
     }
 
     public Future<Void> delete(String username) {
         return store.findUser(username)
                 .otherwiseEmpty()
                 .compose(user -> {
-                    if (user == null) {
-                        return Future.failedFuture(new IllegalArgumentException("User was not found"));
-                    } else {
+                    if (user != null) {
                         return store.logoutUser()
                                 .onSuccess(v -> store.deleteUser(user));
+                    } else {
+                        return Future.failedFuture(new IllegalArgumentException("User was not found"));
                     }
                 });
     }
@@ -75,11 +82,11 @@ public class UserService {
         return store.findProduct(name)
                 .otherwiseEmpty()
                 .compose(product -> {
-                    if (product == null) {
-                        return Future.failedFuture(new IllegalArgumentException("product not found"));
-                    } else {
+                    if (product != null) {
                         System.out.println(product.productId() + "\n" + product.name() + "\n" + product.description() + "\n" + product.brand() + "\n" + product.price() + "\n" + product.quantity() + "\n" + product.category());
                         return Future.succeededFuture(product);
+                    } else {
+                        return Future.failedFuture(new IllegalArgumentException("product not found"));
                     }
                 });
     }
@@ -88,10 +95,10 @@ public class UserService {
         return store.filter(price, category)
                 .otherwiseEmpty()
                 .compose(products -> {
-                    if (products.size() == 0) {
-                        return Future.failedFuture(new IllegalArgumentException("no products found"));
-                    } else {
+                    if (products.size() > 0) {
                         return Future.succeededFuture();
+                    } else {
+                        return Future.failedFuture(new IllegalArgumentException("no products found"));
                     }
                 });
     }
@@ -99,14 +106,12 @@ public class UserService {
     public Future<Void> addCart(String name, int quantity) {
         return store.checkLoggedIn()
                 .otherwiseEmpty()
-                .compose(user -> {
-                    if (user != null)
-                        return store.findProduct(name);
-                    return Future.failedFuture(new IllegalArgumentException("you are not logged-in"));
-                })
+                .compose(user -> getProduct(user, name)
+                        .compose(Future::succeededFuture))
                 .compose(product -> {
                     if (product != null)
                         return store.checkQuantity(product.productId(), quantity)
+                                // TODO: 22/6/23 if quantity >= 0 then...
                                 .compose(v -> store.addToCart(User.getUser(), product.productId(), quantity));
                     return Future.failedFuture(new IllegalArgumentException("product was not found"));
                 });
@@ -115,11 +120,8 @@ public class UserService {
     public Future<Void> removeCart(String name, int quantity) {
         return store.checkLoggedIn()
                 .otherwiseEmpty()
-                .compose(user -> {
-                    if (user != null)
-                        return store.findProduct(name);
-                    return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
-                })
+                .compose(user -> getProduct(user, name)
+                        .compose(Future::succeededFuture))
                 .compose(product -> {
                     if (product != null) {
                         User user = User.getUser();
@@ -143,12 +145,6 @@ public class UserService {
                     if (user != null)
                         return store.cart(user.username());
                     return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
-                })
-                .compose(cart -> {
-                    if (cart != null)
-                        return Future.succeededFuture(cart);
-                    else
-                        return Future.failedFuture(new IllegalArgumentException("Seems like your cart is empty"));
                 });
     }
 
@@ -160,6 +156,12 @@ public class UserService {
                         return store.buy(user.username());
                     return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
                 });
+    }
+
+    public Future<Product> getProduct(User user, String name) {
+        if (user != null)
+            return store.findProduct(name);
+        return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
     }
 
 }

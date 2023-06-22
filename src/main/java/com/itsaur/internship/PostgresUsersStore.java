@@ -60,9 +60,8 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     public Future<Void> logoutUser() {
-        return checkLoggedIn()
-                .compose(v -> User.forget())
-                .onFailure(v -> Future.failedFuture(v.getMessage()));
+        return User.forget()
+                .compose(v -> Future.succeededFuture());
     }
 
     @Override
@@ -201,9 +200,11 @@ public class PostgresUsersStore implements UsersStore {
                         String s5 = "\n";
                         cartProducts.add(s1.concat(s2).concat(s3).concat(s4).concat(s5));
                     });
-                    return totalPrice(username)
-                            .onSuccess(val -> cartProducts.add("\ntotal price: " + val))
-                            .compose(v -> Future.succeededFuture(cartProducts.toString()));
+                    if (cartProducts.size() != 0)
+                        return totalPrice(username)
+                                .onSuccess(val -> cartProducts.add("\ntotal price: " + val))
+                                .compose(v -> Future.succeededFuture(cartProducts.toString()));
+                    return Future.failedFuture(new IllegalArgumentException("Seems like your cart is empty"));
                 });
     }
 
