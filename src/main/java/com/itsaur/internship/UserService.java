@@ -39,7 +39,6 @@ public class UserService {
                     }
                     return Future.failedFuture(new IllegalArgumentException("Already logged in"));
                 });
-
     }
 
     public Future<Void> logout() {
@@ -99,27 +98,36 @@ public class UserService {
 
     public Future<Void> addCart(String name, int quantity) {
         return store.checkLoggedIn()
-                .compose(u -> store.findProduct(name)
-                        .compose(product -> store.checkQuantity(product.productId(), quantity)
+                .compose(u -> store.findProduct(name))
+                .otherwiseEmpty()
+                .compose(product -> {
+                    if (product != null)
+                        return store.checkQuantity(product.productId(), quantity)
                                 .compose(v -> {
                                     String usr = null;
                                     String pass = null;
                                     User user = new User(User.pref.get("username", usr), User.pref.get("password", pass));
                                     return store.addToCart(user, product.productId(), quantity);
-                                })));
+                                });
+                    return Future.failedFuture(new IllegalArgumentException("product was not found"));
+                });
     }
 
     public Future<String> showCart() {
         return store.checkLoggedIn()
                 .compose(user -> store.cart(user.username()))
-                        .onSuccess(Future::succeededFuture)
-                        .onFailure(v -> Future.failedFuture(new IllegalArgumentException("failed to retrieve addCart information")));
+                .otherwiseEmpty()
+                .compose(cart -> {
+                    if (cart != null)
+                        return Future.succeededFuture(cart);
+                    else
+                        return Future.failedFuture(new IllegalArgumentException("Seems like your cart is empty"));
+                });
     }
 
     public Future<Void> buyCart() {
         return store.checkLoggedIn()
                 .compose(user -> store.buy(user.username()));
-
     }
 
 }

@@ -151,14 +151,11 @@ public class PostgresUsersStore implements UsersStore {
                                 .preparedQuery("SELECT price FROM product WHERE productid = $1")
                                 .execute(Tuple.of(pid))
                                 .compose(p -> {
-                                    float price = p.iterator().next().getFloat("price");
+                                    double price = p.iterator().next().getDouble("price");
                                     return client
-                                            .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = (price + ($3 * $2)) WHERE pid = $1 AND uid = $4;")
+                                            .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = price + ($3 * $2) WHERE pid = $1 AND uid = $4;")
                                             .execute(Tuple.of(pid, quantity, price, userid)).compose(r -> Future.succeededFuture())
-                                            .compose(v -> {
-                                                System.out.println(price * quantity);
-                                                return Future.succeededFuture();
-                                            });
+                                            .compose(v -> Future.succeededFuture());
                                 });
                     } else {
                         return client
@@ -179,12 +176,13 @@ public class PostgresUsersStore implements UsersStore {
                     rows.forEach(row -> {
                         String s1 = "\nPRODUCT ID: " + row.getUUID("pid");
                         String s2 = "\nNAME" + row.getString("name");
-                        String s3 = "\nPRICE" + "\t" + row.getFloat("price");
+                        String s3 = "\nPRICE" + "\t" + row.getDouble("price");
                         String s4 = "\nQUANTITY" + "\t" + row.getInteger("quantity");
                         String s5 = "\n";
                         cartProducts.add(s1.concat(s2).concat(s3).concat(s4).concat(s5));
                     });
-                    return totalPrice(username).onSuccess(val -> cartProducts.add("\ntotal price: " + val))
+                    return totalPrice(username)
+                            .onSuccess(val -> cartProducts.add("\ntotal price: " + val))
                             .compose(v -> Future.succeededFuture(cartProducts.toString()));
                 });
     }
@@ -221,14 +219,13 @@ public class PostgresUsersStore implements UsersStore {
 
     }
 
-    public Future<Float> totalPrice(String username) {
+    public Future<Double> totalPrice(String username) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("SELECT SUM(price) FROM cart WHERE username = $1")
                 .execute(Tuple.of(username))
                 .compose(res -> {
-                    float totalPrice = res.iterator().next().getFloat("sum");
-//                    System.out.println("total price = $" + totalPrice);
+                    double totalPrice = res.iterator().next().getDouble("sum");
                     return Future.succeededFuture(totalPrice);
                 });
     }
