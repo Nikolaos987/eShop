@@ -6,6 +6,18 @@ import com.beust.jcommander.Parameters;
 @Parameters(commandDescription = "CRUD operations")
 class Options {
 
+    @Parameter(names = {"--quantity"}, description = "the quantity of the product")
+    public int quantity;
+
+    @Parameter(names = {"--price"}, description = "the price of the product")
+    public double price;
+
+    @Parameter(names = {"--category"}, description = "the category of the product [smartphone / mobile phone]")
+    public String category;
+
+    @Parameter(names = {"--product"}, description = "the name of the product")
+    public String name;
+
     @Parameter(names = {"--file", "-f"}, description = "the file to which the data will be saved")
     public String file;
 

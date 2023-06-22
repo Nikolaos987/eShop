@@ -88,7 +88,7 @@ public class UserService {
         return store.filter(price, category)
                 .otherwiseEmpty()
                 .compose(products -> {
-                    if (products == null) {
+                    if (products.size() == 0) {
                         return Future.failedFuture(new IllegalArgumentException("products not found"));
                     } else {
                         return Future.succeededFuture();

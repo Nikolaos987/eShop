@@ -25,7 +25,7 @@ public class Main {
                     } else if (opts.database != null) {
                         /* Server stores to Postgres */
                         vertx.deployVerticle(new CustomerApp(
-                                new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.password, opts.poolSize))));
+                                new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize))));
                     }
                 }
                 case "console" -> {
