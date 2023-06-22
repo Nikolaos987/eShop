@@ -99,7 +99,7 @@ public class PostgresUsersStore implements UsersStore {
 
     @Override
     public Future<Product> findProduct(String name) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions );
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         String searchQuery = "SELECT * FROM product WHERE name = $1;";
         return client
                 .preparedQuery(searchQuery)
@@ -115,7 +115,7 @@ public class PostgresUsersStore implements UsersStore {
 
     @Override
     public Future<ArrayList<Product>> filter(double price, String category) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions );
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         String filterQuery = "SELECT * FROM product WHERE price <= $1 AND category = $2;";
         return client
                 .preparedQuery(filterQuery)
@@ -144,51 +144,48 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> addToCart(User user, UUID pid, int quantity) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return removeQuantity(pid, quantity)
-                .compose(res -> findInCart(user, pid, client)
-                        .compose(found -> getUserId(user.username(), client).compose(userid -> {
-                            if (found) {
-                                return client
-                                        .preparedQuery("SELECT price FROM product WHERE productid = $1")
-                                        .execute(Tuple.of(pid))
-                                        .compose(p -> {
-                                            float price = p.iterator().next().getFloat("price");
-                                            return client
-                                                    .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = (price + ($3 * $2)) WHERE pid = $1 AND uid = $4;")
-                                                    .execute(Tuple.of(pid, quantity, price, userid)).compose(r -> Future.succeededFuture())
-                                                    .compose(v -> {
-                                                        System.out.println(price * quantity);
-                                                        return Future.succeededFuture();
-                                                    });
-                                        });
-
-                            } else {
-                                return client
-                                        .preparedQuery("INSERT INTO cart (pid, uid, username, name, price, quantity) SELECT productid, $3, $4, name, price * $2, $2 FROM product WHERE productid = $1")
-                                        .execute(Tuple.of(pid, quantity, userid, user.username())).compose(r -> Future.succeededFuture());
-                            }
-                        })));
+        return findInCart(user, pid, client)
+                .compose(found -> getUserId(user.username(), client).compose(userid -> {
+                    if (found) {
+                        return client
+                                .preparedQuery("SELECT price FROM product WHERE productid = $1")
+                                .execute(Tuple.of(pid))
+                                .compose(p -> {
+                                    float price = p.iterator().next().getFloat("price");
+                                    return client
+                                            .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = (price + ($3 * $2)) WHERE pid = $1 AND uid = $4;")
+                                            .execute(Tuple.of(pid, quantity, price, userid)).compose(r -> Future.succeededFuture())
+                                            .compose(v -> {
+                                                System.out.println(price * quantity);
+                                                return Future.succeededFuture();
+                                            });
+                                });
+                    } else {
+                        return client
+                                .preparedQuery("INSERT INTO cart (pid, uid, username, name, price, quantity) SELECT productid, $3, $4, name, price * $2, $2 FROM product WHERE productid = $1")
+                                .execute(Tuple.of(pid, quantity, userid, user.username())).compose(r -> Future.succeededFuture());
+                    }
+                }));
     }
 
-    public Future<UUID> getUserId(String username, SqlClient client) {
+    @Override
+    public Future<String> cart(String username) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("SELECT userid FROM customer WHERE username = $1")
+                .preparedQuery("SELECT pid, name, price, quantity FROM cart WHERE username = $1")
                 .execute(Tuple.of(username))
-                .compose(useridRow -> {
-                    UUID userid = useridRow.iterator().next().getUUID("userid");
-                    return Future.succeededFuture(userid);
-                });
-    }
-
-    public Future<Boolean> findInCart(User user, UUID id, SqlClient client) {
-        return client
-                .preparedQuery("SELECT pid FROM cart WHERE pid = $1 AND username = $2")
-                .execute(Tuple.of(id, user.username()))
                 .compose(rows -> {
-                    if (rows.size() != 0)
-                        return Future.succeededFuture(true);
-                    else
-                        return Future.succeededFuture(false);
+                    ArrayList<String> cartProducts = new ArrayList<>();
+                    rows.forEach(row -> {
+                        String s1 = "\nPRODUCT ID: " + row.getUUID("pid");
+                        String s2 = "\nNAME" + row.getString("name");
+                        String s3 = "\nPRICE" + "\t" + row.getFloat("price");
+                        String s4 = "\nQUANTITY" + "\t" + row.getInteger("quantity");
+                        String s5 = "\n";
+                        cartProducts.add(s1.concat(s2).concat(s3).concat(s4).concat(s5));
+                    });
+                    return totalPrice(username).onSuccess(val -> cartProducts.add("\ntotal price: " + val))
+                            .compose(v -> Future.succeededFuture(cartProducts.toString()));
                 });
     }
 
@@ -212,33 +209,91 @@ public class PostgresUsersStore implements UsersStore {
         }
     }
 
-    // TODO: 20/6/23 remove products from cart after buying them
     @Override
-    public Future<Void> buy() {
+    public Future<Void> buy(String username) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return getUserId(username, client)
+                .compose(this::removeQuantity)
+                .compose(v -> client.preparedQuery("DELETE FROM cart WHERE USERNAME = $1")
+                        .execute(Tuple.of(username))
+                        .compose(r -> Future.succeededFuture()));
+
+
+    }
+
+    public Future<Float> totalPrice(String username) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("SELECT SUM(price) FROM cart")
-                .execute()
+                .preparedQuery("SELECT SUM(price) FROM cart WHERE username = $1")
+                .execute(Tuple.of(username))
                 .compose(res -> {
                     float totalPrice = res.iterator().next().getFloat("sum");
-                    System.out.println("total price = $" + totalPrice);
-                    return Future.succeededFuture();
+//                    System.out.println("total price = $" + totalPrice);
+                    return Future.succeededFuture(totalPrice);
                 });
     }
 
-    public Future<Void> removeQuantity(UUID id, int quantity) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String removeQuantityQuery = "UPDATE product SET quantity = quantity - $1 WHERE productid = $2;";
+
+    public Future<UUID> getUserId(String username, SqlClient client) {
         return client
-                .preparedQuery(removeQuantityQuery)
-                .execute(Tuple.of(quantity, id))
-                .otherwiseEmpty()
-                .compose(rows -> {
-                    if (rows == null) {  // when quantity <= 0
-                        return Future.failedFuture(new IllegalArgumentException("product is out of stock"));
-                    } else {
-                        return Future.succeededFuture();
-                    }
+                .preparedQuery("SELECT userid FROM customer WHERE username = $1")
+                .execute(Tuple.of(username))
+                .compose(useridRow -> {
+                    UUID userid = useridRow.iterator().next().getUUID("userid");
+                    return Future.succeededFuture(userid);
                 });
+    }
+
+    public Future<Boolean> findInCart(User user, UUID id, SqlClient client) {
+        return client
+                .preparedQuery("SELECT pid FROM cart WHERE pid = $1 AND username = $2")
+                .execute(Tuple.of(id, user.username()))
+                .compose(rows -> {
+                    if (rows.size() != 0)
+                        return Future.succeededFuture(true);
+                    else
+                        return Future.succeededFuture(false);
+                });
+    }
+
+    public Future<Void> removeQuantity(UUID id) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT pid, quantity FROM cart WHERE uid = $1")
+                .execute(Tuple.of(id))
+                .compose(rows -> {
+                    ArrayList<UUID> ids = new ArrayList<>();
+                    ArrayList<Integer> quantities = new ArrayList<>();
+                    rows.forEach(row -> {
+                        UUID userId = row.getUUID("pid");
+                        ids.add(userId);
+                        int quantity = row.getInteger("quantity");
+                        quantities.add(quantity);
+                    });
+                    return removeNext(ids, quantities, 0, client);
+                });
+
+//        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+//        String removeQuantityQuery = "UPDATE product SET quantity = quantity - $1 WHERE productid = $2;";
+//        return client
+//                .preparedQuery(removeQuantityQuery)
+//                .execute(Tuple.of(quantity, id))
+//                .otherwiseEmpty()
+//                .compose(rows -> {
+//                    if (rows == null) {  // when quantity <= 0
+//                        return Future.failedFuture(new IllegalArgumentException("product is out of stock"));
+//                    } else {
+//                        return Future.succeededFuture();
+//                    }
+//                });
+    }
+
+    public Future<Void> removeNext(ArrayList<UUID> ids, ArrayList<Integer> quantities, int pos, SqlClient client) {
+        if (pos < ids.size()) {
+            return client
+                    .preparedQuery("UPDATE product SET quantity = quantity - $2 WHERE productid = $1;")
+                    .execute(Tuple.of(ids.get(pos), quantities.get(pos)))
+                    .compose(rows -> removeNext(ids, quantities, pos+1, client));
+        } return Future.succeededFuture();
     }
 }

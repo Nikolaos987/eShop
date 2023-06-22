@@ -97,9 +97,9 @@ public class UserService {
                 });
     }
 
-    public Future<Void> cart(String name, int quantity) {
-        return store.checkLoggedIn().compose(u ->
-                store.findProduct(name)
+    public Future<Void> addCart(String name, int quantity) {
+        return store.checkLoggedIn()
+                .compose(u -> store.findProduct(name)
                         .compose(product -> store.checkQuantity(product.productId(), quantity)
                                 .compose(v -> {
                                     String usr = null;
@@ -109,8 +109,17 @@ public class UserService {
                                 })));
     }
 
+    public Future<String> showCart() {
+        return store.checkLoggedIn()
+                .compose(user -> store.cart(user.username()))
+                        .onSuccess(Future::succeededFuture)
+                        .onFailure(v -> Future.failedFuture(new IllegalArgumentException("failed to retrieve addCart information")));
+    }
+
     public Future<Void> buyCart() {
-        return store.buy();
+        return store.checkLoggedIn()
+                .compose(user -> store.buy(user.username()));
+
     }
 
 }

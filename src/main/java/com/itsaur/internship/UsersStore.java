@@ -22,9 +22,11 @@ public interface UsersStore {
 
     Future<Void> addToCart(User user, UUID id, int quantity);
 
+    Future<String> cart(String username);
+
     Future<Void> checkQuantity(UUID id, int quantity);
 
-    Future<Void> buy();
+    Future<Void> buy(String username);
 
     Future<Void> logoutUser();
 

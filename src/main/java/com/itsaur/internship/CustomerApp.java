@@ -28,11 +28,9 @@ public class CustomerApp extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.get("/logout").handler(ctx -> {
-            this.userService.logout()
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user logged out"))
-                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
-        });
+        router.get("/logout").handler(ctx -> this.userService.logout()
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user logged out"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.post("/register").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
@@ -54,29 +52,25 @@ public class CustomerApp extends AbstractVerticle {
 
         /* for product interaction */
 
-        router.get("/product/:name").handler(ctx -> {
-            this.userService.search(ctx.pathParam("name"))
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product found!"))
-                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
-        });
+        router.get("/product/:name").handler(ctx -> this.userService.search(ctx.pathParam("name"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product found!"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/product/filter/:price/:category").handler(ctx -> {
-            this.userService.filterProducts(Double.parseDouble(ctx.pathParam("price")), ctx.pathParam("category"))
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product found!"))
-                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
-        });
+        router.get("/product/filter/:price/:category").handler(ctx -> this.userService.filterProducts(Double.parseDouble(ctx.pathParam("price")), ctx.pathParam("category"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product found!"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/product/:name/cart/:quantity").handler(ctx -> {
-            this.userService.cart(ctx.pathParam("name"), Integer.parseInt(ctx.pathParam("quantity")))
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product added to cart!"))
-                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
-        });
+        router.get("/product/:name/add/:quantity").handler(ctx -> this.userService.addCart(ctx.pathParam("name"), Integer.parseInt(ctx.pathParam("quantity")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product added to addCart!"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/cart/buy").handler(ctx -> {
-            this.userService.buyCart()
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("all products from carts were bought"))
-                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
-        });
+        router.get("/cart/buy").handler(ctx -> this.userService.buyCart()
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("all products from carts were bought"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
+        router.get("/cart/show").handler(ctx -> this.userService.showCart()
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         server.requestHandler(router).listen(8084);
     }

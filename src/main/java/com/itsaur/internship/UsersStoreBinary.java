@@ -74,12 +74,16 @@ public class UsersStoreBinary implements UsersStore {
     }
 
     @Override
-    public Future<Void> checkQuantity(UUID id, int quantity) {
+    public Future<String> cart(String username) {
         return null;
     }
 
     @Override
-    public Future<Void> buy() {
+    public Future<Void> checkQuantity(UUID id, int quantity) {
+        return null;
+    }
+
+    public Future<Void> buy(String username) {
         return null;
     }
 
