@@ -48,14 +48,14 @@ public class UsersConsole {
                     })
                     .mapEmpty();
             case "search" -> this.userService.search(options.name)
-                    .onSuccess(v -> System.out.println("product found"))
+                    .onSuccess(v -> System.out.println(v))
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
             case "filter" -> this.userService.filterProducts(options.price, options.brand, options.category)
-                    .onSuccess(v -> System.out.println("products found"))
+                    .onSuccess(v -> System.out.println(v))
                     .onFailure(v -> {
                         System.out.println("products not found");
                         v.printStackTrace();
