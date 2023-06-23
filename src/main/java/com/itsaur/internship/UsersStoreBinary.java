@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
+import io.vertx.core.json.JsonArray;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -79,7 +80,7 @@ public class UsersStoreBinary implements UsersStore {
     }
 
     @Override
-    public Future<String> cart(String username) {
+    public Future<JsonArray> cart(String username) {
         return null;
     }
 

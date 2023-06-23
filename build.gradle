@@ -20,6 +20,7 @@ dependencies {
 //     implementation 'com.beust.jcommander.Parameter'
     implementation group: 'com.beust', name: 'jcommander', version: '1.82'
 //    implementation 'com.ongres.scram:client:2.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
 }
 
 test {

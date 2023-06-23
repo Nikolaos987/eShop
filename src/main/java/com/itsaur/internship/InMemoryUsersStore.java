@@ -1,6 +1,7 @@
 package com.itsaur.internship;
 
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public class InMemoryUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<String> cart(String username) {
+    public Future<JsonArray> cart(String username) {
         return null;
     }
 

@@ -1,6 +1,7 @@
 package com.itsaur.internship;
 
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonArray;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -24,7 +25,7 @@ public interface UsersStore {
 
     Future<Boolean> findInCart(User user, UUID id);
 
-    Future<String> cart(String username);
+    Future<JsonArray> cart(String username);
 
     Future<Void> checkQuantity(UUID id, int quantity);
 

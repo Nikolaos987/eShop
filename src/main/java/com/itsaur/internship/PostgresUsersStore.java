@@ -2,6 +2,8 @@ package com.itsaur.internship;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.PoolOptions;
@@ -185,25 +187,22 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<String> cart(String username) {
+    public Future<JsonArray> cart(String username) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("SELECT pid, name, price, quantity FROM cart WHERE username = $1")
                 .execute(Tuple.of(username))
                 .compose(rows -> {
-                    ArrayList<String> cartProducts = new ArrayList<>();
-                    rows.forEach(row -> {
-                        String s1 = "\nPRODUCT ID: " + row.getUUID("pid");
-                        String s2 = "\nNAME" + row.getString("name");
-                        String s3 = "\nPRICE" + "\t" + row.getDouble("price");
-                        String s4 = "\nQUANTITY" + "\t" + row.getInteger("quantity");
-                        String s5 = "\n";
-                        cartProducts.add(s1.concat(s2).concat(s3).concat(s4).concat(s5));
-                    });
+                    JsonArray cartProducts = new JsonArray();
+                    rows.forEach(row -> cartProducts.add(JsonObject.of(
+                            "PRODUCT ID", row.getUUID("pid"),
+                            "NAME", row.getString("name"),
+                            "PRICE", row.getDouble("price"),
+                            "QUANTITY", row.getInteger("quantity"))));
                     if (cartProducts.size() != 0)
                         return totalPrice(username)
-                                .onSuccess(val -> cartProducts.add("\ntotal price: " + val))
-                                .compose(v -> Future.succeededFuture(cartProducts.toString()));
+                                .onSuccess(val -> cartProducts.add(JsonObject.of("TOTAL PRICE", val)))
+                                .compose(v -> Future.succeededFuture(cartProducts));
                     return Future.failedFuture(new IllegalArgumentException("Seems like your cart is empty"));
                 });
     }
