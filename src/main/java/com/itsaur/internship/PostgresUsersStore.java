@@ -109,20 +109,11 @@ public class PostgresUsersStore implements UsersStore {
                 .preparedQuery(searchQuery)
                 .execute(Tuple.of(name))
                 .compose(rows -> {
-                    JsonObject jsonProduct = new JsonObject();
                     Row row = rows.iterator().next();
-
-                    Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
-                    jsonProduct.put("PRODUCT ID", product.productId());
-                    jsonProduct.put("NAME", product.name());
-                    jsonProduct.put("DESCRIPTION", product.description());
-                    jsonProduct.put("PRICE", product.price());
-                    jsonProduct.put("QUANTITY", product.quantity());
-                    jsonProduct.put("BRAND", product.brand());
-                    jsonProduct.put("CATEGORY", product.category());
-
-                    client.close();
-                    return Future.succeededFuture(jsonProduct);
+                    return put(row).compose(jsonProduct -> {
+                        client.close();
+                        return Future.succeededFuture(jsonProduct);
+                    });
                 })
                 .otherwiseEmpty();
     }
@@ -136,19 +127,7 @@ public class PostgresUsersStore implements UsersStore {
                 .execute(Tuple.of(name))
                 .compose(rows -> {
                     JsonArray products = new JsonArray();
-                    rows.forEach(row -> {
-                        JsonObject jsonProduct = new JsonObject();
-                        Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
-                        jsonProduct.put("PRODUCT ID", product.productId());
-                        jsonProduct.put("NAME", product.name());
-                        jsonProduct.put("DESCRIPTION", product.description());
-                        jsonProduct.put("PRICE", product.price());
-                        jsonProduct.put("QUANTITY", product.quantity());
-                        jsonProduct.put("BRAND", product.brand());
-                        jsonProduct.put("CATEGORY", product.category());
-
-                        products.add(product);
-                    });
+                    rows.forEach(row -> put(row).onSuccess(products::add));
                     client.close();
                     return Future.succeededFuture(products);
                 });
@@ -163,19 +142,7 @@ public class PostgresUsersStore implements UsersStore {
                 .execute(Tuple.of(price, brand, category))
                 .compose(rows -> {
                     JsonArray products = new JsonArray();
-                    rows.forEach(row -> {
-                        JsonObject jsonProduct = new JsonObject();
-                        Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
-                        jsonProduct.put("PRODUCT ID", product.productId());
-                        jsonProduct.put("NAME", product.name());
-                        jsonProduct.put("DESCRIPTION", product.description());
-                        jsonProduct.put("PRICE", product.price());
-                        jsonProduct.put("QUANTITY", product.quantity());
-                        jsonProduct.put("BRAND", product.brand());
-                        jsonProduct.put("CATEGORY", product.category());
-
-                        products.add(product);
-                    });
+                    rows.forEach(row -> put(row).onSuccess(products::add));
                     client.close();
                     return Future.succeededFuture(products);
                 });
@@ -273,6 +240,19 @@ public class PostgresUsersStore implements UsersStore {
                         .compose(r -> Future.succeededFuture()));
 
 
+    }
+
+    Future<JsonObject> put(Row row) {
+        JsonObject jsonProduct = new JsonObject();
+        Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
+        jsonProduct.put("PRODUCT ID", product.productId());
+        jsonProduct.put("NAME", product.name());
+        jsonProduct.put("DESCRIPTION", product.description());
+        jsonProduct.put("PRICE", product.price());
+        jsonProduct.put("QUANTITY", product.quantity());
+        jsonProduct.put("BRAND", product.brand());
+        jsonProduct.put("CATEGORY", product.category());
+        return Future.succeededFuture(jsonProduct);
     }
 
     public Future<Double> getPrice(UUID productId) {

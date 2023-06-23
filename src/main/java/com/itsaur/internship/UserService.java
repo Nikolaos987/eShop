@@ -111,7 +111,7 @@ public class UserService {
         return store.filter(price, brand , category)
                 .otherwiseEmpty()
                 .compose(products -> {
-                    if (products.size() > 0) {
+                    if (products != null) {
                         return Future.succeededFuture(products);
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("no products found"));
