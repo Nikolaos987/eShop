@@ -128,12 +128,12 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<JsonArray> filter(double price, String category) {
+    public Future<JsonArray> filter(double price, String brand, String category) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String filterQuery = "SELECT * FROM product WHERE price <= $1 AND category = $2;";
+        String filterQuery = "SELECT * FROM product WHERE price <= $1 AND brand = $2 AND category = $3";
         return client
                 .preparedQuery(filterQuery)
-                .execute(Tuple.of(price, category))
+                .execute(Tuple.of(price, brand, category))
                 .compose(rows -> {
                     JsonArray products = new JsonArray();
                     rows.forEach(row -> {

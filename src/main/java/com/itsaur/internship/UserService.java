@@ -95,8 +95,8 @@ public class UserService {
                 });
     }
 
-    public Future<JsonArray> filterProducts(double price, String category) {
-        return store.filter(price, category)
+    public Future<JsonArray> filterProducts(double price, String brand, String category) {
+        return store.filter(price, brand , category)
                 .otherwiseEmpty()
                 .compose(products -> {
                     if (products.size() > 0) {

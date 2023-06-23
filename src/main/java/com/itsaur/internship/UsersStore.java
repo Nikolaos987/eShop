@@ -19,7 +19,7 @@ public interface UsersStore {
 
     Future<JsonObject> findProduct(String name);
 
-    Future<JsonArray> filter(double price, String category);
+    Future<JsonArray> filter(double price, String brand, String category);
 
     Future<Void> addToCart(User user, UUID id, int quantity);
 

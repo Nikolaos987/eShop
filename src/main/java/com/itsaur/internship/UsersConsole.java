@@ -54,7 +54,7 @@ public class UsersConsole {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "filter" -> this.userService.filterProducts(options.price, options.category)
+            case "filter" -> this.userService.filterProducts(options.price, options.brand, options.category)
                     .onSuccess(v -> System.out.println("products found"))
                     .onFailure(v -> {
                         System.out.println("products not found");

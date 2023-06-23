@@ -65,7 +65,7 @@ public class UsersStoreBinary implements UsersStore {
     }
 
     @Override
-    public Future<JsonArray> filter(double price, String category) {
+    public Future<JsonArray> filter(double price, String brand, String category) {
         return null;
     }
 

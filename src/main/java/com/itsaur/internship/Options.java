@@ -6,6 +6,9 @@ import com.beust.jcommander.Parameters;
 @Parameters(commandDescription = "CRUD operations")
 class Options {
 
+    @Parameter(names = {"--brand"}, description = "the brand name of the product")
+    public String brand;
+
     @Parameter(names = {"--quantity"}, description = "the quantity of the product")
     public int quantity;
 
