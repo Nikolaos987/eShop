@@ -62,7 +62,8 @@ public class UserService {
                 .compose(user -> {
                     if (user != null) {
                         return store.logoutUser()
-                                .onSuccess(v -> store.deleteUser(user));
+                                .onSuccess(v -> store.deleteUser(user)
+                                        .compose(v2 -> Future.succeededFuture()));
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("User was not found"));
                     }
@@ -94,12 +95,12 @@ public class UserService {
                 });
     }
 
-    public Future<Void> filterProducts(double price, String category) {
+    public Future<JsonArray> filterProducts(double price, String category) {
         return store.filter(price, category)
                 .otherwiseEmpty()
                 .compose(products -> {
                     if (products.size() > 0) {
-                        return Future.succeededFuture();
+                        return Future.succeededFuture(products);
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("no products found"));
                     }

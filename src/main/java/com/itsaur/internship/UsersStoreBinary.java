@@ -8,7 +8,6 @@ import io.vertx.core.file.OpenOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 public class UsersStoreBinary implements UsersStore {
@@ -66,7 +65,7 @@ public class UsersStoreBinary implements UsersStore {
     }
 
     @Override
-    public Future<ArrayList<Product>> filter(double price, String category) {
+    public Future<JsonArray> filter(double price, String category) {
         return null;
     }
 

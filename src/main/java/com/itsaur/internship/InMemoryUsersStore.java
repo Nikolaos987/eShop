@@ -4,7 +4,6 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -57,7 +56,7 @@ public class InMemoryUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<ArrayList<Product>> filter(double price, String category) {
+    public Future<JsonArray> filter(double price, String category) {
         return null;
     }
 

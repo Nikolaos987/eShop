@@ -127,44 +127,29 @@ public class PostgresUsersStore implements UsersStore {
                 .otherwiseEmpty();
     }
 
-//    .compose(rows -> {
-//        JsonArray product = new JsonArray();
-//        rows.forEach(row -> product.add(JsonObject.of(
-//                "PRODUCT ID", row.getUUID("productid"),
-//                "NAME", row.getString("name"),
-//                "DESCRIPTION", row.getString("description"),
-//                "PRICE", row.getDouble("price"),
-//                "QUANTITY", row.getInteger("quantity"),
-//                "BRAND", row.getString("brand"),
-//                "CATEGORY", row.getString("category"))));
-//        client.close();
-//        return Future.succeededFuture(product);
-//    })
-
     @Override
-    public Future<ArrayList<Product>> filter(double price, String category) {
+    public Future<JsonArray> filter(double price, String category) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         String filterQuery = "SELECT * FROM product WHERE price <= $1 AND category = $2;";
         return client
                 .preparedQuery(filterQuery)
                 .execute(Tuple.of(price, category))
                 .compose(rows -> {
-                    ArrayList<Product> products = new ArrayList<>();
+                    JsonArray products = new JsonArray();
                     rows.forEach(row -> {
+                        JsonObject jsonProduct = new JsonObject();
                         Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
+                        jsonProduct.put("PRODUCT ID", product.productId());
+                        jsonProduct.put("NAME", product.name());
+                        jsonProduct.put("DESCRIPTION", product.description());
+                        jsonProduct.put("PRICE", product.price());
+                        jsonProduct.put("QUANTITY", product.quantity());
+                        jsonProduct.put("BRAND", product.brand());
+                        jsonProduct.put("CATEGORY", product.category());
+
                         products.add(product);
                     });
                     client.close();
-                    products.forEach(product -> {
-                        System.out.println("ID:\t\t\t " + product.productId() +
-                                "\nname:\t\t " + product.name() +
-                                "\ndescription: " + product.description() +
-                                "\nbrand:\t\t " + product.brand() +
-                                "\nprice:\t\t " + product.price() +
-                                "\nquantity:\t " + product.quantity() +
-                                "\ncategory:\t " + product.category());
-                        System.out.println();
-                    });
                     return Future.succeededFuture(products);
                 });
     }
