@@ -83,12 +83,24 @@ public class UserService {
 
     /* for products interaction */
 
-    public Future<JsonObject> search(String name) {
-        return store.findProduct(name)
+    public Future<JsonObject> product(String name) {
+        return store.getProduct(name)
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product != null) {
                         return Future.succeededFuture(product);
+                    } else {
+                        return Future.failedFuture(new IllegalArgumentException("product not found"));
+                    }
+                });
+    }
+
+    public Future<JsonArray> searchByName(String name) {
+        return store.findProducts(name)
+                .otherwiseEmpty()
+                .compose(products -> {
+                    if (products.size() != 0) {
+                        return Future.succeededFuture(products);
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("product not found"));
                     }
@@ -164,7 +176,7 @@ public class UserService {
 
     public Future<JsonObject> getProduct(User user, String name) {
         if (user != null)
-            return store.findProduct(name);
+            return store.getProduct(name);
         return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
     }
 

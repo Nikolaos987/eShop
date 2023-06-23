@@ -51,7 +51,12 @@ public class InMemoryUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<JsonObject> findProduct(String name) {
+    public Future<JsonObject> getProduct(String name) {
+        return null;
+    }
+
+    @Override
+    public Future<JsonArray> findProducts(String name) {
         return null;
     }
 

@@ -47,7 +47,7 @@ public class UsersConsole {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "search" -> this.userService.search(options.name)
+            case "search" -> this.userService.product(options.name)
                     .onSuccess(v -> System.out.println(v))
                     .onFailure(v -> {
                         System.out.println("product does not exist");

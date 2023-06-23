@@ -17,7 +17,9 @@ public interface UsersStore {
 
         /* for products interaction */
 
-    Future<JsonObject> findProduct(String name);
+    Future<JsonObject> getProduct(String name);
+
+    Future<JsonArray> findProducts(String name);
 
     Future<JsonArray> filter(double price, String brand, String category);
 

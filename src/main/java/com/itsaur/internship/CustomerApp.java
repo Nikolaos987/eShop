@@ -52,7 +52,11 @@ public class CustomerApp extends AbstractVerticle {
 
         /* for product interaction */
 
-        router.get("/search/:name").handler(ctx -> this.userService.search(ctx.pathParam("name"))
+        router.get("/product/:name").handler(ctx -> this.userService.product(ctx.pathParam("name"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
+        router.get("/products/:regex").handler(ctx -> this.userService.searchByName(ctx.pathParam("regex"))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
