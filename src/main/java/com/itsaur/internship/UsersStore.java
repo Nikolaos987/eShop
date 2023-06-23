@@ -2,6 +2,7 @@ package com.itsaur.internship;
 
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -17,7 +18,7 @@ public interface UsersStore {
 
         /* for products interaction */
 
-    Future<Product> findProduct(String name);
+    Future<JsonObject> findProduct(String name);
 
     Future<ArrayList<Product>> filter(double price, String category);
 

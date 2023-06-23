@@ -102,20 +102,44 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Product> findProduct(String name) {
+    public Future<JsonObject> findProduct(String name) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         String searchQuery = "SELECT * FROM product WHERE name = $1;";
         return client
                 .preparedQuery(searchQuery)
                 .execute(Tuple.of(name))
                 .compose(rows -> {
+                    JsonObject jsonProduct = new JsonObject();
                     Row row = rows.iterator().next();
+
                     Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
+                    jsonProduct.put("PRODUCT ID", product.productId());
+                    jsonProduct.put("NAME", product.name());
+                    jsonProduct.put("DESCRIPTION", product.description());
+                    jsonProduct.put("PRICE", product.price());
+                    jsonProduct.put("QUANTITY", product.quantity());
+                    jsonProduct.put("BRAND", product.brand());
+                    jsonProduct.put("CATEGORY", product.category());
+
                     client.close();
-                    return Future.succeededFuture(product);
+                    return Future.succeededFuture(jsonProduct);
                 })
                 .otherwiseEmpty();
     }
+
+//    .compose(rows -> {
+//        JsonArray product = new JsonArray();
+//        rows.forEach(row -> product.add(JsonObject.of(
+//                "PRODUCT ID", row.getUUID("productid"),
+//                "NAME", row.getString("name"),
+//                "DESCRIPTION", row.getString("description"),
+//                "PRICE", row.getDouble("price"),
+//                "QUANTITY", row.getInteger("quantity"),
+//                "BRAND", row.getString("brand"),
+//                "CATEGORY", row.getString("category"))));
+//        client.close();
+//        return Future.succeededFuture(product);
+//    })
 
     @Override
     public Future<ArrayList<Product>> filter(double price, String category) {

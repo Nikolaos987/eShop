@@ -2,6 +2,9 @@ package com.itsaur.internship;
 
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
+import java.util.UUID;
 
 public class UserService {
 
@@ -79,12 +82,11 @@ public class UserService {
 
     /* for products interaction */
 
-    public Future<Product> search(String name) {
+    public Future<JsonObject> search(String name) {
         return store.findProduct(name)
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product != null) {
-                        System.out.println(product.productId() + "\n" + product.name() + "\n" + product.description() + "\n" + product.brand() + "\n" + product.price() + "\n" + product.quantity() + "\n" + product.category());
                         return Future.succeededFuture(product);
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("product not found"));
@@ -111,9 +113,9 @@ public class UserService {
                         .compose(Future::succeededFuture))
                 .compose(product -> {
                     if (product != null)
-                        return store.checkQuantity(product.productId(), quantity)
+                        return store.checkQuantity((UUID) product.getValue("PRODUCT ID"), quantity)
                                 // TODO: 22/6/23 if quantity >= 0 then...
-                                .compose(v -> store.addToCart(User.getUser(), product.productId(), quantity));
+                                .compose(v -> store.addToCart(User.getUser(), (UUID) product.getValue("PRODUCT ID"), quantity));
                     return Future.failedFuture(new IllegalArgumentException("product was not found"));
                 });
     }
@@ -126,10 +128,10 @@ public class UserService {
                 .compose(product -> {
                     if (product != null) {
                         User user = User.getUser();
-                        return store.findInCart(user, product.productId())
+                        return store.findInCart(user, (UUID) product.getValue("PRODUCT ID"))
                                 .compose(exists -> {
                                     if (exists) {
-                                        return store.removeFromCart(user, product.productId(), quantity)
+                                        return store.removeFromCart(user, (UUID) product.getValue("PRODUCT ID"), quantity)
                                                 .compose(v -> Future.succeededFuture());
                                     }
                                     return Future.failedFuture(new IllegalArgumentException("product does not exist in your cart"));
@@ -159,7 +161,7 @@ public class UserService {
                 });
     }
 
-    public Future<Product> getProduct(User user, String name) {
+    public Future<JsonObject> getProduct(User user, String name) {
         if (user != null)
             return store.findProduct(name);
         return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
