@@ -5,20 +5,17 @@ import io.vertx.core.Future;
 public class UsersConsole {
 
     private final UserService userService;
+    private final ProductService productService;
+    private final CartService cartService;
 
-    public UsersConsole(UserService userService) {
+    public UsersConsole(UserService userService, ProductService productService, CartService cartService) {
         this.userService = userService;
+        this.productService = productService;
+        this.cartService = cartService;
     }
 
     public Future<Void> executeCommand(Options options) {
         return switch (options.operation) {
-            case "register" -> this.userService.register(options.username, options.password)
-                    .onSuccess(v -> System.out.println("User registered!"))
-                    .onFailure(v -> {
-                        System.out.println("Failed to register user");
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
             case "login" -> this.userService.login(options.username, options.password)
                     .onSuccess(v -> System.out.println("User logged-in"))
                     .onFailure(v -> {
@@ -26,10 +23,10 @@ public class UsersConsole {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "logout" -> this.userService.logout()
-                    .onSuccess(v -> System.out.println("you are logged-out successfully"))
+            case "register" -> this.userService.register(options.username, options.password)
+                    .onSuccess(v -> System.out.println("User registered!"))
                     .onFailure(v -> {
-                        System.out.println("Failed to log-out. You are not logged in");
+                        System.out.println("Failed to register user");
                         v.printStackTrace();
                     })
                     .mapEmpty();
@@ -47,48 +44,55 @@ public class UsersConsole {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "search" -> this.userService.product(options.productId)
+
+
+            // TODO: 26/6/23 find product implementation
+            case "search" -> this.productService.product(options.productId)
                     .onSuccess(v -> System.out.println(v))
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "filter" -> this.userService.filterProducts(options.price, options.brand, options.category)
+            case "filter" -> this.productService.filterProducts(options.price, options.brand, options.category)
                     .onSuccess(v -> System.out.println(v))
                     .onFailure(v -> {
                         System.out.println("products not found");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "cart" -> this.userService.addCart(options.productId, options.quantity)
-                    .onSuccess(v -> System.out.println("products added to cart"))
-                    .onFailure(v -> {
-                        System.out.println(v.getMessage());
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
-            case "remove" -> this.userService.removeCart(options.productId, options.quantity)
-                    .onSuccess(v -> System.out.println("products quantity removed from cart"))
-                    .onFailure(v -> {
-                        System.out.println(v.getMessage());
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
-            case "myCart" -> this.userService.showCart()
-                    .onSuccess(System.out::println)
-                    .onFailure(v -> {
-                        System.out.println(v.getMessage());
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
-            case "buy" -> this.userService.buyCart()
-                    .onSuccess(v -> System.out.println("bought products in your cart successfully!"))
-                    .onFailure(v -> {
-                        System.out.println(v.getMessage());
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
+
+
+
+
+//            case "cart" -> this.cartService.addCart(options.productId, options.quantity)
+//                    .onSuccess(v -> System.out.println("products added to cart"))
+//                    .onFailure(v -> {
+//                        System.out.println(v.getMessage());
+//                        v.printStackTrace();
+//                    })
+//                    .mapEmpty();
+//            case "remove" -> this.cartService.removeCart(options.productId, options.quantity)
+//                    .onSuccess(v -> System.out.println("products quantity removed from cart"))
+//                    .onFailure(v -> {
+//                        System.out.println(v.getMessage());
+//                        v.printStackTrace();
+//                    })
+//                    .mapEmpty();
+//            case "myCart" -> this.cartService.showCart()
+//                    .onSuccess(System.out::println)
+//                    .onFailure(v -> {
+//                        System.out.println(v.getMessage());
+//                        v.printStackTrace();
+//                    })
+//                    .mapEmpty();
+//            case "buy" -> this.cartService.buyCart()
+//                    .onSuccess(v -> System.out.println("bought products in your cart successfully!"))
+//                    .onFailure(v -> {
+//                        System.out.println(v.getMessage());
+//                        v.printStackTrace();
+//                    })
+//                    .mapEmpty();
             default -> Future.failedFuture(new IllegalArgumentException("Invalid argument"));
         };
     }

@@ -1,6 +1,6 @@
 /* add rows */
 
-INSERT INTO customer (username, password)
+INSERT INTO users (username, password)
 VALUES ('One'   , '1'),
        ('Two'   , '12'),
        ('Three' , '123'),

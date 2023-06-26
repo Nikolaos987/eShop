@@ -20,36 +20,39 @@ public class Main {
                 case "server" -> {
                     if (opts.file != null) {
                         /* Server stores to File */
-                        vertx.deployVerticle(new CustomerApp(
-                                new UserService(new UsersStoreBinary(opts.file, "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt"))));
+//                        vertx.deployVerticle(new CustomerApp(
+//                                new UserService(new UsersStoreBinary(opts.file, "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt"))),);
                     } else if (opts.database != null) {
                         /* Server stores to Postgres */
                         vertx.deployVerticle(new CustomerApp(
-                                new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize))));
+                                new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
+                                new ProductService(new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
+                                new CartService(new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize))));
                     }
                 }
                 case "console" -> {
                     if (opts.database != null) {
                         /* Console stores to Postgres */
-                        new UsersConsole(new UserService(
-                                new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize))
-                        )
+                        new UsersConsole(
+                                new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
+                                new ProductService(new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
+                                new CartService(new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)))
                                 .executeCommand(opts) // args
                                 .onComplete(v -> System.exit(0));
                     } else if (opts.file != null) {
                         /* Console stores to File */
-                        new UsersConsole(new UserService(
-                                new UsersStoreBinary(opts.file, "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt"))
-                        )
-                                .executeCommand(opts) // args
-                                .onComplete(v -> System.exit(0));
+//                        new UsersConsole(new UserService(
+//                                new UsersStoreBinary(opts.file, "/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/temp.txt"))
+//                        )
+//                                .executeCommand(opts) // args
+//                                .onComplete(v -> System.exit(0));
                     } else {
                         /* Console stores to Memory */
-                        new UsersConsole(new UserService(
-                                new InMemoryUsersStore())
-                        )
-                                .executeCommand(opts) // args
-                                .onComplete(v -> System.exit(0));
+//                        new UsersConsole(new UserService(
+//                                new InMemoryUsersStore())
+//                        )
+//                                .executeCommand(opts) // args
+//                                .onComplete(v -> System.exit(0));
                     }
                 }
             }

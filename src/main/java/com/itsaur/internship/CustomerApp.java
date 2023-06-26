@@ -12,9 +12,13 @@ import java.util.UUID;
 public class CustomerApp extends AbstractVerticle {
 
     private final UserService userService;
+    private final ProductService productService;
+    private final CartService cartService;
 
-    public CustomerApp(UserService userService) {
+    public CustomerApp(UserService userService, ProductService productService, CartService cartService) {
         this.userService = userService;
+        this.productService = productService;
+        this.cartService = cartService;
     }
 
     @Override
@@ -23,65 +27,71 @@ public class CustomerApp extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
 
-        router.post("/login").handler(ctx -> {
+        /* USER ENTITY */
+
+        router.post("/customer/login").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.userService.login(body.getString("username"), body.getString("password"))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user logged in"))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.get("/logout").handler(ctx -> this.userService.logout()
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user logged out"))
-                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
-
-        router.post("/register").handler(ctx -> {
+        router.post("/customer/register").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.userService.register(body.getString("username"), body.getString("password"))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user registered"))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.delete("/customer/:username").handler(ctx -> this.userService.delete(ctx.pathParam("username"))
+        router.delete("/customer/:uid").handler(ctx -> this.userService.delete(ctx.pathParam("uid"))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user deleted"))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.put("/customer/:username/password").handler(ctx -> {
+        router.put("/customer/:uid/password").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
-            this.userService.update(ctx.pathParam("username"), body.getString("currentPassword"), body.getString("newPassword"))
+            this.userService.update(ctx.pathParam("uid"), body.getString("currentPassword"), body.getString("newPassword"))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user updated"))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        /* for product interaction */
 
-        router.get("/product/:id").handler(ctx -> this.userService.product(UUID.fromString(ctx.pathParam("id")))
+
+
+        /* PRODUCT ENTITY */
+
+        router.get("/product/find/:pid").handler(ctx -> this.productService.product(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/products/:regex").handler(ctx -> this.userService.searchByName(ctx.pathParam("regex"))
+        router.get("/product/search/:regex").handler(ctx -> this.productService.searchByName(ctx.pathParam("regex"))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/filter/").handler(ctx -> this.userService.filterProducts(
+        router.get("/product/filter/").handler(ctx -> this.productService.filterProducts(
                         Double.parseDouble(ctx.request().getParam("price")),
                         ctx.request().getParam("brand"),
                         ctx.request().getParam("category"))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.put("/product/:id/add/:quantity").handler(ctx -> this.userService.addCart(UUID.fromString(ctx.pathParam("id")), Integer.parseInt(ctx.pathParam("quantity")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product added to cart!"))
-                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.delete("/cart/buy").handler(ctx -> this.userService.buyCart()
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("all products from carts were bought"))
-                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/cart/show").handler(ctx -> this.userService.showCart()
+
+        /* CART ENTITY */
+
+        router.get("/cart/:cid").handler(ctx -> this.cartService.showCart(UUID.fromString(ctx.pathParam("cid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.delete("/cart/:id/remove/:quantity").handler(ctx -> this.userService.removeCart(UUID.fromString(ctx.pathParam("id")), Integer.parseInt(ctx.pathParam("quantity")))
+        router.put("/cart/:cid/product/:pid/:quantity").handler(ctx -> this.cartService.addCart(UUID.fromString(ctx.pathParam("cid")), UUID.fromString(ctx.pathParam("pid")), Integer.parseInt(ctx.pathParam("quantity")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product added to cart!"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
+        router.delete("/cart/:cid").handler(ctx -> this.cartService.buyCart(UUID.fromString("cid"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("all products from carts were bought"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
+        router.delete("/cart/:cid/item/:pid/:quantity").handler(ctx -> this.cartService.removeCart(UUID.fromString(ctx.pathParam("cid")), UUID.fromString(ctx.pathParam("pid")), Integer.parseInt(ctx.pathParam("quantity")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product quantity removed from your cart"))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
