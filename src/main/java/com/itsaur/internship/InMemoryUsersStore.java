@@ -51,7 +51,7 @@ public class InMemoryUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<JsonObject> getProduct(String name) {
+    public Future<JsonObject> getProduct(UUID productId) {
         return null;
     }
 

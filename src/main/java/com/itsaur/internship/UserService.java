@@ -83,8 +83,8 @@ public class UserService {
 
     /* for products interaction */
 
-    public Future<JsonObject> product(String name) {
-        return store.getProduct(name)
+    public Future<JsonObject> product(UUID productId) {
+        return store.getProduct(productId)
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product != null) {
@@ -119,10 +119,10 @@ public class UserService {
                 });
     }
 
-    public Future<Void> addCart(String name, int quantity) {
+    public Future<Void> addCart(UUID productId, int quantity) {
         return store.checkLoggedIn()
                 .otherwiseEmpty()
-                .compose(user -> getProduct(user, name)
+                .compose(user -> getProduct(user, productId)
                         .compose(Future::succeededFuture))
                 .compose(product -> {
                     if (product != null)
@@ -133,10 +133,10 @@ public class UserService {
                 });
     }
 
-    public Future<Void> removeCart(String name, int quantity) {
+    public Future<Void> removeCart(UUID productId, int quantity) {
         return store.checkLoggedIn()
                 .otherwiseEmpty()
-                .compose(user -> getProduct(user, name)
+                .compose(user -> getProduct(user, productId)
                         .compose(Future::succeededFuture))
                 .compose(product -> {
                     if (product != null) {
@@ -174,9 +174,9 @@ public class UserService {
                 });
     }
 
-    public Future<JsonObject> getProduct(User user, String name) {
+    public Future<JsonObject> getProduct(User user, UUID productId) {
         if (user != null)
-            return store.getProduct(name);
+            return store.getProduct(productId);
         return Future.failedFuture(new IllegalArgumentException("you are not logged-in!"));
     }
 

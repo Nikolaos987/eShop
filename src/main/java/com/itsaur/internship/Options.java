@@ -3,8 +3,14 @@ package com.itsaur.internship;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
+import java.util.UUID;
+
 @Parameters(commandDescription = "CRUD operations")
 class Options {
+
+    @Parameter(names = {"--id"}, description = "the UUID")
+    public UUID productId;
+
 
     @Parameter(names = {"--brand"}, description = "the brand name of the product")
     public String brand;

@@ -47,7 +47,7 @@ public class UsersConsole {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "search" -> this.userService.product(options.name)
+            case "search" -> this.userService.product(options.productId)
                     .onSuccess(v -> System.out.println(v))
                     .onFailure(v -> {
                         System.out.println("product does not exist");
@@ -61,14 +61,14 @@ public class UsersConsole {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "cart" -> this.userService.addCart(options.name, options.quantity)
+            case "cart" -> this.userService.addCart(options.productId, options.quantity)
                     .onSuccess(v -> System.out.println("products added to cart"))
                     .onFailure(v -> {
                         System.out.println(v.getMessage());
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "remove" -> this.userService.removeCart(options.name, options.quantity)
+            case "remove" -> this.userService.removeCart(options.productId, options.quantity)
                     .onSuccess(v -> System.out.println("products quantity removed from cart"))
                     .onFailure(v -> {
                         System.out.println(v.getMessage());

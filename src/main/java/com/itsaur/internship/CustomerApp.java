@@ -7,6 +7,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
+import java.util.UUID;
+
 public class CustomerApp extends AbstractVerticle {
 
     private final UserService userService;
@@ -52,7 +54,7 @@ public class CustomerApp extends AbstractVerticle {
 
         /* for product interaction */
 
-        router.get("/product/:name").handler(ctx -> this.userService.product(ctx.pathParam("name"))
+        router.get("/product/:id").handler(ctx -> this.userService.product(UUID.fromString(ctx.pathParam("id")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
@@ -67,7 +69,7 @@ public class CustomerApp extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.put("/product/:name/add/:quantity").handler(ctx -> this.userService.addCart(ctx.pathParam("name"), Integer.parseInt(ctx.pathParam("quantity")))
+        router.put("/product/:id/add/:quantity").handler(ctx -> this.userService.addCart(UUID.fromString(ctx.pathParam("id")), Integer.parseInt(ctx.pathParam("quantity")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product added to cart!"))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
@@ -79,7 +81,7 @@ public class CustomerApp extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.delete("/cart/remove/:name/:quantity").handler(ctx -> this.userService.removeCart(ctx.pathParam("name"), Integer.parseInt(ctx.pathParam("quantity")))
+        router.delete("/cart/:id/remove/:quantity").handler(ctx -> this.userService.removeCart(UUID.fromString(ctx.pathParam("id")), Integer.parseInt(ctx.pathParam("quantity")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product quantity removed from your cart"))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 

@@ -17,7 +17,7 @@ public interface UsersStore {
 
         /* for products interaction */
 
-    Future<JsonObject> getProduct(String name);
+    Future<JsonObject> getProduct(UUID productId);
 
     Future<JsonArray> findProducts(String name);
 

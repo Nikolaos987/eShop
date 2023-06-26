@@ -34,9 +34,8 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> insert(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String insertQuery = "INSERT INTO customer VALUES ($1, $2, $3);";
         return client
-                .preparedQuery(insertQuery)
+                .preparedQuery("INSERT INTO customer VALUES ($1, $2, $3);")
                 .execute(Tuple.of(UUID.randomUUID(), user.username(), user.password()))
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
@@ -45,16 +44,15 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<User> findUser(String username) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String findQuery = "SELECT * FROM customer WHERE username = $1";
         return client
-                .preparedQuery(findQuery)
+                .preparedQuery("SELECT * FROM customer WHERE username = $1")
                 .execute(Tuple.of(username))
                 .compose(rows -> {
                     try {
                         Row row = rows.iterator().next();
                         User user = new User(row.getString("username"), row.getString("password"));
-                        client.close();
-                        return Future.succeededFuture(user);
+                        return client.close()
+                                .compose(r -> Future.succeededFuture(user));
                     } catch (NoSuchElementException e) {
                         return Future.failedFuture(new IllegalArgumentException("User not found"));
                     }
@@ -82,9 +80,8 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> deleteUser(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String deleteQuery = "DELETE FROM customer WHERE username = $1;";
         return client
-                .preparedQuery(deleteQuery)
+                .preparedQuery("DELETE FROM customer WHERE username = $1;")
                 .execute(Tuple.of(user.username()))
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
@@ -93,27 +90,23 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> updateUser(String username, String password) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String updateQuery = "UPDATE customer SET password = $2 WHERE username = $1;";
         return client
-                .preparedQuery(updateQuery)
+                .preparedQuery("UPDATE customer SET password = $2 WHERE username = $1;")
                 .execute(Tuple.of(username, password))
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
     }
 
     @Override
-    public Future<JsonObject> getProduct(String name) {
+    public Future<JsonObject> getProduct(UUID productId) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String searchQuery = "SELECT * FROM product WHERE name = $1;";
         return client
-                .preparedQuery(searchQuery)
-                .execute(Tuple.of(name))
+                .preparedQuery("SELECT * FROM product WHERE productid = $1;")
+                .execute(Tuple.of(productId))
                 .compose(rows -> {
                     Row row = rows.iterator().next();
-                    return put(row).compose(jsonProduct -> {
-                        client.close();
-                        return Future.succeededFuture(jsonProduct);
-                    });
+                    return productAsJson(row).compose(jsonProduct -> client.close()
+                            .compose(r -> Future.succeededFuture(jsonProduct)));
                 })
                 .otherwiseEmpty();
     }
@@ -127,24 +120,23 @@ public class PostgresUsersStore implements UsersStore {
                 .execute(Tuple.of(name))
                 .compose(rows -> {
                     JsonArray products = new JsonArray();
-                    rows.forEach(row -> put(row).onSuccess(products::add));
-                    client.close();
-                    return Future.succeededFuture(products);
+                    rows.forEach(row -> productAsJson(row).onSuccess(products::add));
+                    return client.close()
+                            .compose(r -> Future.succeededFuture(products));
                 });
     }
 
     @Override
     public Future<JsonArray> filter(double price, String brand, String category) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        String filterQuery = "SELECT * FROM product WHERE price <= $1 AND brand = $2 AND category = $3";
         return client
-                .preparedQuery(filterQuery)
+                .preparedQuery("SELECT * FROM product WHERE price <= $1 AND brand = $2 AND category = $3")
                 .execute(Tuple.of(price, brand, category))
                 .compose(rows -> {
                     JsonArray products = new JsonArray();
-                    rows.forEach(row -> put(row).onSuccess(products::add));
-                    client.close();
-                    return Future.succeededFuture(products);
+                    rows.forEach(row -> productAsJson(row).onSuccess(products::add));
+                    return client.close()
+                            .compose(r -> Future.succeededFuture(products));
                 });
     }
 
@@ -154,14 +146,24 @@ public class PostgresUsersStore implements UsersStore {
         return findInCart(user, pid)
                 .compose(found -> getUserId(user.username(), client).compose(userid -> {
                     if (found) {
-                        return getPrice(pid).compose(price -> client
+                        return client
+                                .preparedQuery("SELECT quantity FROM cart WHERE pid=$1 AND uid=$2")
+                                .execute(Tuple.of(pid, userid))
+                                .compose(row -> {
+                                    int cartQuantity = row.iterator().next().getInteger("quantity");
+                                    return checkQuantity(pid, cartQuantity + quantity);
+                                })
+                                .compose(res -> getPrice(pid).compose(price -> client
                                         .preparedQuery("UPDATE cart SET quantity = quantity + $2, price = price + ($3 * $2) WHERE pid = $1 AND uid = $4;")
-                                        .execute(Tuple.of(pid, quantity, price, userid)).compose(r -> Future.succeededFuture())
+                                        .execute(Tuple.of(pid, quantity, price, userid)))
+                                        .compose(v -> client.close())
                                         .compose(v -> Future.succeededFuture()));
                     } else {
                         return client
                                 .preparedQuery("INSERT INTO cart (pid, uid, username, name, price, quantity) SELECT productid, $3, $4, name, price * $2, $2 FROM product WHERE productid = $1")
-                                .execute(Tuple.of(pid, quantity, userid, user.username())).compose(r -> Future.succeededFuture());
+                                .execute(Tuple.of(pid, quantity, userid, user.username()))
+                                .compose(r -> client.close())
+                                .compose(r -> Future.succeededFuture());
                     }
                 }));
     }
@@ -179,11 +181,13 @@ public class PostgresUsersStore implements UsersStore {
                                 return getPrice(productId).compose(price -> client
                                         .preparedQuery("UPDATE cart SET quantity = quantity - $1, price = price - ($1 * $4) WHERE uid = $2 AND pid = $3")
                                         .execute(Tuple.of(quantity, userid, productId, price))
+                                        .compose(v -> client.close())
                                         .compose(v -> Future.succeededFuture()));
                             } else {
                                 return client
                                         .preparedQuery("DELETE FROM cart WHERE uid = $1 AND pid = $2")
                                         .execute(Tuple.of(userid, productId))
+                                        .compose(v -> client.close())
                                         .compose(v -> Future.succeededFuture());
                             }
                         }));
@@ -205,6 +209,7 @@ public class PostgresUsersStore implements UsersStore {
                     if (cartProducts.size() != 0)
                         return totalPrice(username)
                                 .onSuccess(val -> cartProducts.add(JsonObject.of("TOTAL PRICE", val)))
+                                .compose(v -> client.close())
                                 .compose(v -> Future.succeededFuture(cartProducts));
                     return Future.failedFuture(new IllegalArgumentException("Seems like your cart is empty"));
                 });
@@ -220,9 +225,11 @@ public class PostgresUsersStore implements UsersStore {
                     .compose(rows -> {
                         Row row = rows.iterator().next();
                         if (row.getInteger("quantity") - quantity < 0) {
-                            return Future.failedFuture(new IllegalArgumentException("out of stock"));
+                            return client.close()
+                                    .compose(r -> Future.failedFuture(new IllegalArgumentException("out of stock")));
                         } else {
-                            return Future.succeededFuture();
+                            return client.close()
+                                    .compose(r -> Future.succeededFuture());
                         }
                     });
         } else {
@@ -237,12 +244,11 @@ public class PostgresUsersStore implements UsersStore {
                 .compose(this::removeQuantity)
                 .compose(v -> client.preparedQuery("DELETE FROM cart WHERE USERNAME = $1")
                         .execute(Tuple.of(username))
+                        .compose(r -> client.close())
                         .compose(r -> Future.succeededFuture()));
-
-
     }
 
-    Future<JsonObject> put(Row row) {
+    Future<JsonObject> productAsJson(Row row) {
         JsonObject jsonProduct = new JsonObject();
         Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
         jsonProduct.put("PRODUCT ID", product.productId());
@@ -262,7 +268,8 @@ public class PostgresUsersStore implements UsersStore {
                 .execute(Tuple.of(productId))
                 .compose(p -> {
                     double price = p.iterator().next().getDouble("price");
-                    return Future.succeededFuture(price);
+                    return client.close()
+                            .compose(r -> Future.succeededFuture(price));
                 });
     }
 
@@ -273,7 +280,8 @@ public class PostgresUsersStore implements UsersStore {
                 .execute(Tuple.of(username))
                 .compose(res -> {
                     double totalPrice = res.iterator().next().getDouble("sum");
-                    return Future.succeededFuture(totalPrice);
+                    return client.close()
+                            .compose(r -> Future.succeededFuture(totalPrice));
                 });
     }
 
@@ -295,9 +303,11 @@ public class PostgresUsersStore implements UsersStore {
                 .execute(Tuple.of(id, user.username()))
                 .compose(rows -> {
                     if (rows.size() != 0)
-                        return Future.succeededFuture(true);
+                        return client.close()
+                                .compose(r -> Future.succeededFuture(true));
                     else
-                        return Future.succeededFuture(false);
+                        return client.close()
+                                .compose(r -> Future.succeededFuture(false));
                 });
     }
 
@@ -325,6 +335,7 @@ public class PostgresUsersStore implements UsersStore {
                     .preparedQuery("UPDATE product SET quantity = quantity - $2 WHERE productid = $1;")
                     .execute(Tuple.of(ids.get(pos), quantities.get(pos)))
                     .compose(rows -> removeNext(ids, quantities, pos+1, client));
-        } return Future.succeededFuture();
+        } return client.close()
+                .compose(r -> Future.succeededFuture());
     }
 }
