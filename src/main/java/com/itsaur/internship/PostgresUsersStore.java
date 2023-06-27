@@ -2,8 +2,6 @@ package com.itsaur.internship;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.PoolOptions;
@@ -11,7 +9,6 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -59,7 +56,23 @@ public class PostgresUsersStore implements UsersStore {
                 });
     }
 
-
+    @Override
+    public Future<User> findUser(UUID userId) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT * FROM users WHERE uid = $1")
+                .execute(Tuple.of(userId))
+                .compose(rows -> {
+                    try {
+                        Row row = rows.iterator().next();
+                        User user = new User(row.getString("username"), row.getString("password"));
+                        return client.close()
+                                .compose(r -> Future.succeededFuture(user));
+                    } catch (NoSuchElementException e) {
+                        return Future.failedFuture(new IllegalArgumentException("User not found"));
+                    }
+                });
+    }
 
     @Override
     public Future<Void> deleteUser(User user) {

@@ -30,32 +30,32 @@ public class UsersConsole {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "delete" -> this.userService.delete(options.username)
-                    .onSuccess(v -> System.out.println("User deleted!"))
-                    .onFailure(v -> {
-                        System.out.println("Failed to delete user");
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
-            case "update" -> this.userService.update(options.username, options.password, options.newPassword)
-                    .onSuccess(v -> System.out.println("User updated!"))
-                    .onFailure(v -> {
-                        System.out.println("Failed to update user");
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
+//            case "delete" -> this.userService.delete(options.username)
+//                    .onSuccess(v -> System.out.println("User deleted!"))
+//                    .onFailure(v -> {
+//                        System.out.println("Failed to delete user");
+//                        v.printStackTrace();
+//                    })
+//                    .mapEmpty();
+//            case "update" -> this.userService.update(options.username, options.password, options.newPassword)
+//                    .onSuccess(v -> System.out.println("User updated!"))
+//                    .onFailure(v -> {
+//                        System.out.println("Failed to update user");
+//                        v.printStackTrace();
+//                    })
+//                    .mapEmpty();
 
 
             // TODO: 26/6/23 find product implementation
             case "search" -> this.productService.product(options.productId)
-                    .onSuccess(v -> System.out.println(v))
+                    .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
             case "filter" -> this.productService.filterProducts(options.price, options.brand, options.category)
-                    .onSuccess(v -> System.out.println(v))
+                    .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println("products not found");
                         v.printStackTrace();
@@ -65,14 +65,14 @@ public class UsersConsole {
 
 
 
-//            case "cart" -> this.cartService.addCart(options.productId, options.quantity)
+//            case "cart" -> this.cartService.addItem(options.productId, options.quantity)
 //                    .onSuccess(v -> System.out.println("products added to cart"))
 //                    .onFailure(v -> {
 //                        System.out.println(v.getMessage());
 //                        v.printStackTrace();
 //                    })
 //                    .mapEmpty();
-//            case "remove" -> this.cartService.removeCart(options.productId, options.quantity)
+//            case "remove" -> this.cartService.removeItem(options.productId, options.quantity)
 //                    .onSuccess(v -> System.out.println("products quantity removed from cart"))
 //                    .onFailure(v -> {
 //                        System.out.println(v.getMessage());

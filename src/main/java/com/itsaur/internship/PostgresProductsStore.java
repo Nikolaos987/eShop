@@ -75,7 +75,7 @@ public class PostgresProductsStore implements ProductsStore {
 
     Future<JsonObject> productAsJson(Row row) {
         JsonObject jsonProduct = new JsonObject();
-        Product product = new Product(row.getUUID("productid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
+        Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
         jsonProduct.put("PRODUCT ID", product.productId());
         jsonProduct.put("NAME", product.name());
         jsonProduct.put("DESCRIPTION", product.description());

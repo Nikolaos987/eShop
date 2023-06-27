@@ -1,8 +1,6 @@
 package com.itsaur.internship;
 
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 
 import java.util.UUID;
 
@@ -37,8 +35,8 @@ public class UserService {
                 });
     }
 
-    public Future<Void> delete(String username) {
-        return store.findUser(username)
+    public Future<Void> delete(UUID uid) {
+        return store.findUser(uid)
                 .otherwiseEmpty()
                 .compose(user -> {
                     if (user != null) {
@@ -49,11 +47,11 @@ public class UserService {
                 });
     }
 
-    public Future<Void> update(String username, String currentPassword, String newPassword) {
-        return store.findUser(username)
+    public Future<Void> update(UUID uid, String currentPassword, String newPassword) {
+        return store.findUser(uid)
                 .compose(user -> {
                     if (user.matches(currentPassword)) {
-                        return store.updateUser(username, newPassword);
+                        return store.updateUser(user.username(), newPassword);
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("passwords do not match"));
                     }

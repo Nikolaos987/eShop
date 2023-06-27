@@ -30,7 +30,7 @@ DROP TABLE IF EXISTS cart CASCADE;
 CREATE TABLE cart (
     cid uuid DEFAULT uuid_generate_v4(),
     uid uuid NOT NULL,
-    dateCreated date NOT NULL,
+    dateCreated TIMESTAMP NOT NULL,
     PRIMARY KEY (cid),
     FOREIGN KEY (uid) REFERENCES users(uid)
 );
@@ -38,10 +38,12 @@ CREATE TABLE cart (
 
 DROP TABLE IF EXISTS cartItem CASCADE;
 CREATE TABLE cartItem (
-    cid uuid DEFAULT uuid_generate_v4(),
+    itemid uuid DEFAULT uuid_generate_v4(),
+    cid uuid NOT NULL,
     pid uuid NOT NULL,
     quantity int NOT NULL,
-    PRIMARY KEY (cid),
+    PRIMARY KEY (itemid),
+    FOREIGN KEY (cid) REFERENCES cart(cid),
     FOREIGN KEY (pid) REFERENCES product(pid)
 );
 
