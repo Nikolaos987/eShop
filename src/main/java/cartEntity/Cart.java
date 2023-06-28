@@ -1,4 +1,4 @@
-package com.itsaur.internship;
+package cartEntity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

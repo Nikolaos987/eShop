@@ -1,4 +1,4 @@
-package com.itsaur.internship;
+package userEntity;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -29,11 +29,11 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Void> insert(User user) {
+    public Future<Void> insert(String username, String password) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("INSERT INTO users VALUES ($1, $2, $3);")
-                .execute(Tuple.of(UUID.randomUUID(), user.username(), user.password()))
+                .execute(Tuple.of(UUID.randomUUID(), username, password))
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
     }
@@ -47,7 +47,7 @@ public class PostgresUsersStore implements UsersStore {
                 .compose(rows -> {
                     try {
                         Row row = rows.iterator().next();
-                        User user = new User(row.getString("username"), row.getString("password"));
+                        User user = new User(row.getUUID("uid"), row.getString("username"), row.getString("password"));
                         return client.close()
                                 .compose(r -> Future.succeededFuture(user));
                     } catch (NoSuchElementException e) {
@@ -65,7 +65,7 @@ public class PostgresUsersStore implements UsersStore {
                 .compose(rows -> {
                     try {
                         Row row = rows.iterator().next();
-                        User user = new User(row.getString("username"), row.getString("password"));
+                        User user = new User(row.getUUID("uid"), row.getString("username"), row.getString("password"));
                         return client.close()
                                 .compose(r -> Future.succeededFuture(user));
                     } catch (NoSuchElementException e) {
@@ -93,24 +93,5 @@ public class PostgresUsersStore implements UsersStore {
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

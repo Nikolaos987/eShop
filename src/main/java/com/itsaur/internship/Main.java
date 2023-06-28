@@ -1,8 +1,14 @@
 package com.itsaur.internship;
 
+import cartEntity.CartService;
+import cartEntity.PostgresCartsStore;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import io.vertx.core.Vertx;
+import productEntity.PostgresProductsStore;
+import productEntity.ProductService;
+import userEntity.PostgresUsersStore;
+import userEntity.UserService;
 
 public class Main {
 

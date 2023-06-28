@@ -1,6 +1,9 @@
 package com.itsaur.internship;
 
+import cartEntity.CartService;
 import io.vertx.core.Future;
+import productEntity.ProductService;
+import userEntity.UserService;
 
 import java.util.UUID;
 

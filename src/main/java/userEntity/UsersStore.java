@@ -1,11 +1,11 @@
-package com.itsaur.internship;
+package userEntity;
 
 import io.vertx.core.Future;
 
 import java.util.UUID;
 
 public interface UsersStore {
-    Future<Void> insert(User user);
+    Future<Void> insert(String username, String password);
 
     Future<User> findUser(String username);
 

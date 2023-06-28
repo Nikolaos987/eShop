@@ -1,4 +1,4 @@
-package com.itsaur.internship;
+package userEntity;
 
 import io.vertx.core.Future;
 
@@ -28,7 +28,7 @@ public class UserService {
                 .otherwiseEmpty()
                 .compose(user -> {
                     if (user == null) {
-                        return store.insert(new User(username, password));
+                        return store.insert(username, password);
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("User already exists"));
                     }
@@ -57,13 +57,5 @@ public class UserService {
                     }
                 });
     }
-
-
-
-
-
-
-
-
 
 }

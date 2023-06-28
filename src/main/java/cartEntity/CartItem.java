@@ -1,4 +1,4 @@
-package com.itsaur.internship;
+package cartEntity;
 
 import java.util.UUID;
 

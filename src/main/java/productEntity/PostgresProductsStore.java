@@ -1,4 +1,4 @@
-package com.itsaur.internship;
+package productEntity;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -85,7 +85,7 @@ public class PostgresProductsStore implements ProductsStore {
     Future<JsonObject> productAsJson(Row row) {
         JsonObject jsonProduct = new JsonObject();
         Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
-        jsonProduct.put("PRODUCT ID", product.productId());
+        jsonProduct.put("PRODUCT ID", product.pid());
         jsonProduct.put("NAME", product.name());
         jsonProduct.put("DESCRIPTION", product.description());
         jsonProduct.put("PRICE", product.price());

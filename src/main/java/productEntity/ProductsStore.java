@@ -1,4 +1,4 @@
-package com.itsaur.internship;
+package productEntity;
 
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
