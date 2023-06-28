@@ -14,4 +14,6 @@ public interface ProductsStore {
 
     Future<JsonArray> filter(double price, String brand, String category);
 
+    Future<Void> create(String name, String description, double price, int quantity, String brand, String category);
+
 }

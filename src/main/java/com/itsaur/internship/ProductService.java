@@ -50,4 +50,10 @@ public class ProductService {
                     }
                 });
     }
+
+    public Future<Void> newProduct(String name, String description, double price, int quantity, String brand, String category) {
+        return store.create(name, description, price, quantity, brand, category)
+                .compose(r -> Future.succeededFuture());
+    }
+
 }

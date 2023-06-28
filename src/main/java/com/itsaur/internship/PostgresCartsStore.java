@@ -40,8 +40,8 @@ public class PostgresCartsStore implements CartsStore {
                     .preparedQuery("SELECT * FROM product WHERE pid = $1")
                     .execute(Tuple.of(id))
                     .compose(rows -> {
-                        Row row = rows.iterator().next();
                         client.close().onSuccess(v -> Future.succeededFuture()); // TODO: 27/6/23
+                        Row row = rows.iterator().next();
                         if (row.getInteger("quantity") - quantity >= 0) {
                             return Future.succeededFuture();
                         }
@@ -143,7 +143,8 @@ public class PostgresCartsStore implements CartsStore {
                 .execute(Tuple.of(uid))
                 .compose(rows -> {
                     JsonArray cartProducts = new JsonArray();
-                    rows.forEach(row -> cartProducts.add(JsonObject.of(
+                    rows.forEach(row ->
+                            cartProducts.add(JsonObject.of(
                             "PRODUCT ID", row.getUUID("pid"),
                             "NAME", row.getString("name"),
                             "PRICE", row.getDouble("price"),

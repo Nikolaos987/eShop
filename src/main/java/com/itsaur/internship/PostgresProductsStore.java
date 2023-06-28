@@ -73,6 +73,15 @@ public class PostgresProductsStore implements ProductsStore {
                 });
     }
 
+    @Override
+    public Future<Void> create(String name, String description, double price, int quantity, String brand, String category) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+            return client
+                    .preparedQuery("INSERT INTO product (name, description, price, quantity, brand, category) VALUES ($1, $2, $3, $4, $5, $6);")
+                    .execute(Tuple.of(name, description, price, quantity, brand, category))
+                    .compose(res -> Future.succeededFuture());
+    }
+
     Future<JsonObject> productAsJson(Row row) {
         JsonObject jsonProduct = new JsonObject();
         Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));

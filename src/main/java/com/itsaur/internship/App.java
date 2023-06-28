@@ -74,6 +74,11 @@ public class App extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
+        router.put("/product/create/:name/:description/:price/:quantity/:brand/:category").handler(ctx ->
+                this.productService.newProduct(ctx.pathParam("name"), ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), ctx.pathParam("category"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product created successfully"))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
 
 
 
