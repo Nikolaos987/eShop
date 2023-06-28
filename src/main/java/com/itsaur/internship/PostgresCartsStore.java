@@ -72,7 +72,7 @@ public class PostgresCartsStore implements CartsStore {
                                             .compose(v -> Future.succeededFuture())); // TODO: 27/6/23 remove this line)
                         });
                     }
-                    return client.preparedQuery("INSERT INTO cart ("uid", datecreated) VALUES ($1, $2);")
+                    return client.preparedQuery("INSERT INTO cart (uid, datecreated) VALUES ($1, $2);")
                             .execute(Tuple.of(uid, LocalDateTime.now()))
                             .compose(v -> Future.succeededFuture())
                             .compose(res -> client.preparedQuery("INSERT INTO cartitem (cid, pid, quantity) SELECT cid, $1, $2 FROM cart WHERE uid = $3;")

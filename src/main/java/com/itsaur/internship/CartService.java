@@ -13,11 +13,18 @@ public class CartService {
         this.store = store;
     }
 
+    public Future<JsonArray> showCart(UUID userId) {
+        return store.cart(userId);
+    }
 
     public Future<Void> addItem(UUID userId, UUID productId, int quantity) {
         return store.checkQuantity(productId, quantity)
                 // TODO: 22/6/23 if quantity >= 0 then...
                 .compose(v -> store.addToCart(userId, productId, quantity));
+    }
+
+    public Future<Void> buyCart(UUID userId) {
+        return store.buy(userId);
     }
 
     public Future<Void> removeItem(UUID userId, UUID productId, int quantity) {
@@ -29,14 +36,6 @@ public class CartService {
                     }
                     return Future.failedFuture(new IllegalArgumentException("product does not exist in your cart"));
                 });
-    }
-
-    public Future<JsonArray> showCart(UUID userId) {
-        return store.cart(userId);
-    }
-
-    public Future<Void> buyCart(UUID userId) {
-        return store.buy(userId);
     }
 
 }

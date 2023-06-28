@@ -8,9 +8,11 @@ import java.util.UUID;
 @Parameters(commandDescription = "CRUD operations")
 class Options {
 
-    @Parameter(names = {"--id"}, description = "the UUID")
-    public UUID productId;
+    @Parameter(names = {"--uid"}, description = "the UUID of the user")
+    public String uid;
 
+    @Parameter(names = {"--pid"}, description = "the UUID of the product")
+    public String pid;
 
     @Parameter(names = {"--brand"}, description = "the brand name of the product")
     public String brand;

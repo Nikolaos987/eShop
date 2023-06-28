@@ -9,13 +9,13 @@ import io.vertx.ext.web.handler.BodyHandler;
 
 import java.util.UUID;
 
-public class CustomerApp extends AbstractVerticle {
+public class App extends AbstractVerticle {
 
     private final UserService userService;
     private final ProductService productService;
     private final CartService cartService;
 
-    public CustomerApp(UserService userService, ProductService productService, CartService cartService) {
+    public App(UserService userService, ProductService productService, CartService cartService) {
         this.userService = userService;
         this.productService = productService;
         this.cartService = cartService;
