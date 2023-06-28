@@ -1,19 +1,22 @@
 package productEntity;
 
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public interface ProductsStore {
 
-    Future<JsonObject> getProduct(UUID productId);
+    Future<Void> insert(Product product);
 
-    Future<JsonArray> findProducts(String name);
+    Future<Product> findProduct(UUID pid);
 
-    Future<JsonArray> filter(double price, String brand, String category);
+    Future<Collection<Product>> findProduct(String name);
 
-    Future<Void> create(String name, String description, double price, int quantity, String brand, String category);
+    Future<Void> deleteProduct(UUID pid);
+
+    Future<Void> updateProduct(UUID pid, double price);
+
+//    Future<JsonArray> filter(double price, String brand, String category);
 
 }

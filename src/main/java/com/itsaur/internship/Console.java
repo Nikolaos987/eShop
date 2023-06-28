@@ -61,17 +61,24 @@ public class Console {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "search-by-name" -> this.productService.searchByName(options.name)
+            case "search-by-name" -> this.productService.products(options.name)
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "filter" -> this.productService.filterProducts(options.price, options.brand, options.category)
+            case "delete-product" -> this.productService.delete(UUID.fromString(options.pid))
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
-                        System.out.println("products not found");
+                        System.out.println("product does not exist");
+                        v.printStackTrace();
+                    })
+                    .mapEmpty();
+            case "update-product" -> this.productService.update(UUID.fromString(options.pid), options.price)
+                    .onSuccess(System.out::println)
+                    .onFailure(v -> {
+                        System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();

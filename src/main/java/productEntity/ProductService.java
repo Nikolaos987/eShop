@@ -1,9 +1,8 @@
 package productEntity;
 
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class ProductService {
@@ -15,8 +14,8 @@ public class ProductService {
     }
 
 
-    public Future<JsonObject> product(UUID productId) {
-        return store.getProduct(productId)
+    public Future<Product> product(UUID productId) {
+        return store.findProduct(productId)
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product != null) {
@@ -27,8 +26,8 @@ public class ProductService {
                 });
     }
 
-    public Future<JsonArray> searchByName(String name) {
-        return store.findProducts(name)
+    public Future<Collection<Product>> products(String name) {
+        return store.findProduct(name)
                 .otherwiseEmpty()
                 .compose(products -> {
                     if (products.size() != 0) {
@@ -39,21 +38,29 @@ public class ProductService {
                 });
     }
 
-    public Future<JsonArray> filterProducts(double price, String brand, String category) {
-        return store.filter(price, brand , category)
+    public Future<Void> insert(String name, String description, double price, int quantity, String brand, String category) {
+        return store.insert(new Product(UUID.randomUUID(), name, description, price, quantity, brand, category))
+                .compose(r -> Future.succeededFuture());
+    }
+
+    public Future<Void> delete(UUID pid) {
+        return store.findProduct(pid)
                 .otherwiseEmpty()
-                .compose(products -> {
-                    if (products != null) {
-                        return Future.succeededFuture(products);
-                    } else {
-                        return Future.failedFuture(new IllegalArgumentException("no products found"));
-                    }
+                .compose(product -> {
+                    if (product != null)
+                        return store.deleteProduct(pid);
+                    return Future.failedFuture(new IllegalArgumentException("product not found"));
                 });
     }
 
-    public Future<Void> newProduct(String name, String description, double price, int quantity, String brand, String category) {
-        return store.create(name, description, price, quantity, brand, category)
-                .compose(r -> Future.succeededFuture());
+    public Future<Void> update(UUID pid, double price) {
+        return store.findProduct(pid)
+                .otherwiseEmpty()
+                .compose(product -> {
+                    if (product != null)
+                        return store.updateProduct(pid, price);
+                    return Future.failedFuture(new IllegalArgumentException("product not found"));
+                });
     }
 
 }
