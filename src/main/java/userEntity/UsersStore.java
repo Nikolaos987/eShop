@@ -5,7 +5,7 @@ import io.vertx.core.Future;
 import java.util.UUID;
 
 public interface UsersStore {
-    Future<Void> insert(String username, String password);
+    Future<Void> insert(User user);
 
     Future<User> findUser(String username);
 

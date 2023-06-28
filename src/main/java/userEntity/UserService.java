@@ -28,7 +28,7 @@ public class UserService {
                 .otherwiseEmpty()
                 .compose(user -> {
                     if (user == null) {
-                        return store.insert(username, password);
+                        return store.insert(new User(UUID.randomUUID(), username, password));
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("User already exists"));
                     }

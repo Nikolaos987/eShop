@@ -29,11 +29,11 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Void> insert(String username, String password) {
+    public Future<Void> insert(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("INSERT INTO users VALUES ($1, $2, $3);")
-                .execute(Tuple.of(UUID.randomUUID(), username, password))
+                .execute(Tuple.of(user.uid(), user.username(), user.password()))
                 .compose(v -> client.close())
                 .compose(v -> Future.succeededFuture());
     }
