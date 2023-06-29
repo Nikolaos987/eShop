@@ -6,6 +6,9 @@ import com.beust.jcommander.Parameters;
 @Parameters(commandDescription = "CRUD operations")
 class Options {
 
+    @Parameter(names = {"--description"}, description = "the description of the product")
+    public String desc;
+
     @Parameter(names = {"--iid"}, description = "the UUID of the item")
     public String iid;
 

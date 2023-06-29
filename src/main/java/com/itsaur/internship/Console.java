@@ -2,6 +2,7 @@ package com.itsaur.internship;
 
 import cartEntity.CartService;
 import io.vertx.core.Future;
+import productEntity.Category;
 import productEntity.ProductService;
 import userEntity.UserService;
 
@@ -54,22 +55,29 @@ public class Console {
 
 
             // TODO: 26/6/23 find product implementation
-            case "product" -> this.productService.findProduct(UUID.fromString(options.pid))
+            case "find-by-id" -> this.productService.findProduct(UUID.fromString(options.pid))
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "search-by-name" -> this.productService.findProducts(options.name)
+            case "find-by-name" -> this.productService.findProducts(options.name)
                     .onSuccess(System.out::println)
+                    .onFailure(v -> {
+                        System.out.println("product does not exist");
+                        v.printStackTrace();
+                    })
+                    .mapEmpty();
+            case "insert" -> this.productService.addProduct(options.name, options.desc, options.price, options.quantity, options.brand, Category.valueOf(options.category))
+                    .onSuccess(v -> System.out.println("product added!"))
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
             case "delete-product" -> this.productService.deleteProduct(UUID.fromString(options.pid))
-                    .onSuccess(System.out::println)
+                    .onSuccess(v -> System.out.println("product deleted!"))
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
@@ -86,14 +94,21 @@ public class Console {
 
 
 
-            case "show-cart" -> this.cartService.showCartItem(UUID.fromString(options.iid))
+            case "item" -> this.cartService.showCartItem(UUID.fromString(options.iid))
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println(v.getMessage());
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "add-item" -> this.cartService.addItem(UUID.fromString(options.uid), UUID.fromString(options.pid), options.quantity)
+            case "items" -> this.cartService.showCartItem(UUID.fromString(options.uid))
+                    .onSuccess(System.out::println)
+                    .onFailure(v -> {
+                        System.out.println(v.getMessage());
+                        v.printStackTrace();
+                    })
+                    .mapEmpty();
+            case "item-update" -> this.cartService.addItem(UUID.fromString(options.uid), UUID.fromString(options.pid), options.quantity)
                     .onSuccess(v -> System.out.println("products added to cart"))
                     .onFailure(v -> {
                         System.out.println(v.getMessage());
