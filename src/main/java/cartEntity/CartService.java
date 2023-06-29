@@ -8,40 +8,40 @@ import java.util.UUID;
 
 public class CartService {
 
-    private final CartsStore store;
-    private final ProductsStore storeProduct;
+    private final CartsStore cartsStore;
+    private final ProductsStore productsStore;
 
-    public CartService(CartsStore store, ProductsStore storeProduct) {
-        this.store = store;
-        this.storeProduct = storeProduct;
+    public CartService(CartsStore cartsStore, ProductsStore productsStore) {
+        this.cartsStore = cartsStore;
+        this.productsStore = productsStore;
     }
 
     public Future<CartItem> showCartItem(UUID itemid) {
-        return store.findCartItem(itemid);
+        return cartsStore.findCartItem(itemid);
     }
 
     public Future<Collection<CartItem>> showCartItems(UUID uid) {
-        return store.findCartItems(uid);
+        return cartsStore.findCartItems(uid);
     }
 
     public Future<Void> addItem(UUID uid, UUID pid, int quantity) {
-        return store.findCartItem(uid, pid)
+        return cartsStore.findCartItem(uid, pid)
                 .otherwiseEmpty()
                 .compose(item -> {
                     if (item == null) {
-                        return store.findCart(uid)
-                                .compose(cart -> store.insert(new CartItem(UUID.randomUUID(), pid, quantity), cart.cid()));
+                        return cartsStore.findCart(uid)
+                                .compose(cart -> cartsStore.insert(new CartItem(UUID.randomUUID(), pid, quantity), cart.cid()));
                     }
-                    return store.updateCartItem(item, quantity);
+                    return cartsStore.updateCartItem(item, quantity);
                 });
     }
 
     public Future<Void> buyCart(UUID userId) {
-        return store.findCartItems(userId)
+        return cartsStore.findCartItems(userId)
                 .compose(collectionOfCartItems -> {
                     collectionOfCartItems.forEach(cartItem -> {
-                        store.removeCartItem(cartItem);
-                        storeProduct.updateProduct(cartItem.pid(), cartItem.quantity());
+                        cartsStore.removeCartItem(cartItem);
+                        productsStore.updateProduct(cartItem.pid(), cartItem.quantity());
                     });
                     return Future.succeededFuture();
                 });

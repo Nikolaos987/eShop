@@ -54,28 +54,28 @@ public class Console {
 
 
             // TODO: 26/6/23 find product implementation
-            case "product" -> this.productService.product(UUID.fromString(options.pid))
+            case "product" -> this.productService.findProduct(UUID.fromString(options.pid))
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "search-by-name" -> this.productService.products(options.name)
+            case "search-by-name" -> this.productService.findProducts(options.name)
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "delete-product" -> this.productService.delete(UUID.fromString(options.pid))
+            case "delete-product" -> this.productService.deleteProduct(UUID.fromString(options.pid))
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println("product does not exist");
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "update-product" -> this.productService.update(UUID.fromString(options.pid), options.price)
+            case "update-product" -> this.productService.updateProduct(UUID.fromString(options.pid), options.price)
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println("product does not exist");

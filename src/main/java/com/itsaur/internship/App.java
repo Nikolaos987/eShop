@@ -7,6 +7,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import productEntity.Category;
 import productEntity.ProductService;
 import userEntity.UserService;
 
@@ -62,26 +63,26 @@ public class App extends AbstractVerticle {
 
         /* PRODUCT ENTITY */
 
-        router.get("/product/find/:pid").handler(ctx -> this.productService.product(UUID.fromString(ctx.pathParam("pid")))
+        router.get("/product/find/:pid").handler(ctx -> this.productService.findProduct(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/product/search/:regex").handler(ctx -> this.productService.products(ctx.pathParam("regex"))
+        router.get("/product/search/:regex").handler(ctx -> this.productService.findProducts(ctx.pathParam("regex"))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.post("/product/insert/:name/:description/:price/:quantity/:brand/:category").handler(ctx ->
-                this.productService.insert(ctx.pathParam("name"), ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), ctx.pathParam("category"))
+                this.productService.addProduct(ctx.pathParam("name"), ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), Category.valueOf(ctx.pathParam("category")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product created successfully"))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.delete("/product/delete/:pid").handler(ctx ->
-                this.productService.delete(UUID.fromString(ctx.pathParam("pid")))
+                this.productService.deleteProduct(UUID.fromString(ctx.pathParam("pid")))
                         .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product deleted successfully"))
                         .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.put("/product/update/:pid/:price").handler(ctx ->
-                this.productService.update(UUID.fromString(ctx.pathParam("pid")), Double.parseDouble(ctx.pathParam("price")))
+                this.productService.updateProduct(UUID.fromString(ctx.pathParam("pid")), Double.parseDouble(ctx.pathParam("price")))
                         .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product updated successfully"))
                         .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
