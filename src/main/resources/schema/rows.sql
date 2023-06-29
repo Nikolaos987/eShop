@@ -3,14 +3,10 @@
 INSERT INTO users (username, password)
 VALUES ('One'   , '1'),
        ('Two'   , '12'),
-       ('Three' , '123'),
-       ('Four'  , '1234'),
-       ('Five'  , '12345'),
-       ('Six'   , '123456'),
-       ('Seven' , '1234567'),
-       ('Eight' , '12345678'),
-       ('Nine'  , '123456789'),
-       ('Ten'   , '1234567890');
+       ('Three' , '123');
+
+INSERT INTO cart (uid)
+SELECT uid FROM users;
 
 INSERT INTO product (name, description, price, quantity, brand, category)
 VALUES ('Samsung Galaxy S23 Ultra', 'Galaxy S23 Ultra owns the latest processor, which is the Qualcomm SM8550-AC Snapdragon 8 Gen 2 (4 nm) processor. It is capable of multi-tasking, streaming videos, running even the most demanding games with ease. The phone comes with various memory variations, up to 1TB and 12GB RAM (Please check specification table).',

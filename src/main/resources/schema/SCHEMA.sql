@@ -26,16 +26,18 @@ CREATE TABLE product (
 );
 
 
+/* create table cart*/
 DROP TABLE IF EXISTS cart CASCADE;
 CREATE TABLE cart (
     cid uuid DEFAULT uuid_generate_v4(),
     uid uuid NOT NULL,
-    dateCreated TIMESTAMP NOT NULL,
+    dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (cid),
     FOREIGN KEY (uid) REFERENCES users(uid)
 );
 
 
+/* create table cartItem*/
 DROP TABLE IF EXISTS cartItem CASCADE;
 CREATE TABLE cartItem (
     itemid uuid DEFAULT uuid_generate_v4(),

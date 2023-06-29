@@ -1,23 +1,26 @@
 package cartEntity;
 
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public interface CartsStore {
 
-    Future<Void> checkQuantity(UUID id, int quantity);
+    Future<Void> insert(CartItem cartItem, UUID pid);
 
-    Future<Void> addToCart(UUID uid, UUID pid, int quantity);
+    Future<Void> insert(Cart cart);
 
-    Future<Boolean> findCart(UUID id);
+    Future<CartItem> findCartItem(UUID itemid);
 
-    Future<Boolean> findItem(UUID uid, UUID pid);
+    Future<CartItem> findCartItem(UUID uid, UUID pid);
 
-    Future<Void> removeFromCart(UUID uid, UUID pid, int quantity);
+    Future<Collection<CartItem>> findCartItems(UUID uid);
 
-    Future<JsonArray> cart(UUID uid);
+    Future<Cart> findCart(UUID uid);
 
-    Future<Void> buy(UUID uid);
+    Future<Void> removeCartItem(CartItem item);
+
+    Future<Void> updateCartItem(CartItem item, int quantity);
+
 }

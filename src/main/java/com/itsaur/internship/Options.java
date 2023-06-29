@@ -3,10 +3,11 @@ package com.itsaur.internship;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-import java.util.UUID;
-
 @Parameters(commandDescription = "CRUD operations")
 class Options {
+
+    @Parameter(names = {"--iid"}, description = "the UUID of the item")
+    public String iid;
 
     @Parameter(names = {"--uid"}, description = "the UUID of the user")
     public String uid;

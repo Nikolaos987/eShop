@@ -13,7 +13,6 @@ public class ProductService {
         this.store = store;
     }
 
-
     public Future<Product> product(UUID productId) {
         return store.findProduct(productId)
                 .otherwiseEmpty()

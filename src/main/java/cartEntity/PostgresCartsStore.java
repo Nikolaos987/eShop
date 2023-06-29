@@ -2,8 +2,6 @@ package cartEntity;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.PoolOptions;
@@ -11,8 +9,8 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 public class PostgresCartsStore implements CartsStore {
@@ -33,176 +31,125 @@ public class PostgresCartsStore implements CartsStore {
     }
 
     @Override
-    public Future<Void> checkQuantity(UUID id, int quantity) {
-        if (quantity > 0) {
-            SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-            return client
-                    .preparedQuery("SELECT * FROM product WHERE pid = $1")
-                    .execute(Tuple.of(id))
-                    .compose(rows -> {
-                        client.close().onSuccess(v -> Future.succeededFuture()); // TODO: 27/6/23
-                        Row row = rows.iterator().next();
-                        if (row.getInteger("quantity") - quantity >= 0) {
-                            return Future.succeededFuture();
-                        }
-                        return Future.failedFuture(new IllegalArgumentException("out of stock"));
-                    });
-        }
-        return Future.failedFuture(new IllegalArgumentException("quantity can not be 0 or less"));
+    public Future<Void> insert(CartItem item, UUID cid) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+            return inStock(item, item.quantity())
+                    .compose(isInStock -> client
+                            .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
+                            .execute(Tuple.of(item.itemId(), cid, item.pid(), item.quantity()))
+                            .compose(records -> client.close())
+                            .compose(result -> Future.succeededFuture()));
     }
 
     @Override
-    public Future<Void> addToCart(UUID uid, UUID pid, int quantity) {
+    public Future<Void> insert(Cart cart) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return findCart(uid)
-                .compose(foundCart -> {
-                    if (foundCart) {
-                        return findItem(uid, pid).compose(foundItem -> {
-                            if (!foundItem) {
-                                        client.preparedQuery("INSERT INTO cartitem (cid, pid, quantity) SELECT cid, $1, $2 FROM cart WHERE uid = $3;")
-                                        .execute(Tuple.of(pid, quantity, uid))
-                                        .compose(v -> Future.succeededFuture());
-                            }
-                            return client.preparedQuery("SELECT cartitem.cid, quantity FROM cart JOIN cartitem ON cart.cid = cartitem.cid WHERE uid = $1")
-                                    .execute(Tuple.of(uid))
-                                    .compose(records -> checkQuantity(pid, quantity + records.iterator().next().getInteger("quantity"))
-                                            .compose(amount -> client.preparedQuery("UPDATE cartitem SET quantity = quantity + $1 WHERE cid = $2 AND pid = $3;")
-                                                    .execute(Tuple.of(quantity, records.iterator().next().getUUID("cid"), pid))
-                                                    .compose(v -> Future.succeededFuture()))
-                                            .compose(v -> Future.succeededFuture())); // TODO: 27/6/23 remove this line)
-                        });
-                    }
-                    return client.preparedQuery("INSERT INTO cart (uid, datecreated) VALUES ($1, $2);")
-                            .execute(Tuple.of(uid, LocalDateTime.now()))
-                            .compose(v -> Future.succeededFuture())
-                            .compose(res -> client.preparedQuery("INSERT INTO cartitem (cid, pid, quantity) SELECT cid, $1, $2 FROM cart WHERE uid = $3;")
-                                    .execute(Tuple.of(pid, quantity, uid))
-                                    .compose(v -> Future.succeededFuture()));
+        return client
+                .preparedQuery("INSERT INTO cart VALUES ($1, $2, $3);")
+                .execute(Tuple.of(cart.cid(), cart.uid(), cart.dateCreated()))
+                .compose(records -> client.close())
+                .compose(result -> Future.succeededFuture());
+    }
+
+    @Override
+    public Future<CartItem> findCartItem(UUID itemid) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT c.cid, c.uid, datecreated, itemid, ci.pid, ci.quantity FROM cart c JOIN cartitem ci ON c.cid = ci.cid WHERE itemid = $1;")
+                .execute(Tuple.of(itemid))
+                .compose(records -> {
+                    Row row = records.iterator().next();
+                    CartItem item = new CartItem(row.getUUID("itemid"), row.getUUID("pid"), row.getInteger("quantity"));
+                    return Future.succeededFuture(item);
                 });
     }
 
     @Override
-    public Future<Boolean> findCart(UUID uid) {
+    public Future<CartItem> findCartItem(UUID uid, UUID pid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("SELECT * FROM cart JOIN cartitem ON cart.cid = cartitem.cid WHERE cart.uid = $1")
-                .execute(Tuple.of(uid))
-                .compose(rows -> {
-                    client.close().onSuccess(v -> Future.succeededFuture());
-                    if (rows.size() != 0)
-                        return Future.succeededFuture(true);
-                    else
-                        return Future.succeededFuture(false);
-                });
-    }
-
-    @Override
-    public Future<Boolean> findItem(UUID uid, UUID pid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
-                .preparedQuery("SELECT * FROM cartitem WHERE pid = $2 AND cid IN (SELECT cid FROM cart WHERE uid = $1)")
+                .preparedQuery("SELECT c.cid, c.uid, datecreated, itemid, ci.pid, ci.quantity FROM cart c JOIN cartitem ci ON c.cid = ci.cid WHERE uid = $1 AND pid = $2;")
                 .execute(Tuple.of(uid, pid))
-                .compose(rows -> {
-                    client.close().onSuccess(v -> Future.succeededFuture());
-                    if (rows.size() != 0)
-                        return Future.succeededFuture(true);
-                    else
-                        return Future.succeededFuture(false);
+                .compose(records -> {
+                    Row row = records.iterator().next();
+                    CartItem item = new CartItem(row.getUUID("itemid"), row.getUUID("pid"), row.getInteger("quantity"));
+                    return Future.succeededFuture(item);
                 });
     }
 
     @Override
-    public Future<Void> removeFromCart(UUID uid, UUID pid, int quantity) {
+    public Future<Collection<CartItem>> findCartItems(UUID uid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client.preparedQuery("SELECT cartitem.cid, quantity FROM cart JOIN cartitem ON cart.cid = cartitem.cid WHERE uid = $1")
+        return client
+                .preparedQuery("SELECT c.cid, c.uid, datecreated, itemid, ci.pid, ci.quantity FROM cart c JOIN cartitem ci ON c.cid = ci.cid WHERE uid = $1;")
                 .execute(Tuple.of(uid))
                 .compose(records -> {
-                    int itemQuantity = records.iterator().next().getInteger("quantity");
-                    UUID cid = records.iterator().next().getUUID("cid");
-                    if (itemQuantity - quantity > 0) {
-                        return client
-                                .preparedQuery("UPDATE cartitem SET quantity = quantity - $1 WHERE cid = $2 AND pid = $3")
-                                .execute(Tuple.of(quantity, cid, pid))
-                                .compose(v -> client.close())
-                                .compose(v -> Future.succeededFuture());
-                    } else {
-                        return client
-                                .preparedQuery("DELETE FROM cartitem WHERE cid = $1 AND pid = $2")
-                                .execute(Tuple.of(cid, pid))
-                                .compose(v -> client.close())
-                                .compose(v -> Future.succeededFuture());
-                    }
-                });
-    }
-
-    @Override
-    public Future<JsonArray> cart(UUID uid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
-                .preparedQuery("SELECT cart.cid, cart.uid, datecreated, itemid, product.pid, cartitem.quantity, price, name FROM cart JOIN cartitem ON cart.cid = cartitem.cid JOIN product ON product.pid = cartitem.pid WHERE uid = $1")
-                .execute(Tuple.of(uid))
-                .compose(rows -> {
-                    JsonArray cartProducts = new JsonArray();
-                    rows.forEach(row ->
-                            cartProducts.add(JsonObject.of(
-                            "PRODUCT ID", row.getUUID("pid"),
-                            "NAME", row.getString("name"),
-                            "PRICE", row.getDouble("price"),
-                            "QUANTITY", row.getInteger("quantity"))));
-                    if (cartProducts.size() != 0) {
-                        client.close().onSuccess(v -> Future.succeededFuture());
-                        return Future.succeededFuture(cartProducts);
-                    }
-                    return Future.failedFuture(new IllegalArgumentException("Seems like your cart is empty"));
-                });
-    }
-
-    @Override
-    public Future<Void> buy(UUID uid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
-                .preparedQuery("SELECT cart.cid, quantity FROM cart JOIN cartitem ON cart.cid = cartitem.cid WHERE uid = $1")
-                .execute(Tuple.of(uid))
-                .compose(records -> {
-                    int quantity = records.iterator().next().getInteger("quantity");
-                    UUID cid = records.iterator().next().getUUID("cid");
-                    return removeQuantity(uid).compose(r -> client
-                            .preparedQuery("DELETE FROM cartitem WHERE cid = $1")
-                            .execute(Tuple.of(cid))
-                            .compose(r2 -> client
-                                    .preparedQuery("DELETE FROM cart WHERE cid = $1")
-                                    .execute(Tuple.of(cid))
-                                    .compose(res -> client.close())
-                                    .compose(res -> Future.succeededFuture())));
-                });
-    }
-
-    public Future<Void> removeQuantity(UUID userid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
-                .preparedQuery("SELECT pid, quantity FROM cart JOIN cartitem ON cart.cid = cartitem.cid WHERE uid = $1")
-                .execute(Tuple.of(userid))
-                .compose(rows -> {
-                    ArrayList<UUID> ids = new ArrayList<>();
-                    ArrayList<Integer> quantities = new ArrayList<>();
-                    rows.forEach(row -> {
-                        UUID userId = row.getUUID("pid");
-                        ids.add(userId);
-                        int quantity = row.getInteger("quantity");
-                        quantities.add(quantity);
+                    Collection<CartItem> items = new ArrayList<>();
+                    records.forEach(row -> {
+                        CartItem item = new CartItem(row.getUUID("itemid"), row.getUUID("pid"), row.getInteger("quantity"));
+                        items.add(item);
                     });
-                    return removeNext(ids, quantities, 0, client);
+                    return Future.succeededFuture(items);
                 });
     }
 
-    public Future<Void> removeNext(ArrayList<UUID> ids, ArrayList<Integer> quantities, int pos, SqlClient client) {
-        if (pos < ids.size()) {
-            return client
-                    .preparedQuery("UPDATE product SET quantity = quantity - $1 WHERE pid = $2;")
-                    .execute(Tuple.of(quantities.get(pos), ids.get(pos)))
-                    .compose(rows -> removeNext(ids, quantities, pos+1, client));
-        } return client.close()
-                .compose(r -> Future.succeededFuture());
+    @Override
+    public Future<Cart> findCart(UUID uid) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid WHERE uid = $1;")
+                .execute(Tuple.of(uid))
+                .otherwiseEmpty()
+                .compose(records -> {
+                    Collection<CartItem> items = new ArrayList<>();
+                    if (records.size() > 1) {
+                        records.forEach(row -> {
+                            CartItem item = new CartItem(row.getUUID("itemid"), row.getUUID("pid"), row.getInteger("quantity"));
+                            items.add(item);
+                        });
+                    } else {
+                        items.add(null);
+                    }
+                    Row row = records.iterator().next();
+                    Cart cart = new Cart(row.getUUID("cid"), row.getUUID("uid"), row.getLocalDateTime("datecreated"), items);
+                    return Future.succeededFuture(cart);
+                });
+    }
+
+    @Override
+    public Future<Void> removeCartItem(CartItem item) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("DELETE FROM cartitem WHERE itemid = $1;")
+                .execute(Tuple.of(item.itemId()))
+                .compose(records -> Future.succeededFuture());
+    }
+
+    @Override
+    public Future<Void> updateCartItem(CartItem item, int quantity) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return inStock(item, quantity)
+                .compose(isInStock -> {
+                    if (item.quantity() + quantity >= 0)
+                        return client
+                                .preparedQuery("UPDATE cartitem SET quantity = quantity + $1 WHERE itemid = $2;")
+                                .execute(Tuple.of(quantity, item.itemId()))
+                                .compose(records -> Future.succeededFuture());
+                    return Future.failedFuture("item quantity can't be negative!");
+                });
+    }
+
+    public Future<Void> inStock(CartItem item, int quantity) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
+                .execute(Tuple.of(item.pid()))
+                .compose(records -> {
+                    Row row = records.iterator().next();
+                    if (row.getInteger("quantity") - (item.quantity() + quantity) >= 0)
+                        return Future.succeededFuture();
+                    return Future.failedFuture(new IllegalArgumentException("product out of stock!"));
+                });
     }
 
 }

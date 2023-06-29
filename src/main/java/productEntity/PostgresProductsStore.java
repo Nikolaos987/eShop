@@ -86,4 +86,25 @@ public class PostgresProductsStore implements ProductsStore {
                 .compose(records -> Future.succeededFuture());
     }
 
+    @Override
+    public Future<Void> updateProduct(UUID pid, int quantity) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return inStock(pid, quantity).compose(result -> client
+                .preparedQuery("UPDATE product SET quantity = quantity - $1 WHERE pid = $2")
+                .execute(Tuple.of(quantity, pid))
+                .compose(records2 -> Future.succeededFuture()));
+    }
+
+    public Future<Void> inStock(UUID pid, int quantity) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
+                .execute(Tuple.of(pid))
+                .compose(records -> {
+                    Row row = records.iterator().next();
+                    if (row.getInteger("quantity") - quantity >= 0)
+                        return Future.succeededFuture();
+                    return Future.failedFuture("cannot buy such amount. Out of stock");
+                });
+    }
 }

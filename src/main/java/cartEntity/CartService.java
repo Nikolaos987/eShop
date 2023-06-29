@@ -1,40 +1,49 @@
 package cartEntity;
 
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
+import productEntity.ProductsStore;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class CartService {
 
     private final CartsStore store;
+    private final ProductsStore storeProduct;
 
-    public CartService(CartsStore store) {
+    public CartService(CartsStore store, ProductsStore storeProduct) {
         this.store = store;
+        this.storeProduct = storeProduct;
     }
 
-    public Future<JsonArray> showCart(UUID userId) {
-        return store.cart(userId);
+    public Future<CartItem> showCartItem(UUID itemid) {
+        return store.findCartItem(itemid);
     }
 
-    public Future<Void> addItem(UUID userId, UUID productId, int quantity) {
-        return store.checkQuantity(productId, quantity)
-                // TODO: 22/6/23 if quantity >= 0 then...
-                .compose(v -> store.addToCart(userId, productId, quantity));
+    public Future<Collection<CartItem>> showCartItems(UUID uid) {
+        return store.findCartItems(uid);
+    }
+
+    public Future<Void> addItem(UUID uid, UUID pid, int quantity) {
+        return store.findCartItem(uid, pid)
+                .otherwiseEmpty()
+                .compose(item -> {
+                    if (item == null) {
+                        return store.findCart(uid)
+                                .compose(cart -> store.insert(new CartItem(UUID.randomUUID(), pid, quantity), cart.cid()));
+                    }
+                    return store.updateCartItem(item, quantity);
+                });
     }
 
     public Future<Void> buyCart(UUID userId) {
-        return store.buy(userId);
-    }
-
-    public Future<Void> removeItem(UUID userId, UUID productId, int quantity) {
-        return store.findItem(userId, productId) // TODO: 27/6/23 return void instead of boolean
-                .compose(exists -> {
-                    if (exists) {
-                        return store.removeFromCart(userId, productId, quantity)
-                                .compose(v -> Future.succeededFuture());
-                    }
-                    return Future.failedFuture(new IllegalArgumentException("product does not exist in your cart"));
+        return store.findCartItems(userId)
+                .compose(collectionOfCartItems -> {
+                    collectionOfCartItems.forEach(cartItem -> {
+                        store.removeCartItem(cartItem);
+                        storeProduct.updateProduct(cartItem.pid(), cartItem.quantity());
+                    });
+                    return Future.succeededFuture();
                 });
     }
 

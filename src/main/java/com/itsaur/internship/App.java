@@ -90,20 +90,20 @@ public class App extends AbstractVerticle {
 
         /* CART ENTITY */
 
-        router.get("/user/:uid").handler(ctx -> this.cartService.showCart(UUID.fromString(ctx.pathParam("uid")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v.toBuffer()))
+        router.get("/item/:iid/item").handler(ctx -> this.cartService.showCartItem(UUID.fromString(ctx.pathParam("iid")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
+        router.get("/user/:uid/items").handler(ctx -> this.cartService.showCartItems(UUID.fromString(ctx.pathParam("uid")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.put("/user/:uid/product/:pid/:quantity").handler(ctx -> this.cartService.addItem(UUID.fromString(ctx.pathParam("uid")), UUID.fromString(ctx.pathParam("pid")), Integer.parseInt(ctx.pathParam("quantity")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product added to cart!"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("item updated!"))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.delete("/user/:uid/cart").handler(ctx -> this.cartService.buyCart(UUID.fromString(ctx.pathParam("uid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("all products from carts were bought"))
-                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
-
-        router.delete("/cart/:uid/item/:pid/:quantity").handler(ctx -> this.cartService.removeItem(UUID.fromString(ctx.pathParam("uid")), UUID.fromString(ctx.pathParam("pid")), Integer.parseInt(ctx.pathParam("quantity")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product quantity removed from your cart"))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         server.requestHandler(router).listen(8084);

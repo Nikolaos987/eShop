@@ -86,7 +86,7 @@ public class Console {
 
 
 
-            case "show-cart" -> this.cartService.showCart(UUID.fromString(options.uid))
+            case "show-cart" -> this.cartService.showCartItem(UUID.fromString(options.iid))
                     .onSuccess(System.out::println)
                     .onFailure(v -> {
                         System.out.println(v.getMessage());
@@ -102,13 +102,6 @@ public class Console {
                     .mapEmpty();
             case "buy" -> this.cartService.buyCart(UUID.fromString(options.uid))
                     .onSuccess(v -> System.out.println("bought products in your cart successfully!"))
-                    .onFailure(v -> {
-                        System.out.println(v.getMessage());
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
-            case "remove-item" -> this.cartService.removeItem(UUID.fromString(options.uid), UUID.fromString(options.pid), options.quantity)
-                    .onSuccess(v -> System.out.println("products quantity removed from cart"))
                     .onFailure(v -> {
                         System.out.println(v.getMessage());
                         v.printStackTrace();

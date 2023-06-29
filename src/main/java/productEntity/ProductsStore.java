@@ -17,6 +17,8 @@ public interface ProductsStore {
 
     Future<Void> updateProduct(UUID pid, double price);
 
+    Future<Void> updateProduct(UUID pid, int quantity);
+
 //    Future<JsonArray> filter(double price, String brand, String category);
 
 }
