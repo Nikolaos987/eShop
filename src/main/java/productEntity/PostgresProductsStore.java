@@ -47,7 +47,7 @@ public class PostgresProductsStore implements ProductsStore {
                 .execute(Tuple.of(productId))
                 .compose(records -> {
                     Row row = records.iterator().next();
-                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"));
+                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")));
                     return Future.succeededFuture(product);
                 })
                 .otherwiseEmpty();
@@ -62,7 +62,7 @@ public class PostgresProductsStore implements ProductsStore {
                 .execute(Tuple.of(name))
                 .compose(rows -> {
                     Collection<Product> products = new ArrayList<>();
-                    rows.forEach(row -> products.add(new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), row.getString("category"))));
+                    rows.forEach(row -> products.add(new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")))));
                     return client.close()
                             .compose(r -> Future.succeededFuture(products));
                 });

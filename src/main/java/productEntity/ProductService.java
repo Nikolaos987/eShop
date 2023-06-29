@@ -13,7 +13,7 @@ public class ProductService {
         this.store = store;
     }
 
-    public Future<Product> product(UUID productId) {
+    public Future<Product> findProduct(UUID productId) {
         return store.findProduct(productId)
                 .otherwiseEmpty()
                 .compose(product -> {
@@ -25,7 +25,7 @@ public class ProductService {
                 });
     }
 
-    public Future<Collection<Product>> products(String name) {
+    public Future<Collection<Product>> findProducts(String name) {
         return store.findProduct(name)
                 .otherwiseEmpty()
                 .compose(products -> {
@@ -37,12 +37,13 @@ public class ProductService {
                 });
     }
 
-    public Future<Void> insert(String name, String description, double price, int quantity, String brand, String category) {
+    public Future<Void> addProduct(String name, String description, double price, int quantity, String brand, Category category) {
+
         return store.insert(new Product(UUID.randomUUID(), name, description, price, quantity, brand, category))
                 .compose(r -> Future.succeededFuture());
     }
 
-    public Future<Void> delete(UUID pid) {
+    public Future<Void> deleteProduct(UUID pid) {
         return store.findProduct(pid)
                 .otherwiseEmpty()
                 .compose(product -> {
@@ -52,7 +53,7 @@ public class ProductService {
                 });
     }
 
-    public Future<Void> update(UUID pid, double price) {
+    public Future<Void> updateProduct(UUID pid, double price) {
         return store.findProduct(pid)
                 .otherwiseEmpty()
                 .compose(product -> {

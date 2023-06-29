@@ -21,7 +21,7 @@ CREATE TABLE product (
     price float8 NOT NULL,
     quantity int /*CHECK (product.quantity>=0)*/ NOT NULL,
     brand varchar(25) NOT NULL,
-    category valid_categories NOT NULL,
+    category varchar(25)/*valid_categories*/ NOT NULL,
     PRIMARY KEY (pid)
 );
 
