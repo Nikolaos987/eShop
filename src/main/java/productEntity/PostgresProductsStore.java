@@ -1,5 +1,6 @@
 package productEntity;
 
+import cartEntity.CartItem;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgConnectOptions;
@@ -87,12 +88,21 @@ public class PostgresProductsStore implements ProductsStore {
     }
 
     @Override
-    public Future<Void> updateProduct(UUID pid, int quantity) {
+    public Future<Void> updateProducts(ArrayList<CartItem> items) {
+        return updateNext(items, 0)
+                .compose(result -> Future.succeededFuture());
+    }
+
+    public Future<Void> updateNext(ArrayList<CartItem> items, int position) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return inStock(pid, quantity).compose(result -> client
+        return inStock(items.get(position).pid(), items.get(position).quantity()).compose(result -> client
                 .preparedQuery("UPDATE product SET quantity = quantity - $1 WHERE pid = $2")
-                .execute(Tuple.of(quantity, pid))
-                .compose(records2 -> Future.succeededFuture()));
+                .execute(Tuple.of(items.get(position).quantity(), items.get(position).pid()))
+                .compose(records2 -> {
+                    if (position + 1 < items.size())
+                        return updateNext(items, position + 1);
+                    return Future.succeededFuture();
+                }));
     }
 
     public Future<Void> inStock(UUID pid, int quantity) {

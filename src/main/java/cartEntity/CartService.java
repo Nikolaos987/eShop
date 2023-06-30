@@ -3,7 +3,7 @@ package cartEntity;
 import io.vertx.core.Future;
 import productEntity.ProductsStore;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class CartService {
@@ -20,7 +20,7 @@ public class CartService {
         return cartsStore.findCartItem(itemid);
     }
 
-    public Future<Collection<CartItem>> showCartItems(UUID uid) {
+    public Future<ArrayList<CartItem>> showCartItems(UUID uid) {
         return cartsStore.findCartItems(uid);
     }
 
@@ -38,13 +38,8 @@ public class CartService {
 
     public Future<Void> buyCart(UUID userId) {
         return cartsStore.findCartItems(userId)
-                .compose(collectionOfCartItems -> {
-                    collectionOfCartItems.forEach(cartItem -> {
-                        cartsStore.removeCartItem(cartItem);
-                        productsStore.updateProduct(cartItem.pid(), cartItem.quantity());
-                    });
-                    return Future.succeededFuture();
-                });
+                .compose(items -> cartsStore.removeCartItems(items)
+                        .compose(result -> productsStore.updateProducts(items)));
     }
 
 }

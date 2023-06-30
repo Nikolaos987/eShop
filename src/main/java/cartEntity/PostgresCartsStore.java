@@ -33,7 +33,7 @@ public class PostgresCartsStore implements CartsStore {
     @Override
     public Future<Void> insert(CartItem item, UUID cid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-            return inStock(item, item.quantity())
+            return inStock(item, 0)
                     .compose(isInStock -> client
                             .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
                             .execute(Tuple.of(item.itemId(), cid, item.pid(), item.quantity()))
@@ -78,13 +78,13 @@ public class PostgresCartsStore implements CartsStore {
     }
 
     @Override
-    public Future<Collection<CartItem>> findCartItems(UUID uid) {
+    public Future<ArrayList<CartItem>> findCartItems(UUID uid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("SELECT c.cid, c.uid, datecreated, itemid, ci.pid, ci.quantity FROM cart c JOIN cartitem ci ON c.cid = ci.cid WHERE uid = $1;")
                 .execute(Tuple.of(uid))
                 .compose(records -> {
-                    Collection<CartItem> items = new ArrayList<>();
+                    ArrayList<CartItem> items = new ArrayList<>();
                     records.forEach(row -> {
                         CartItem item = new CartItem(row.getUUID("itemid"), row.getUUID("pid"), row.getInteger("quantity"));
                         items.add(item);
@@ -117,12 +117,22 @@ public class PostgresCartsStore implements CartsStore {
     }
 
     @Override
-    public Future<Void> removeCartItem(CartItem item) {
+    public Future<Void> removeCartItems(ArrayList<CartItem> items) {
+        return removeNext(items, 0)
+                .compose(result -> Future.succeededFuture());
+    }
+
+    public Future<Void> removeNext(ArrayList<CartItem> items, int position) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("DELETE FROM cartitem WHERE itemid = $1;")
-                .execute(Tuple.of(item.itemId()))
-                .compose(records -> Future.succeededFuture());
+                .execute(Tuple.of(items.get(position).itemId()))
+                .compose(records -> {
+                    if (position + 1 < items.size()) {
+                        return removeNext(items, position + 1);
+                    }
+                    return Future.succeededFuture();
+                });
     }
 
     @Override

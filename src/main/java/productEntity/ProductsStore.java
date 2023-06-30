@@ -1,7 +1,9 @@
 package productEntity;
 
+import cartEntity.CartItem;
 import io.vertx.core.Future;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -17,7 +19,7 @@ public interface ProductsStore {
 
     Future<Void> updateProduct(UUID pid, double price);
 
-    Future<Void> updateProduct(UUID pid, int quantity);
+    Future<Void> updateProducts(ArrayList<CartItem> items);
 
 //    Future<JsonArray> filter(double price, String brand, String category);
 

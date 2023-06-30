@@ -2,7 +2,7 @@ package cartEntity;
 
 import io.vertx.core.Future;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public interface CartsStore {
@@ -15,11 +15,11 @@ public interface CartsStore {
 
     Future<CartItem> findCartItem(UUID uid, UUID pid);
 
-    Future<Collection<CartItem>> findCartItems(UUID uid);
+    Future<ArrayList<CartItem>> findCartItems(UUID uid);
 
     Future<Cart> findCart(UUID uid);
 
-    Future<Void> removeCartItem(CartItem item);
+    Future<Void> removeCartItems(ArrayList<CartItem> items);
 
     Future<Void> updateCartItem(CartItem item, int quantity);
 
