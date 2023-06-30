@@ -27,10 +27,14 @@ public class Main {
                     if (opts.database != null) {
                         /* Server stores to Postgres */
                         vertx.deployVerticle(new App(
-                                new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                new UserService(
+                                        new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
-                                new ProductService(new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
-                                new CartService(new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                new ProductService(
+                                        new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                        new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
+                                new CartService(
+                                        new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize))));
                     }
@@ -39,10 +43,14 @@ public class Main {
                     if (opts.database != null) {
                         /* Console stores to Postgres */
                         new Console(
-                                new UserService(new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                new UserService(
+                                        new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
-                                new ProductService(new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
-                                new CartService(new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                new ProductService(
+                                        new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                        new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
+                                new CartService(
+                                        new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)))
                                 .executeCommand(opts) // args

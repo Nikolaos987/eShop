@@ -19,6 +19,8 @@ public interface CartsStore {
 
     Future<Cart> findCart(UUID uid);
 
+    Future<Void> deleteCart(UUID uid);
+
     Future<Void> removeCartItems(ArrayList<CartItem> items);
 
     Future<Void> updateCartItem(CartItem item, int quantity);
