@@ -23,6 +23,8 @@ public interface CartsStore {
 
     Future<Void> removeCartItems(ArrayList<CartItem> items);
 
+    Future<Void> removeCartItems(UUID pid);
+
     Future<Void> updateCartItem(CartItem item, int quantity);
 
 }

@@ -134,6 +134,15 @@ public class PostgresCartsStore implements CartsStore {
                 .compose(result -> Future.succeededFuture());
     }
 
+    @Override
+    public Future<Void> removeCartItems(UUID pid) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("DELETE FROM cartitem WHERE pid = $1;")
+                .execute(Tuple.of(pid))
+                .compose(result -> Future.succeededFuture());
+    }
+
     public Future<Void> removeNext(ArrayList<CartItem> items, int position) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
