@@ -55,12 +55,26 @@ public class PostgresProductsStore implements ProductsStore {
     }
 
     @Override
-    public Future<Collection<Product>> findProduct(String name) {
-        name = "%"+name+"%";
+    public Future<Product> findProduct(String name) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT * FROM product WHERE name = $1;")
+                .execute(Tuple.of(name))
+                .compose(records -> {
+                    Row row = records.iterator().next();
+                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")));
+                    return Future.succeededFuture(product);
+                })
+                .otherwiseEmpty();
+    }
+
+    @Override
+    public Future<Collection<Product>> findProducts(String filter) {
+        filter = "%"+filter+"%";
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("SELECT * FROM product WHERE name LIKE $1;")
-                .execute(Tuple.of(name))
+                .execute(Tuple.of(filter))
                 .compose(rows -> {
                     Collection<Product> products = new ArrayList<>();
                     rows.forEach(row -> products.add(new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")))));

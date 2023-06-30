@@ -29,20 +29,25 @@ public class ProductService {
     }
 
     public Future<Collection<Product>> findProducts(String name) {
-        return productsStore.findProduct(name)
+        return productsStore.findProducts(name)
                 .otherwiseEmpty()
                 .compose(products -> {
-                    if (products.size() != 0) {
+                    if (products.size() != 0)
                         return Future.succeededFuture(products);
-                    } else {
-                        return Future.failedFuture(new IllegalArgumentException("product not found"));
-                    }
+                    return Future.failedFuture(new IllegalArgumentException("product not found"));
                 });
     }
 
     public Future<Void> addProduct(String name, String description, double price, int quantity, String brand, Category category) {
-        return productsStore.insert(new Product(UUID.randomUUID(), name, description, price, quantity, brand, category))
-                .compose(r -> Future.succeededFuture());
+        return productsStore.findProduct(name)
+                .otherwiseEmpty()
+                .compose(product -> {
+                    if (product == null)
+                        return productsStore.insert(new Product(UUID.randomUUID(), name, description, price, quantity, brand, category));
+                    return Future.failedFuture(new IllegalArgumentException("product with this name already exists!"));
+                });
+
+
     }
 
     public Future<Void> deleteProduct(UUID pid) {

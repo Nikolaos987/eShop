@@ -13,7 +13,9 @@ public interface ProductsStore {
 
     Future<Product> findProduct(UUID pid);
 
-    Future<Collection<Product>> findProduct(String name);
+    Future<Product> findProduct(String name);
+
+    Future<Collection<Product>> findProducts(String filter);
 
     Future<Void> deleteProduct(UUID pid);
 
