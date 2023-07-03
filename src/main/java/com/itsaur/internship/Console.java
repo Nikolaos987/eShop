@@ -69,7 +69,7 @@ public class Console {
                         v.printStackTrace();
                     })
                     .mapEmpty();
-            case "insert" -> this.productService.addProduct(options.name, options.desc, options.price, options.quantity, options.brand, Category.valueOf(options.category))
+            case "insert" -> this.productService.addProduct(options.name, options.imagePath, options.desc, options.price, options.quantity, options.brand, Category.valueOf(options.category))
                     .onSuccess(v -> System.out.println("product added!"))
                     .onFailure(v -> {
                         System.out.println("product does not exist");

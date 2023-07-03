@@ -3,6 +3,7 @@ package productEntity;
 import cartEntity.CartItem;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.PoolOptions;
@@ -41,14 +42,14 @@ public class PostgresProductsStore implements ProductsStore {
     }
 
     @Override
-    public Future<Product> findProduct(UUID productId) {
+    public Future<Product> findProduct(UUID pid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("SELECT * FROM product WHERE pid = $1;")
-                .execute(Tuple.of(productId))
+                .execute(Tuple.of(pid))
                 .compose(records -> {
                     Row row = records.iterator().next();
-                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")));
+                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")));
                     return Future.succeededFuture(product);
                 })
                 .otherwiseEmpty();
@@ -62,7 +63,7 @@ public class PostgresProductsStore implements ProductsStore {
                 .execute(Tuple.of(name))
                 .compose(records -> {
                     Row row = records.iterator().next();
-                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")));
+                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")));
                     return Future.succeededFuture(product);
                 })
                 .otherwiseEmpty();
@@ -77,7 +78,7 @@ public class PostgresProductsStore implements ProductsStore {
                 .execute(Tuple.of(filter))
                 .compose(rows -> {
                     Collection<Product> products = new ArrayList<>();
-                    rows.forEach(row -> products.add(new Product(row.getUUID("pid"), row.getString("name"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")))));
+                    rows.forEach(row -> products.add(new Product(row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")))));
                     return client.close()
                             .compose(r -> Future.succeededFuture(products));
                 });
@@ -103,8 +104,43 @@ public class PostgresProductsStore implements ProductsStore {
 
     @Override
     public Future<Void> updateProducts(ArrayList<CartItem> items) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+//        return client
+//                .preparedQuery("UPDATE product SET quantity = $2 WHERE pid = $1")
+//                .execute(Tuple.of())
+//                .compose(records -> Future.succeededFuture());
+
         return updateNext(items, 0)
                 .compose(result -> Future.succeededFuture());
+    }
+
+    @Override
+    public Future<Void> updateProducts(UUID uid) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+//                .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE uid = $1);")
+                .preparedQuery("SELECT pid FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE uid = $1;")
+                .execute(Tuple.of(uid))
+                .onSuccess(records -> records.forEach(row -> client
+                        .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem WHERE pid = $1) WHERE pid = $1")
+                        .execute(Tuple.of(row.getUUID("pid")))
+                        .compose(recs -> Future.succeededFuture())))
+                .compose(res -> Future.succeededFuture());
+    }
+
+    @Override
+    public Future<Buffer> findProductImage(UUID pid) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client.preparedQuery("SELECT image FROM product WHERE pid = $1;")
+                .execute(Tuple.of(pid))
+                .compose(records -> {
+                    Row row = records.iterator().next();
+                    return vertx.fileSystem().readFile(row.getString("image"))
+                            .compose(file -> {
+                                Buffer buffer = Buffer.buffer(file.getBytes());
+                                return Future.succeededFuture(buffer);
+                            });
+                });
     }
 
     public Future<Void> updateNext(ArrayList<CartItem> items, int position) {

@@ -2,6 +2,7 @@ package productEntity;
 
 import cartEntity.CartsStore;
 import io.vertx.core.Future;
+import io.vertx.core.buffer.Buffer;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -38,12 +39,12 @@ public class ProductService {
                 });
     }
 
-    public Future<Void> addProduct(String name, String description, double price, int quantity, String brand, Category category) {
+    public Future<Void> addProduct(String name, String imagePath, String description, double price, int quantity, String brand, Category category) {
         return productsStore.findProduct(name)
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product == null)
-                        return productsStore.insert(new Product(UUID.randomUUID(), name, description, price, quantity, brand, category));
+                        return productsStore.insert(new Product(UUID.randomUUID(), name, imagePath, description, price, quantity, brand, category));
                     return Future.failedFuture(new IllegalArgumentException("product with this name already exists!"));
                 });
 
@@ -71,4 +72,8 @@ public class ProductService {
                 });
     }
 
+    public Future<Buffer> findProductImage(UUID pid) {
+        return productsStore.findProductImage(pid)
+                .compose(Future::succeededFuture);
+    }
 }

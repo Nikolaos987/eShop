@@ -48,8 +48,11 @@ public class UserService {
                 .otherwiseEmpty()
                 .compose(user -> {
                     if (user != null) {
-                        return cartsStore.deleteCart(uid)
-                                .compose(result -> userStore.deleteUser(user));
+                        // TODO: 30/6/23 put here .delete cartItems also
+                        return cartsStore
+                                .removeCartItemsById(uid)
+                                .compose(res -> cartsStore.deleteCart(uid)
+                                .compose(result -> userStore.deleteUser(user)));
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("User was not found"));
                     }

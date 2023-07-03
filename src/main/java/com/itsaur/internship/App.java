@@ -63,6 +63,10 @@ public class App extends AbstractVerticle {
 
         /* PRODUCT ENTITY */
 
+        router.get("/product/:pid/image").handler(ctx -> this.productService.findProductImage(UUID.fromString(ctx.pathParam("pid")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
         router.get("/product/find/:pid").handler(ctx -> this.productService.findProduct(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
@@ -71,16 +75,15 @@ public class App extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.post("/product/insert/:name/:description/:price/:quantity/:brand/:category").handler(ctx -> {
+        router.post("/product/insert/:name/:imagePath/:description/:price/:quantity/:brand/:category").handler(ctx -> {
             try {
-                this.productService.addProduct(ctx.pathParam("name"), ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), Category.valueOf(ctx.pathParam("category")))
+                this.productService.addProduct(ctx.pathParam("name"), ctx.pathParam("imagePath"), ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), Category.valueOf(ctx.pathParam("category")))
                         .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product created successfully"))
                         .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
             } catch (IllegalArgumentException e) {
                 ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end("category should be either cellphone or smartphone!");
             }
         });
-
 
         router.delete("/product/delete/:pid").handler(ctx ->
                 this.productService.deleteProduct(UUID.fromString(ctx.pathParam("pid")))

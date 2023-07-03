@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS product CASCADE;
 CREATE TABLE product (
     pid uuid DEFAULT uuid_generate_v4(),  /* gen_random_uuid () */
     name varchar(50) NOT NULL,
+    image varchar(250),
     description VARCHAR(500),
     price float8 NOT NULL,
     quantity int NOT NULL,

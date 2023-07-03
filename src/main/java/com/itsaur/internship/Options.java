@@ -6,6 +6,9 @@ import com.beust.jcommander.Parameters;
 @Parameters(commandDescription = "CRUD operations")
 class Options {
 
+    @Parameter(names = {"--image-path"}, description = "the file path of the product's image")
+    public String imagePath;
+
     @Parameter(names = {"--description"}, description = "the description of the product")
     public String desc;
 
@@ -68,4 +71,5 @@ class Options {
 
     @Parameter(names = {"--pool-size", "-ps"}, description = "pool size of the database. Default value = 5")
     public int poolSize = 5;
+
 }

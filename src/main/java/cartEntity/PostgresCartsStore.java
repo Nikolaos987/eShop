@@ -120,18 +120,21 @@ public class PostgresCartsStore implements CartsStore {
     public Future<Void> deleteCart(UUID uid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("DELETE FROM cartitem WHERE cid = (SELECT cid FROM cart WHERE uid = $1);")
+                .preparedQuery("DELETE FROM cart WHERE uid = $1;")
                 .execute(Tuple.of(uid))
-                .compose(result -> client
-                        .preparedQuery("DELETE FROM cart WHERE uid = $1;")
-                        .execute(Tuple.of(uid))
-                        .compose(result2 -> Future.succeededFuture()));
+                .compose(result2 -> Future.succeededFuture());
     }
 
     @Override
-    public Future<Void> removeCartItems(ArrayList<CartItem> items) {
-        return removeNext(items, 0)
+    public Future<Void> removeCartItemsById(UUID uid) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("DELETE FROM cartitem WHERE itemid IN (SELECT itemid FROM cart c JOIN cartitem ci ON c.cid = ci.cid WHERE c.uid = $1);")
+                .execute(Tuple.of(uid))
                 .compose(result -> Future.succeededFuture());
+
+//        return removeNext(items, 0)
+//                .compose(result -> Future.succeededFuture());
     }
 
     @Override
@@ -141,6 +144,7 @@ public class PostgresCartsStore implements CartsStore {
                 .preparedQuery("DELETE FROM cartitem WHERE pid = $1;")
                 .execute(Tuple.of(pid))
                 .compose(result -> Future.succeededFuture());
+
     }
 
     public Future<Void> removeNext(ArrayList<CartItem> items, int position) {

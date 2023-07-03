@@ -30,7 +30,7 @@ public class CartService {
     }
 
     public Future<Void> addItem(UUID uid, UUID pid, int quantity) {
-        return userExists(uid)
+        return userExists(uid) // todo
                 .compose(user -> productExists(pid)
                         .compose(product -> cartsStore.findCartItem(uid, pid)
                                 .otherwiseEmpty()
@@ -46,8 +46,13 @@ public class CartService {
     public Future<Void> buyCart(UUID uid) {
         return userExists(uid)
                 .compose(result -> cartsStore.findCartItems(uid)
-                        .compose(items -> cartsStore.removeCartItems(items)
-                                .compose(result2 -> productsStore.updateProducts(items))));
+                        .otherwiseEmpty()
+                        .compose(items -> {
+                            if (items.size() >= 1)
+                                return productsStore.updateProducts(uid) // productsStore.updateProducts(items)
+                                        .compose(result2 -> cartsStore.removeCartItemsById(uid)); // TODO: 30/6/23.
+                            return Future.failedFuture("no items found in your cart");
+                        }));
     }
 
     public Future<User> userExists(UUID uid) {
