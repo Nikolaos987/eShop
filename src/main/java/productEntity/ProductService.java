@@ -10,11 +10,14 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductsStore productsStore;
-    private final CartsStore cartsStore;
 
-    public ProductService(ProductsStore productsStore, CartsStore cartsStore) {
+    public ProductService(ProductsStore productsStore) {
         this.productsStore = productsStore;
-        this.cartsStore = cartsStore;
+    }
+
+    public Future<Buffer> findProductImage(UUID pid) {
+        return productsStore.findProductImage(pid)
+                .compose(Future::succeededFuture);
     }
 
     public Future<Product> findProduct(UUID productId) {
@@ -47,8 +50,6 @@ public class ProductService {
                         return productsStore.insert(new Product(UUID.randomUUID(), name, imagePath, description, price, quantity, brand, category));
                     return Future.failedFuture(new IllegalArgumentException("product with this name already exists!"));
                 });
-
-
     }
 
     public Future<Void> deleteProduct(UUID pid) {
@@ -56,8 +57,7 @@ public class ProductService {
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product != null)
-                        return cartsStore.removeCartItems(pid)
-                                .compose(result -> productsStore.deleteProduct(pid));
+                        return productsStore.deleteProduct(pid);
                     return Future.failedFuture(new IllegalArgumentException("product not found"));
                 });
     }
@@ -72,8 +72,4 @@ public class ProductService {
                 });
     }
 
-    public Future<Buffer> findProductImage(UUID pid) {
-        return productsStore.findProductImage(pid)
-                .compose(Future::succeededFuture);
-    }
 }

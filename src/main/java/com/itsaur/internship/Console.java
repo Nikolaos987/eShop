@@ -94,20 +94,6 @@ public class Console {
 
 
 
-            case "item" -> this.cartService.showCartItem(UUID.fromString(options.iid))
-                    .onSuccess(System.out::println)
-                    .onFailure(v -> {
-                        System.out.println(v.getMessage());
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
-            case "items" -> this.cartService.showCartItem(UUID.fromString(options.uid))
-                    .onSuccess(System.out::println)
-                    .onFailure(v -> {
-                        System.out.println(v.getMessage());
-                        v.printStackTrace();
-                    })
-                    .mapEmpty();
             case "item-update" -> this.cartService.addItem(UUID.fromString(options.uid), UUID.fromString(options.pid), options.quantity)
                     .onSuccess(v -> System.out.println("products added to cart"))
                     .onFailure(v -> {

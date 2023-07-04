@@ -10,11 +10,9 @@ import java.util.UUID;
 public class UserService {
 
     private final UsersStore userStore;
-    private final CartsStore cartsStore;
 
-    public UserService(UsersStore userStore, CartsStore cartsStore) {
+    public UserService(UsersStore userStore) {
         this.userStore = userStore;
-        this.cartsStore = cartsStore;
     }
 
     public Future<User> login(String username, String password) {
@@ -34,9 +32,7 @@ public class UserService {
                 .compose(user -> {
                     if (user == null) {
                         UUID uuid = UUID.randomUUID();
-                        return userStore.insert(new User(uuid, username, password))
-                                .compose(res -> userStore.findUser(uuid))
-                                .compose(newUser -> cartsStore.insert(new Cart(UUID.randomUUID(), newUser.uid(), LocalDateTime.now(), null)));
+                        return userStore.insert(new User(uuid, username, password));
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("User already exists"));
                     }
@@ -48,11 +44,7 @@ public class UserService {
                 .otherwiseEmpty()
                 .compose(user -> {
                     if (user != null) {
-                        // TODO: 30/6/23 put here .delete cartItems also
-                        return cartsStore
-                                .removeCartItemsById(uid)
-                                .compose(res -> cartsStore.deleteCart(uid)
-                                .compose(result -> userStore.deleteUser(user)));
+                        return userStore.deleteUser(user);
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("User was not found"));
                     }

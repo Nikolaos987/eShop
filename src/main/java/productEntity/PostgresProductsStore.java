@@ -88,9 +88,12 @@ public class PostgresProductsStore implements ProductsStore {
     public Future<Void> deleteProduct(UUID pid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("DELETE FROM product WHERE pid = $1")
+                .preparedQuery("DELETE FROM cartitem WHERE pid = $1")
                 .execute(Tuple.of(pid))
-                .compose(records -> Future.succeededFuture());
+                .compose(v -> client
+                        .preparedQuery("DELETE FROM product WHERE pid = $1")
+                        .execute(Tuple.of(pid))
+                        .compose(records -> Future.succeededFuture()));
     }
 
     @Override

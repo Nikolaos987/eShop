@@ -1,5 +1,6 @@
 package userEntity;
 
+import cartEntity.Cart;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgConnectOptions;
@@ -9,6 +10,7 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -31,11 +33,17 @@ public class PostgresUsersStore implements UsersStore {
     @Override
     public Future<Void> insert(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        // TODO: 3/7/23 insert new cart
         return client
                 .preparedQuery("INSERT INTO users VALUES ($1, $2, $3);")
                 .execute(Tuple.of(user.uid(), user.username(), user.password()))
-                .compose(v -> client.close())
-                .compose(v -> Future.succeededFuture());
+                .compose(v -> {
+                    Cart cart = new Cart(UUID.randomUUID(), user.uid(), LocalDateTime.now(), null);
+                    return client
+                            .preparedQuery("INSERT INTO cart VALUES ($1, $2, $3)")
+                            .execute(Tuple.of(cart.cid(), cart.uid(), cart.dateCreated()))
+                            .compose(v2 -> Future.succeededFuture());
+                });
     }
 
     @Override
@@ -78,10 +86,16 @@ public class PostgresUsersStore implements UsersStore {
     public Future<Void> deleteUser(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("DELETE FROM users WHERE username = $1;")
-                .execute(Tuple.of(user.username()))
-                .compose(v -> client.close())
-                .compose(v -> Future.succeededFuture());
+                .preparedQuery("DELETE FROM cartitem WHERE itemid IN (SELECT itemid FROM cart c JOIN cartitem ci ON c.cid = ci.cid WHERE c.uid = $1);")
+                .execute(Tuple.of(user.uid()))
+                .compose(v -> client
+                        .preparedQuery("DELETE FROM cart WHERE uid = $1")
+                        .execute(Tuple.of(user.uid()))
+                        .compose(v1 -> client
+                                .preparedQuery("DELETE FROM users WHERE username = $1;")
+                                .execute(Tuple.of(user.username()))
+                                .compose(v2 -> client.close())
+                                .compose(v2 -> Future.succeededFuture())));
     }
 
     @Override
