@@ -5,14 +5,17 @@ import cartEntity.CartsStore;
 import io.vertx.core.Future;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class UserService {
 
     private final UsersStore userStore;
+    private final CartsStore cartsStore;
 
-    public UserService(UsersStore userStore) {
+    public UserService(UsersStore userStore, CartsStore cartsStore) {
         this.userStore = userStore;
+        this.cartsStore = cartsStore;
     }
 
     public Future<User> login(String username, String password) {
@@ -32,7 +35,8 @@ public class UserService {
                 .compose(user -> {
                     if (user == null) {
                         UUID uuid = UUID.randomUUID();
-                        return userStore.insert(new User(uuid, username, password));
+                        return userStore.insert(new User(uuid, username, password))
+                                .compose(newUser -> cartsStore.insert(new Cart(UUID.randomUUID(), uuid, LocalDateTime.now(), new ArrayList<>())));
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("User already exists"));
                     }
@@ -44,7 +48,8 @@ public class UserService {
                 .otherwiseEmpty()
                 .compose(user -> {
                     if (user != null) {
-                        return userStore.deleteUser(user);
+                        return cartsStore.deleteCart(uid)
+                                .compose(result -> userStore.deleteUser(user));
                     } else {
                         return Future.failedFuture(new IllegalArgumentException("User was not found"));
                     }
