@@ -10,7 +10,6 @@ import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.UUID;
 
 public class PostgresCartsStore implements CartsStore {
@@ -34,20 +33,24 @@ public class PostgresCartsStore implements CartsStore {
     @Override
     public Future<Void> insert(Cart cart) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        if (cart.items().iterator().next().quantity() > 0)
-            return client
-                    .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
-                    .execute(Tuple.of(cart.items().iterator().next().pid()))
-                    .compose(records -> {
-                        if (records.iterator().next().getInteger("quantity") - cart.items().iterator().next().quantity() >= 0)
-                            return Future.succeededFuture();
-                        return Future.failedFuture(new IllegalArgumentException("out of stock"));
-                    })
-                    .compose(v -> client
-                            .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
-                            .execute(Tuple.of(cart.items().iterator().next().itemId(), cart.cid(), cart.items().iterator().next().pid(), cart.items().iterator().next().quantity()))
-                            .compose(v1 -> Future.succeededFuture()));
-        return Future.failedFuture(new IllegalArgumentException("quantity can not be 0 nor negative"));
+        cart.items().iterator().forEachRemaining(cartItem -> {
+                client
+                        .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
+                        .execute(Tuple.of(cart.items().iterator().next().pid()))
+                        .compose(records -> {
+                            if (cartItem.quantity() > 0) {
+                                if (records.iterator().next().getInteger("quantity") - cartItem.quantity() >= 0)
+                                    return Future.succeededFuture();
+                                return Future.failedFuture(new IllegalArgumentException("out of stock"));
+                            }
+                            return Future.failedFuture(new IllegalArgumentException("quantity can not be 0 nor negative"));
+                        })
+                        .onSuccess(v -> client
+                                .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
+                                .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), cartItem.quantity()))
+                                .compose(v1 -> Future.succeededFuture()));
+        });
+        return Future.succeededFuture();
     }
 
     @Override
@@ -56,16 +59,13 @@ public class PostgresCartsStore implements CartsStore {
         return client
                 .preparedQuery("SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid WHERE uid = $1;")
                 .execute(Tuple.of(uid))
-                .otherwiseEmpty()
                 .compose(records -> {
-                    Collection<CartItem> items = new ArrayList<>();
+                    ArrayList<CartItem> items = new ArrayList<>();
                     if (records.iterator().next().getUUID("itemid") != null) {
                         records.forEach(row -> {
                             CartItem item = new CartItem(row.getUUID("itemid"), row.getUUID("pid"), row.getInteger("quantity"));
                             items.add(item);
                         });
-                    } else {
-                        items.add(null);
                     }
                     Row row = records.iterator().next();
                     Cart cart = new Cart(row.getUUID("cid"), row.getUUID("uid"), row.getLocalDateTime("datecreated"), items);
@@ -84,11 +84,11 @@ public class PostgresCartsStore implements CartsStore {
                                 .execute(Tuple.of(uid))
                                 .onSuccess(records -> {
                                     records.forEach(row -> {
-                                    if (row.getInteger("quantity") - cart.items().iterator().next().quantity() >= 0) {
-                                        client
-                                                .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE pid = $1 AND uid = $2) WHERE pid = $1")
-                                                .execute(Tuple.of(row.getUUID("pid"), uid));
-                                    }
+                                        if (row.getInteger("quantity") - cart.items().iterator().next().quantity() >= 0) {
+                                            client
+                                                    .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE pid = $1 AND uid = $2) WHERE pid = $1")
+                                                    .execute(Tuple.of(row.getUUID("pid"), uid));
+                                        }
                                     });
                                 })
                                 .compose(res -> client
@@ -101,28 +101,28 @@ public class PostgresCartsStore implements CartsStore {
     }
 
     @Override
-    public Future<Void> update(Cart cart, int quantity) {
+    public Future<Void> update(Cart cart) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        if (quantity > 0)
-            return client
-                    .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
-                    .execute(Tuple.of(cart.items().iterator().next().pid()))
-                    .compose(records -> {
-                        if (records.iterator().next().getInteger("quantity") - cart.items().iterator().next().quantity() - quantity >= 0) {
-                            if (cart.items().iterator().next().quantity() + quantity > 0)
+        cart.items().iterator().forEachRemaining(cartItem -> {
+            if (cartItem.quantity() >= 0)
+                client
+                        .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
+                        .execute(Tuple.of(cartItem.pid()))
+                        .compose(records -> {
+                            Row row = records.iterator().next();
+                            if (row.getInteger("quantity") - cartItem.quantity() >= 0 && cartItem.quantity() != 0)
                                 return Future.succeededFuture();
                             return client
                                     .preparedQuery("DELETE FROM cartitem WHERE itemid = $1")
                                     .execute(Tuple.of(cart.items().iterator().next().itemId()))
-                                    .compose(v -> Future.succeededFuture());
-                        }
-                        return Future.failedFuture(new IllegalArgumentException("out of stock"));
-                    })
-                    .compose(v -> client
-                            .preparedQuery("UPDATE cartitem SET quantity = quantity + $1 WHERE cid = $2 AND pid = $3")
-                            .execute(Tuple.of(quantity, cart.cid(), cart.items().iterator().next().pid()))
-                            .compose(v2 -> Future.succeededFuture()));
-        return Future.failedFuture(new IllegalArgumentException("quantity can not be 0 nor negative"));
+                                    .compose(v -> Future.failedFuture(new IllegalArgumentException("no")));
+                        })
+                        .compose(v -> client
+                                .preparedQuery("UPDATE cartitem SET quantity = $1 WHERE cid = $2 AND pid = $3")
+                                .execute(Tuple.of(cartItem.quantity(), cart.cid(), cartItem.pid()))
+                                .compose(v2 -> Future.succeededFuture()));
+        });
+        return Future.succeededFuture();
     }
 
 }

@@ -13,6 +13,6 @@ public interface CartsStore {
 
     Future<Void> deleteCart(UUID uid);
 
-    Future<Void> update(Cart cart, int quantity);
+    Future<Void> update(Cart cart);
 
 }

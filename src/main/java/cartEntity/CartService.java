@@ -5,7 +5,9 @@ import userEntity.UsersStore;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class CartService {
 
@@ -22,20 +24,26 @@ public class CartService {
         return usersStore.findUser(uid)
                 .otherwiseEmpty()
                 .compose(user -> {
-                    if (user != null) {
+                    if (user != null)
                         return cartsStore.findCart(uid)
                                 .compose(cart -> {
-                                    if (cart.items().iterator().next() == null) {
-                                        Collection<CartItem> items = new ArrayList<>();
-                                        items.add(new CartItem(UUID.randomUUID(), pid, quantity));
-                                        return cartsStore.insert(new Cart(cart.cid(), cart.uid(), cart.dateCreated(), items));
+                                    ArrayList<CartItem> items = cart.items();
+                                    if (items.stream().anyMatch(cartItem -> cartItem.pid().equals(pid))) {
+                                        CartItem cartItem = cart.items().get(items.indexOf(new CartItem(
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId(),
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().pid(),
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().quantity())));
+                                        cart.items().set(items.indexOf(cartItem), new CartItem(cartItem.itemId(), cartItem.pid(), quantity));
+                                        ArrayList<CartItem> item = new ArrayList<>();
+                                        item.add(new CartItem(cartItem.itemId(), pid, quantity));
+                                        return cartsStore.update(new Cart(cart.cid(), cart.uid(), cart.dateCreated(), item));
+                                    } else {
+                                        cart.items().add(new CartItem(UUID.randomUUID(), pid, quantity));
+                                        return cartsStore.insert(cart);
                                     }
-                                    return cartsStore.update(cart, quantity);
                                 });
-                    }
                     return Future.failedFuture(new IllegalArgumentException("user does not exist"));
                 });
-
     }
 
     public Future<Void> buyCart(UUID uid) {
