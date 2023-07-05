@@ -42,9 +42,9 @@ CREATE TABLE cart (
 DROP TABLE IF EXISTS cartItem CASCADE;
 CREATE TABLE cartItem (
     itemid uuid DEFAULT uuid_generate_v4(),
-    cid uuid NOT NULL,
-    pid uuid NOT NULL,
-    quantity int NOT NULL,
+    cid uuid,
+    pid uuid,
+    quantity int,
     PRIMARY KEY (itemid),
     FOREIGN KEY (cid) REFERENCES cart(cid),
     FOREIGN KEY (pid) REFERENCES product(pid)
