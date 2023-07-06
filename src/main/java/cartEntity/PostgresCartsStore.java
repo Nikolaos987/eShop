@@ -33,24 +33,27 @@ public class PostgresCartsStore implements CartsStore {
     @Override
     public Future<Void> insert(Cart cart) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        cart.items().iterator().forEachRemaining(cartItem -> {
-                client
-                        .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
-                        .execute(Tuple.of(cart.items().iterator().next().pid()))
-                        .compose(records -> {
-                            if (cartItem.quantity() > 0) {
-                                if (records.iterator().next().getInteger("quantity") - cartItem.quantity() >= 0)
-                                    return Future.succeededFuture();
-                                return Future.failedFuture(new IllegalArgumentException("out of stock"));
-                            }
-                            return Future.failedFuture(new IllegalArgumentException("quantity can not be 0 nor negative"));
-                        })
-                        .onSuccess(v -> client
-                                .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
-                                .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), cartItem.quantity()))
-                                .compose(v1 -> Future.succeededFuture()));
-        });
-        return Future.succeededFuture();
+        return client
+                .preparedQuery("SELECT cid FROM cart WHERE cid = $1")
+                .execute(Tuple.of(cart.cid()))
+                .otherwiseEmpty()
+                .compose(records -> {
+                    if (records == null) {
+                        return client
+                                .preparedQuery("INSERT INTO cart VALUES ($1, $2, $3)")
+                                .execute(Tuple.of(cart.cid(), cart.uid(), cart.dateCreated()))
+                                .compose(r -> client.close());
+                    }
+                    return Future.succeededFuture();
+                })
+                .compose(r -> client.close())
+                .compose(r -> {
+                    cart.items().iterator().forEachRemaining(cartItem -> client
+                            .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4)")
+                            .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), cartItem.quantity()))
+                            .compose(r2 -> client.close()));
+                    return Future.succeededFuture();
+                });
     }
 
     @Override
