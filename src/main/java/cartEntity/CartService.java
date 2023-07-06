@@ -1,6 +1,7 @@
 package cartEntity;
 
 import io.vertx.core.Future;
+import productEntity.ProductsStore;
 import userEntity.UsersStore;
 
 import java.util.ArrayList;
@@ -12,10 +13,12 @@ import java.util.stream.Stream;
 public class CartService {
 
     private final CartsStore cartsStore;
+    private final ProductsStore productsStore;
     private final UsersStore usersStore;
 
-    public CartService(CartsStore cartsStore, UsersStore usersStore) {
+    public CartService(CartsStore cartsStore, ProductsStore productsStore, UsersStore usersStore) {
         this.cartsStore = cartsStore;
+        this.productsStore = productsStore;
         this.usersStore = usersStore;
     }
 
@@ -39,7 +42,7 @@ public class CartService {
                                         return cartsStore.update(new Cart(cart.cid(), cart.uid(), cart.dateCreated(), item));
                                     } else {
                                         cart.items().add(new CartItem(UUID.randomUUID(), pid, quantity));
-                                        return cartsStore.insert(cart);
+                                        return cartsStore.update(cart);
                                     }
                                 });
                     return Future.failedFuture(new IllegalArgumentException("user does not exist"));
@@ -51,8 +54,17 @@ public class CartService {
                 .otherwiseEmpty()
                 .compose(user -> {
                     if (user != null)
-                        return cartsStore.deleteCart(uid);
+                        return cartsStore.deleteCart(uid); //lathos. productsStore.update
                     return Future.failedFuture(new IllegalArgumentException("user does not exist"));
                 });
     }
+
+    // TODO: 5/7/23
+//    public Future<Void> deleteCartItems(UUID pid) {
+//        return productsStore.findProduct(pid)
+//                .compose(product -> {
+//                    if (product != null)
+//                        return
+//                });
+//    }
 }

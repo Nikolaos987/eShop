@@ -69,7 +69,7 @@ public class PostgresCartsStore implements CartsStore {
                     }
                     Row row = records.iterator().next();
                     Cart cart = new Cart(row.getUUID("cid"), row.getUUID("uid"), row.getLocalDateTime("datecreated"), items);
-                    return Future.succeededFuture(cart);
+                    return client.close().compose(r -> Future.succeededFuture(cart));
                 });
     }
 
@@ -78,51 +78,63 @@ public class PostgresCartsStore implements CartsStore {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return findCart(uid)
                 .compose(cart -> {
-                    if (cart.items().iterator().next() != null) {
+                    if (cart != null) {
                         return client
-                                .preparedQuery("SELECT pid, quantity FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE uid = $1;")
+                                .preparedQuery("DELETE FROM cartitem WHERE uid = $1;")
                                 .execute(Tuple.of(uid))
-                                .onSuccess(records -> {
-                                    records.forEach(row -> {
-                                        if (row.getInteger("quantity") - cart.items().iterator().next().quantity() >= 0) {
-                                            client
-                                                    .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE pid = $1 AND uid = $2) WHERE pid = $1")
-                                                    .execute(Tuple.of(row.getUUID("pid"), uid));
-                                        }
-                                    });
-                                })
-                                .compose(res -> client
-                                        .preparedQuery("DELETE FROM cartitem WHERE itemid IN (SELECT itemid FROM cart c JOIN cartitem ci ON c.cid = ci.cid WHERE c.uid = $1);")
+                                .compose(r -> client.close()
+                                        .compose(v -> client
+                                        .preparedQuery("DELETE FROM cart WHERE uid = $1")
                                         .execute(Tuple.of(uid))
-                                        .compose(v -> Future.succeededFuture()));
+                                        .compose(r2 -> client.close())
+                                        .compose(v2 -> Future.succeededFuture())));
                     }
-                    return Future.failedFuture(new IllegalArgumentException("you don't have any items in your cart"));
+                    else
+                        return Future.failedFuture(new IllegalArgumentException("you don't have any items in your cart"));
                 });
     }
 
     @Override
     public Future<Void> update(Cart cart) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        cart.items().iterator().forEachRemaining(cartItem -> {
-            if (cartItem.quantity() >= 0)
-                client
-                        .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
-                        .execute(Tuple.of(cartItem.pid()))
-                        .compose(records -> {
-                            Row row = records.iterator().next();
-                            if (row.getInteger("quantity") - cartItem.quantity() >= 0 && cartItem.quantity() != 0)
+        return client
+                .preparedQuery("SELECT cid FROM cart WHERE uid = $1")
+                .execute(Tuple.of(cart.uid()))
+                .compose(r -> client.close()
+                        .compose(records -> deleteNext(cart, 0)
+                                .compose(r2 -> updateNext(cart, 0)
+                                        .compose(r3 -> Future.succeededFuture()))));
+
+    }
+
+    public Future<Void> deleteNext(Cart cart, int position) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        CartItem cartItem = cart.items().get(position);
+        return client
+                .preparedQuery("DELETE FROM cartitem WHERE pid = $1 AND cid = $2")
+                .execute(Tuple.of(cartItem.pid(), cart.cid()))
+                .compose(r -> client.close()
+                        .compose(r2 -> {
+                            if (position+1 < cart.items().size())
+                                return deleteNext(cart, position+1);
+                            else
                                 return Future.succeededFuture();
-                            return client
-                                    .preparedQuery("DELETE FROM cartitem WHERE itemid = $1")
-                                    .execute(Tuple.of(cart.items().iterator().next().itemId()))
-                                    .compose(v -> Future.failedFuture(new IllegalArgumentException("no")));
-                        })
-                        .compose(v -> client
-                                .preparedQuery("UPDATE cartitem SET quantity = $1 WHERE cid = $2 AND pid = $3")
-                                .execute(Tuple.of(cartItem.quantity(), cart.cid(), cartItem.pid()))
-                                .compose(v2 -> Future.succeededFuture()));
-        });
-        return Future.succeededFuture();
+                        }));
+    }
+
+    public Future<Void> updateNext(Cart cart, int position) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        CartItem cartItem = cart.items().get(position);
+        return client
+                .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
+                .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), cartItem.quantity()))
+                .compose(r -> client.close()
+                        .compose(r2 -> {
+                            if (position+1 < cart.items().size())
+                                return updateNext(cart, position+1);
+                            else
+                                return Future.succeededFuture();
+                        }));
     }
 
 }
