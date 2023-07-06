@@ -5,10 +5,7 @@ import productEntity.ProductsStore;
 import userEntity.UsersStore;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public class CartService {
 
