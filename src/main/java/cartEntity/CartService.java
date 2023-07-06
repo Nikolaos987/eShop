@@ -33,9 +33,9 @@ public class CartService {
                                     ArrayList<CartItem> items = cart.items();
                                     if (items.stream().anyMatch(cartItem -> cartItem.pid().equals(pid))) {  // if the product already exists in your cart
                                         CartItem cartItem = cart.items().get(items.indexOf(new CartItem(    // find the item in the cart
-                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId(), // find the item id of the item with the given pid
-                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().pid(),    // find the pid of the item with the given pid
-                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().quantity())));    // find the quantity of the item with the given pid
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId(), // the item id of the item with the given pid
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().pid(),    // the pid of the item with the given pid
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().quantity())));    // the quantity of the item with the given pid
 //                                        cart.items().set(items.indexOf(cartItem), new CartItem(cartItem.itemId(), cartItem.pid(), quantity));   // change the quantity of the item
                                         ArrayList<CartItem> item = new ArrayList<>();
                                         item.add(new CartItem(cartItem.itemId(), pid, quantity));
@@ -54,7 +54,12 @@ public class CartService {
                 .otherwiseEmpty()
                 .compose(user -> {
                     if (user != null)
-                        return cartsStore.deleteCart(uid); //lathos. productsStore.update
+                        return productsStore.updateProducts(uid)
+                                .compose(r -> cartsStore.findCart(uid)
+                                        .compose(cart -> {
+                                            cart.items().replaceAll(item -> new CartItem(item.itemId(), item.pid(), 0));
+                                            return cartsStore.update(cart);
+                                        }));
                     return Future.failedFuture(new IllegalArgumentException("user does not exist"));
                 });
     }
