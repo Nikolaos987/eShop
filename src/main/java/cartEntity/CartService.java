@@ -31,16 +31,16 @@ public class CartService {
                         return cartsStore.findCart(uid)
                                 .compose(cart -> {
                                     ArrayList<CartItem> items = cart.items();
-                                    if (items.stream().anyMatch(cartItem -> cartItem.pid().equals(pid))) {
-                                        CartItem cartItem = cart.items().get(items.indexOf(new CartItem(
-                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId(),
-                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().pid(),
-                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().quantity())));
-                                        cart.items().set(items.indexOf(cartItem), new CartItem(cartItem.itemId(), cartItem.pid(), quantity));
+                                    if (items.stream().anyMatch(cartItem -> cartItem.pid().equals(pid))) {  // if the product already exists in your cart
+                                        CartItem cartItem = cart.items().get(items.indexOf(new CartItem(    // find the item in the cart
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId(), // find the item id of the item with the given pid
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().pid(),    // find the pid of the item with the given pid
+                                                items.stream().filter(item -> item.pid().equals(pid)).findAny().get().quantity())));    // find the quantity of the item with the given pid
+//                                        cart.items().set(items.indexOf(cartItem), new CartItem(cartItem.itemId(), cartItem.pid(), quantity));   // change the quantity of the item
                                         ArrayList<CartItem> item = new ArrayList<>();
                                         item.add(new CartItem(cartItem.itemId(), pid, quantity));
                                         return cartsStore.update(new Cart(cart.cid(), cart.uid(), cart.dateCreated(), item));
-                                    } else {
+                                    } else {    // if the product does not exist in your cart
                                         cart.items().add(new CartItem(UUID.randomUUID(), pid, quantity));
                                         return cartsStore.update(cart);
                                     }
