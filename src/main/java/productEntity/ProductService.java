@@ -1,5 +1,6 @@
 package productEntity;
 
+import cartEntity.CartService;
 import cartEntity.CartsStore;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
@@ -10,9 +11,11 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductsStore productsStore;
+    private final CartService cartService;
 
-    public ProductService(ProductsStore productsStore) {
+    public ProductService(ProductsStore productsStore, CartService cartService) {
         this.productsStore = productsStore;
+        this.cartService = cartService;
     }
 
     public Future<Buffer> findProductImage(UUID pid) {
