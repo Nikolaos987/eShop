@@ -5,7 +5,6 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -16,17 +15,18 @@ import userEntity.UserService;
 
 import java.util.UUID;
 
-public class App extends AbstractVerticle {
+public class Api extends AbstractVerticle {
 
     private final UserService userService;
     private final ProductService productService;
     private final CartService cartService;
     private final CartQueryModelStore cartQueryModelStore;
 
-    public App(UserService userService, ProductService productService, CartService cartService) {
+    public Api(UserService userService, ProductService productService, CartService cartService, CartQueryModelStore cartQueryModelStore) {
         this.userService = userService;
         this.productService = productService;
         this.cartService = cartService;
+        this.cartQueryModelStore = cartQueryModelStore;
     }
 
     @Override
@@ -108,6 +108,10 @@ public class App extends AbstractVerticle {
 
 
         /* CART ENTITY */
+
+        router.get("/user/:uid/cart").handler(ctx -> this.cartQueryModelStore.findByUserId(UUID.fromString(ctx.pathParam("uid")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.put("/user/:uid/product/:pid/:quantity").handler(ctx -> this.cartService.addItem(UUID.fromString(ctx.pathParam("uid")), UUID.fromString(ctx.pathParam("pid")), Integer.parseInt(ctx.pathParam("quantity")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("item updated!"))

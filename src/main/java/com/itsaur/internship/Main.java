@@ -7,6 +7,7 @@ import com.beust.jcommander.ParameterException;
 import io.vertx.core.Vertx;
 import productEntity.PostgresProductsStore;
 import productEntity.ProductService;
+import query.CartQuery;
 import userEntity.PostgresUsersStore;
 import userEntity.UserService;
 
@@ -26,7 +27,7 @@ public class Main {
                 case "server" -> {
                     if (opts.database != null) {
                         /* Server stores to Postgres */
-                        vertx.deployVerticle(new App(
+                        vertx.deployVerticle(new Api(
                                 new UserService(
                                         new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
@@ -39,7 +40,8 @@ public class Main {
                                 new CartService(
                                         new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
-                                        new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize))));
+                                        new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
+                                new CartQuery(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)));
                     }
                 }
                 case "console" -> {
