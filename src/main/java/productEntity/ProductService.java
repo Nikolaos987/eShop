@@ -60,7 +60,8 @@ public class ProductService {
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product != null)
-                        return productsStore.deleteProduct(pid);
+                        return cartService.deleteCartItems(pid)
+                                .compose(result -> productsStore.deleteProduct(pid));
                     return Future.failedFuture(new IllegalArgumentException("product not found"));
                 });
     }

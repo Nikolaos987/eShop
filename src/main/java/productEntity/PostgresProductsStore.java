@@ -88,12 +88,9 @@ public class PostgresProductsStore implements ProductsStore {
     public Future<Void> deleteProduct(UUID pid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("DELETE FROM cartitem WHERE pid = $1")
+                .preparedQuery("DELETE FROM product WHERE pid = $1")
                 .execute(Tuple.of(pid))
-                .compose(v -> client
-                        .preparedQuery("DELETE FROM product WHERE pid = $1")
-                        .execute(Tuple.of(pid))
-                        .compose(records -> Future.succeededFuture()));
+                .compose(records -> Future.succeededFuture());
     }
 
     @Override
@@ -125,8 +122,8 @@ public class PostgresProductsStore implements ProductsStore {
                 .preparedQuery("SELECT pid FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE uid = $1;")
                 .execute(Tuple.of(uid))
                 .onSuccess(records -> records.forEach(row -> client
-                        .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem WHERE pid = $1) WHERE pid = $1")
-                        .execute(Tuple.of(row.getUUID("pid")))
+                        .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE pid = $1 AND uid = $2) WHERE pid = $1")
+                        .execute(Tuple.of(row.getUUID("pid"), uid))
                         .compose(recs -> Future.succeededFuture())))
                 .compose(res -> Future.succeededFuture());
     }

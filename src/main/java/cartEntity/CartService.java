@@ -62,11 +62,33 @@ public class CartService {
     }
 
     // TODO: 5/7/23
-//    public Future<Void> deleteCartItems(UUID pid) {
-//        return productsStore.findProduct(pid)
-//                .compose(product -> {
-//                    if (product != null)
-//                        return
-//                });
-//    }
+    public Future<Void> deleteCartItems(UUID pid) {
+        return productsStore.findProduct(pid)
+                .compose(product -> {
+                    if (product != null)
+                        return cartsStore.findCarts()
+                                .compose(carts -> {
+                                    return deleteNext(carts, 0, pid);
+                                    /*carts.forEach(cart -> {
+                                        UUID itemId = cart.items().stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId();
+                                        cart.items().add(new CartItem(itemId, pid, 0));
+                                        cartsStore.update(cart);
+                                    });*/
+                                });
+                    return Future.failedFuture(new IllegalArgumentException("this product does not exist"));
+                });
+    }
+
+    public Future<Void> deleteNext(ArrayList<Cart> carts, int position, UUID pid) {
+        Cart cart = carts.get(position);
+        UUID itemId = cart.items().stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId();
+        cart.items().add(new CartItem(itemId, pid, 0));
+        return cartsStore.update(cart)
+                .compose(r -> {
+                    if (position+1 < carts.size())
+                        return deleteNext(carts, position + 1, pid);
+                    else
+                        return Future.succeededFuture();
+                });
+    }
 }

@@ -4,10 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
-import io.vertx.sqlclient.PoolOptions;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.SqlClient;
-import io.vertx.sqlclient.Tuple;
+import io.vertx.sqlclient.*;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -74,6 +71,25 @@ public class PostgresCartsStore implements CartsStore {
                     Cart cart = new Cart(row.getUUID("cid"), row.getUUID("uid"), row.getLocalDateTime("datecreated"), items);
                     return client.close().compose(r -> Future.succeededFuture(cart));
                 });
+    }
+
+    @Override
+    public Future<ArrayList<Cart>> findCarts() {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT uid FROM cart;")
+                .execute()
+                .compose(rows -> {
+
+                    ArrayList<Cart> carts = new ArrayList<>();
+                    return findNext(rows.iterator(), carts, 0)
+                            .compose(r -> Future.succeededFuture());
+                });
+    }
+
+    // TODO: 6/7/23 WITH ANADROMI
+    public Future<ArrayList<Cart>> findNext(RowIterator iterator, ArrayList<Cart> carts, int position) {
+        return null;
     }
 
     @Override
