@@ -4,11 +4,14 @@ import cartEntity.CartService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import productEntity.Category;
 import productEntity.ProductService;
+import query.CartQueryModelStore;
 import userEntity.UserService;
 
 import java.util.UUID;
@@ -18,6 +21,7 @@ public class App extends AbstractVerticle {
     private final UserService userService;
     private final ProductService productService;
     private final CartService cartService;
+    private final CartQueryModelStore cartQueryModelStore;
 
     public App(UserService userService, ProductService productService, CartService cartService) {
         this.userService = userService;
@@ -58,7 +62,12 @@ public class App extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-
+        router.get("/user/:uid/cart").handler(ctx -> {
+            cartQueryModelStore.findByUserId(UUID.fromString(ctx.pathParam("uid")))
+                    .onSuccess(cart -> {
+                        ctx.response().end(Json.encode(cart));
+                    });
+        });
 
 
         /* PRODUCT ENTITY */
