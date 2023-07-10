@@ -10,7 +10,9 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import productEntity.Category;
 import productEntity.ProductService;
-import query.CartQueryModelStore;
+import query.cart.CartQueryModelStore;
+import query.product.ProductQueryModelStore;
+import query.user.UserQueryModelStore;
 import userEntity.UserService;
 
 import java.util.UUID;
@@ -21,12 +23,16 @@ public class Api extends AbstractVerticle {
     private final ProductService productService;
     private final CartService cartService;
     private final CartQueryModelStore cartQueryModelStore;
+    private final ProductQueryModelStore productQueryModelStore;
+    private final UserQueryModelStore userQueryModelStore;
 
-    public Api(UserService userService, ProductService productService, CartService cartService, CartQueryModelStore cartQueryModelStore) {
+    public Api(UserService userService, ProductService productService, CartService cartService, CartQueryModelStore cartQueryModelStore, ProductQueryModelStore productQueryModelStore, UserQueryModelStore userQueryModelStore) {
         this.userService = userService;
         this.productService = productService;
         this.cartService = cartService;
         this.cartQueryModelStore = cartQueryModelStore;
+        this.productQueryModelStore = productQueryModelStore;
+        this.userQueryModelStore = userQueryModelStore;
     }
 
     @Override
@@ -70,18 +76,25 @@ public class Api extends AbstractVerticle {
         });
 
 
+
+
         /* PRODUCT ENTITY */
 
         router.get("/product/:pid/image").handler(ctx -> this.productService.findProductImage(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/product/find/:pid").handler(ctx -> this.productService.findProduct(UUID.fromString(ctx.pathParam("pid")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
+        router.get("/product/find/:pid").handler(ctx -> this.productQueryModelStore.findProductById(UUID.fromString(ctx.pathParam("pid")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/product/search/:regex").handler(ctx -> this.productService.findProducts(ctx.pathParam("regex"))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(v)))
+        router.get("/product/search/:regex").handler(ctx -> this.productQueryModelStore.findProductsByName(ctx.pathParam("regex"))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
+        // TODO: 7/7/23 findProducts
+        router.get("/product/find").handler(ctx -> this.productQueryModelStore.findProducts()
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.post("/product/insert/:name/:imagePath/:description/:price/:quantity/:brand/:category").handler(ctx -> {

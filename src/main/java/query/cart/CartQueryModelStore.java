@@ -1,4 +1,4 @@
-package query;
+package query.cart;
 
 import io.vertx.core.Future;
 

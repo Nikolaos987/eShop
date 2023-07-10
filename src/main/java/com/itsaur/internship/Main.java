@@ -7,7 +7,9 @@ import com.beust.jcommander.ParameterException;
 import io.vertx.core.Vertx;
 import productEntity.PostgresProductsStore;
 import productEntity.ProductService;
-import query.CartQuery;
+import query.cart.CartQuery;
+import query.product.ProductQuery;
+import query.user.UserQuery;
 import userEntity.PostgresUsersStore;
 import userEntity.UserService;
 
@@ -41,7 +43,9 @@ public class Main {
                                         new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
                                         new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
-                                new CartQuery(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)));
+                                new CartQuery(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                new ProductQuery(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                new UserQuery(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)));
                     }
                 }
                 case "console" -> {
