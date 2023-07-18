@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 import { ProductsService } from "../services/products.service";
-import { SearchBarComponent } from "../search-bar/search-bar.component";
-import { ProductListComponent } from "../product-list/product-list.component";
 
 @Component({
   selector: 'app-home',
@@ -11,7 +9,20 @@ import { ProductListComponent } from "../product-list/product-list.component";
 })
 export class HomeComponent {
 
-  constructor(productsService: ProductsService) { }
+  productList: any;
 
+  constructor(private productsService: ProductsService) { }
+
+  public getProducts() {
+    this.productList = this.productList = this.productsService.fetchProducts();
+  }
+
+  public getFilteredProducts(text: string) {
+    this.productList = this.productsService.fetchFilteredProducts(text);
+  }
+
+  public showDetails(pid: string): void {
+    this.productsService.fetchProduct(pid);
+  }
 
 }

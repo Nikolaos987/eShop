@@ -9,7 +9,6 @@ h2 {
 
 .float-container {
   padding: 20px;
-  border: brown 3px solid;
 }
 
 .listing-description p   {
@@ -23,7 +22,6 @@ h2 {
   float: right;
   padding: 20px;
   margin-right: 100px;
-  border: brown 2px solid;
 }
 
 .listing-description h3 {

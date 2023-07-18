@@ -21,6 +21,9 @@ export class ProductsService {
   }
 
   public fetchFilteredProducts(filter: string) {
+    if (!filter) {
+      return this.fetchProducts();
+    }
     return this.http.get('http://localhost:8084/product/search/'+filter);
   }
 

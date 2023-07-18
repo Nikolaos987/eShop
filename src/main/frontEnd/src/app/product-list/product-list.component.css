@@ -30,3 +30,11 @@ section.listing a::after {
   margin-left: 5px;
 }
 
+.flex-box-listing {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  gap: 10vh;
+}
+

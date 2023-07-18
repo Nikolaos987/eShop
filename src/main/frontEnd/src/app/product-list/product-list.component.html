@@ -1,14 +1,14 @@
-<section class="listing" *ngFor="let product of productList | async">
-  <img [src]='product.image' class="listing-photo" alt="could not load photo of {{product.name}}">
-  <h2
-    class="listing-heading">{{product.name}}
-  </h2>
-  <p
-    class="listing-location">${{product.price}} {{product.category}}
-  </p>
-  <a [routerLink]="['/details', product.pid]">
-    Details
-  </a>
+<section class="listing" *ngFor="let product of products | async">
+    <img [src]='product.image' class="listing-photo" alt="could not load photo of {{product.name}}">
+    <h2
+      class="listing-heading">{{product.name}}
+    </h2>
+    <p
+      class="listing-location">${{product.price}} {{product.category}}
+    </p>
+    <a [routerLink]="['/details', product.pid]">
+      Details
+    </a>
 </section>
 
 

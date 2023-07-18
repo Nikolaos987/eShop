@@ -13,6 +13,8 @@ import { CartComponent } from './cart/cart.component';
 import { ProductListComponent } from './product-list/product-list.component';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { BackNavComponent } from './back-nav/back-nav.component';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { BackNavComponent } from './back-nav/back-nav.component';
     CartComponent,
     ProductListComponent,
     SearchBarComponent,
-    BackNavComponent
+    BackNavComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
