@@ -1,2 +1,4 @@
 /build/
 /.gradle/
+/src/main/angular-tour-of-heroes/
+/src/main/app/

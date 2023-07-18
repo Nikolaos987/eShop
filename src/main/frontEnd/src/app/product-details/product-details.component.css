@@ -1,0 +1,90 @@
+h2 {
+  font-size: 70px;
+  font-weight: 600;
+  background-image: linear-gradient(to right, #553c9a, #b393d3);
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.float-container {
+  padding: 20px;
+  border: brown 3px solid;
+}
+
+.listing-description p   {
+  padding: 10px;
+  background-color: #D1D0CE;
+  mc-auto-number-format: '{b}Note: {/b}';
+}
+
+.listing-description {
+  width: 40%;
+  float: right;
+  padding: 20px;
+  margin-right: 100px;
+  border: brown 2px solid;
+}
+
+.listing-description h3 {
+  padding: 16px 0px;
+  text-align: center;
+}
+
+.button-56 {
+  align-items: center;
+  background-color: #fee6e3;
+  border: 2px solid #111;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #111;
+  cursor: pointer;
+  display: flex;
+  font-family: Inter,sans-serif;
+  font-size: 16px;
+  height: 48px;
+  justify-content: center;
+  line-height: 24px;
+  max-width: 100%;
+  padding: 0 25px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-56:after {
+  background-color: #111;
+  border-radius: 8px;
+  content: "";
+  display: block;
+  height: 48px;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  top: -2px;
+  transform: translate(8px, 8px);
+  transition: transform .2s ease-out;
+  z-index: -1;
+}
+
+.button-56:hover:after {
+  transform: translate(0, 0);
+}
+
+.button-56:active {
+  background-color: #ffdeda;
+  outline: 0;
+}
+
+.button-56:hover {
+  outline: 0;
+}
+
+@media (min-width: 768px) {
+  .button-56 {
+    padding: 0 40px;
+  }
+}
