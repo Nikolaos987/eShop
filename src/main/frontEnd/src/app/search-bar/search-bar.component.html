@@ -1,6 +1,7 @@
 <div class="search-bar">
   <form>
-    <input type="text" placeholder="Search any product..." #text/>
+    <input type="text" name="productName" [(ngModel)]="txt" placeholder="Search any product..." #text/>
+    <input type="button" value="X" (click)="clearText(text.value)">
     <button class="search-button" (click)="filter(text.value)">Search</button>
   </form>
 </div>

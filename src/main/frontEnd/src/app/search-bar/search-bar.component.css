@@ -1,0 +1,20 @@
+input[type="button"] {
+  width: 50px;
+  height: 37px;
+  margin: 0 5px;
+  transform: translate(-4em, -2px);
+  background: none;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+  border: none;
+  color: red;
+  font-size: 16px;
+  font-weight: bolder;
+}
+input[type="button"]:hover {
+  cursor: pointer;
+  border: 1px black solid;
+  background: #f8f8f8;
+}

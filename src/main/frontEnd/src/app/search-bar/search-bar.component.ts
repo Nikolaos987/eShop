@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import { HomeComponent } from "../home/home.component";
+import {filter} from "rxjs";
 
 @Component({
   selector: 'app-search-bar',
@@ -9,15 +10,22 @@ import { HomeComponent } from "../home/home.component";
 })
 export class SearchBarComponent implements OnInit {
 
-  text: string = '';
+  txt: string = '';
 
-  constructor(private homeComponent: HomeComponent) { }
+  constructor(private homeComponent: HomeComponent) {
+    this.txt='';
+  }
 
   ngOnInit(): void {
   }
 
   filter(text: string) {
     this.homeComponent.getFilteredProducts(text);
+  }
+
+  clearText(text: string) {
+    this.txt='';
+    this.filter(this.txt);
   }
 
 }

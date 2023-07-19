@@ -9,6 +9,7 @@
 
 input[type="text"] {
   border: solid 1px var(--primary-color);
+  font-size: 20px;
   padding: 10px;
   border-radius: 8px;
   margin-right: 4px;
@@ -23,15 +24,19 @@ input[type="text"] {
 
 .search-button {
   padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
   border: none;
   border-radius: 8px;
   transition-duration: 0.2s;
+  transform: translateX(-3em);
+  box-shadow: 1px 2px;
 }
-
 .search-button:hover {
   border: none;
   background-color: #0068ff;
   color: white;
+  cursor: pointer;
 }
 
 @media (min-width: 500px) and (max-width: 768px) {
