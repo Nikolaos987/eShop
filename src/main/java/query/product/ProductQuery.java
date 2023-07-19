@@ -9,11 +9,8 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 import productEntity.Category;
-import productEntity.Product;
-import query.cart.CartQueryModel;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +39,7 @@ public class ProductQuery implements ProductQueryModelStore {
                 .compose(records -> {
                     Row row = records.iterator().next();
                     ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                            row.getUUID("pid"), row.getString("name"), row.getString("description"),
+                            row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"),
                             row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"),
                             Category.valueOf(row.getString("category")));
                     return Future.succeededFuture(product);
@@ -50,45 +47,45 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
-    public Future<ProductsQueryModel> findProductsByName(String regex) {
-            regex = "%"+regex+"%";
+    public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex) {
+            regex = "%"+regex+"%".toLowerCase();
             SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
             return client
-                    .preparedQuery("SELECT * FROM product WHERE name LIKE $1;")
+                    .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1;")
                     .execute(Tuple.of(regex))
                     .compose(rows -> {
-                        List<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
+                        ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
                         rows.forEach(row -> {
                             ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                    row.getUUID("pid"), row.getString("name"), row.getString("description"),
+                                    row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"),
                                     row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"),
                                     Category.valueOf(row.getString("category")));
                             products.add(product);
                         });
-                        ProductsQueryModel productList = new ProductsQueryModel(products);
+//                        ProductsQueryModel productList = new ProductsQueryModel(products);
                         return client.close()
-                                .compose(r -> Future.succeededFuture(productList));
+                                .compose(r -> Future.succeededFuture(products));
                     });
     }
 
     @Override
-    public Future<ProductsQueryModel> findProducts() {
+    public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProducts() {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("SELECT * FROM product;")
                 .execute()
                 .compose(rows -> {
-                    List<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
+                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
                     rows.forEach(row -> {
                         ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                row.getUUID("pid"), row.getString("name"), row.getString("description"),
+                                row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"),
                                 row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"),
                                 Category.valueOf(row.getString("category")));
                         products.add(product);
                     });
-                    ProductsQueryModel productList = new ProductsQueryModel(products);
+//                    ProductsQueryModel productList = new ProductsQueryModel(products);
                     return client.close()
-                            .compose(r -> Future.succeededFuture(productList));
+                            .compose(r -> Future.succeededFuture(products));
                 });
     }
 }

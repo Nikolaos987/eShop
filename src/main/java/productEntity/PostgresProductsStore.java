@@ -55,6 +55,7 @@ public class PostgresProductsStore implements ProductsStore {
                 .otherwiseEmpty();
     }
 
+    // TODO: 7/7/23 DELETE
     @Override
     public Future<Product> findProduct(String name) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
@@ -69,6 +70,7 @@ public class PostgresProductsStore implements ProductsStore {
                 .otherwiseEmpty();
     }
 
+    // TODO: 7/7/23 DELETE
     @Override
     public Future<Collection<Product>> findProducts(String filter) {
         filter = "%"+filter+"%";

@@ -8,6 +8,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CorsHandler;
 import productEntity.Category;
 import productEntity.ProductService;
 import query.cart.CartQueryModelStore;
@@ -40,6 +41,18 @@ public class Api extends AbstractVerticle {
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
+
+//        router.route().handler(CorsHandler.create("http://localhost:8084"));
+
+        router.route().handler(io.vertx.ext.web.handler.CorsHandler.create()
+                .allowedMethod(io.vertx.core.http.HttpMethod.GET)
+                .allowedMethod(io.vertx.core.http.HttpMethod.POST)
+                .allowedMethod(io.vertx.core.http.HttpMethod.OPTIONS)
+                .allowedHeader("Access-Control-Request-Method")
+                .allowedHeader("Access-Control-Allow-Credentials")
+                .allowedHeader("Access-Control-Allow-Origin")
+                .allowedHeader("Access-Control-Allow-Headers")
+                .allowedHeader("Content-Type"));
 
         /* USER ENTITY */
 
@@ -84,7 +97,7 @@ public class Api extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/product/find/:pid").handler(ctx -> this.productQueryModelStore.findProductById(UUID.fromString(ctx.pathParam("pid")))
+        router.get("/product/:pid").handler(ctx -> this.productQueryModelStore.findProductById(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
@@ -93,9 +106,17 @@ public class Api extends AbstractVerticle {
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         // TODO: 7/7/23 findProducts
-        router.get("/product/find").handler(ctx -> this.productQueryModelStore.findProducts()
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
-                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+        router.get("/products").handler(ctx -> {
+//            ctx.request().headers().set("Access-Control-Allow-Origin", "http://localhost:4200/");
+//            ctx.request().headers().add("Access-Control-Allow-Origin", "http://localhost:4200/");
+//            ctx.response().putHeader("Access-Control-Allow-Origin", "http://localhost:4200/");
+//            ctx.response().headers().set("Access-Control-Allow-Origin", "http://localhost:4200/");
+//            ctx.response().headers().add("Access-Control-Allow-Origin", "http://localhost:4200/");
+
+            this.productQueryModelStore.findProducts()
+                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
 
         router.post("/product/insert/:name/:imagePath/:description/:price/:quantity/:brand/:category").handler(ctx -> {
             try {
