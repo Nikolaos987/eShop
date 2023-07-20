@@ -5,6 +5,7 @@ import productEntity.ProductsStore;
 import userEntity.UsersStore;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CartService {
@@ -63,6 +64,21 @@ public class CartService {
 
     // TODO: 5/7/23
     public Future<Void> deleteCartItems(UUID pid) {
+//        return cartsStore.findCarts()
+//                .otherwiseEmpty()
+//                .compose(carts -> {
+//                    if (carts.size() == 0) {
+//                        return Future.succeededFuture();
+//                    } else {
+//                        List<Future<Void>> futureList = carts
+//                                .stream()
+//                                .map(cart -> {
+//                                    cart.items().add(new CartItem(cart.items().get(0), ca))
+//                                    return cartsStore.update(cart));
+//                                })
+//                    }
+//                })
+
         return productsStore.findProduct(pid)
                 .compose(product -> {
                     if (product != null)

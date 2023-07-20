@@ -1,23 +1,56 @@
 .b {
   position: relative;
-  border: 2px red solid;
   width: 100vw;
   height: 100vh;
 }
 
 .container h1 {
   text-align: center;
-  margin: 10px 0;
+  font-weight: bold;
+  color: #edfaf5;
+  margin: 40px 0;
 }
 
 .container {
   position: absolute;
+  width: 600px;
+  height: 80%;
   top: 50%;
   left: 50%;
-  border: 2px green solid;
-  width: 600px;
-  height: 50%;
   transform: translate(-50%, -50%);
-  margin: auto;
-  background: antiquewhite;
+  border-radius: 30px;
+  background: #3faee3;
+}
+
+.edit-form {
+  position: absolute;
+  left: 10%;
+}
+.edit-form input {
+  border-radius: 20px;
+  border:none;
+  font-size: 24px;
+  margin-bottom: 12px;
+  height: 50px;
+  width: 400px;
+  background: white;
+}
+.edit-form input[placeholder] {
+  padding: 0 12px;
+}
+.edit-form input[type="submit"] {
+  width: 100px;
+  font-weight: 600;
+  color: #0989c6;
+  margin: 20px 0;
+  transition: .3s ease;
+}
+.edit-form input[type="submit"]:hover {
+  color: black;
+  font-size: 22px;
+  background: #38e171;
+  cursor: pointer;
+}
+.edit-form input[type="submit"]:active {
+  transform: scale(.94);
 }

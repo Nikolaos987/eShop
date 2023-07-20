@@ -16,18 +16,12 @@ public interface ProductsStore {
 
     Future<Product> findProduct(String name);
 
-    Future<Collection<Product>> findProducts(String filter);
-
     Future<Void> deleteProduct(UUID pid);
 
-    Future<Void> updateProduct(UUID pid, double price);
+    Future<Void> updateProduct(Product product);
 
     Future<Void> updateProducts(ArrayList<CartItem> items);
 
     Future<Void> updateProducts(UUID uid);
-
-    Future<Buffer> findProductImage(UUID pid);
-
-//    Future<JsonArray> filter(double price, String brand, String category);
 
 }

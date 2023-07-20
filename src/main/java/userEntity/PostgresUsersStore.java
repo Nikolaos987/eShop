@@ -76,11 +76,11 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Void> deleteUser(User user) {
+    public Future<Void> deleteUser(UUID uid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("DELETE FROM users WHERE username = $1;")
-                .execute(Tuple.of(user.username()))
+                .preparedQuery("DELETE FROM users WHERE uid = $1;")
+                .execute(Tuple.of(uid))
                 .compose(v2 -> client.close())
                 .compose(v2 -> Future.succeededFuture());
     }

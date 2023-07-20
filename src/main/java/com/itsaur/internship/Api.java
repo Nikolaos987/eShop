@@ -16,6 +16,7 @@ import query.product.ProductQueryModelStore;
 import query.user.UserQueryModelStore;
 import userEntity.UserService;
 
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class Api extends AbstractVerticle {
@@ -81,21 +82,10 @@ public class Api extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.get("/user/:uid/cart").handler(ctx -> {
-            cartQueryModelStore.findByUserId(UUID.fromString(ctx.pathParam("uid")))
-                    .onSuccess(cart -> {
-                        ctx.response().end(Json.encode(cart));
-                    });
-        });
-
 
 
 
         /* PRODUCT ENTITY */
-
-        router.get("/product/:pid/image").handler(ctx -> this.productService.findProductImage(UUID.fromString(ctx.pathParam("pid")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
-                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.get("/product/:pid").handler(ctx -> this.productQueryModelStore.findProductById(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
@@ -118,9 +108,17 @@ public class Api extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-        router.post("/product/insert/:name/:imagePath/:description/:price/:quantity/:brand/:category").handler(ctx -> {
+//        router.get("/image/:pid")
+//                .handler(ctx -> {
+//                    ctx.response().sendFile("../resources/assets/")
+//                    ctx.response().sendFile(Paths.get("images", ctx.pathParam("uuidimage")));
+//                });
+
+        router.post("/product/insert/:name/:imagepath/:description/:price/:quantity/:brand/:category").handler(ctx -> {
             try {
-                this.productService.addProduct(ctx.pathParam("name"), ctx.pathParam("imagePath"), ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), Category.valueOf(ctx.pathParam("category")))
+                String path = "assets/" + ctx.pathParam("imagepath");
+                System.out.println(path);
+                        this.productService.addProduct(ctx.pathParam("name"), path, ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), Category.valueOf(ctx.pathParam("category")))
                         .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product created successfully"))
                         .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
             } catch (IllegalArgumentException e) {
@@ -133,10 +131,21 @@ public class Api extends AbstractVerticle {
                         .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product deleted successfully"))
                         .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.put("/product/update/:pid/:price").handler(ctx ->
-                this.productService.updateProduct(UUID.fromString(ctx.pathParam("pid")), Double.parseDouble(ctx.pathParam("price")))
-                        .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product updated successfully"))
-                        .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+        router.put("/product/update/:pid/:name/:imagepath/:description/:price/:quantity/:brand/:category").handler(ctx -> {
+            UUID pid = UUID.fromString(ctx.pathParam("pid"));
+            String name = ctx.pathParam("name");
+            String image = ctx.pathParam("imagepath");
+            String description = ctx.pathParam("description");
+            double price = Double.parseDouble(ctx.pathParam("price"));
+            int quantity = Integer.parseInt(ctx.pathParam("quantity"));
+            String brand = ctx.pathParam("brand");
+            Category category = Category.valueOf(ctx.pathParam("category"));
+
+            this.productService.updateProduct(pid, name, image, description, price, quantity, brand, category)
+                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product updated successfully"))
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
 
 
 

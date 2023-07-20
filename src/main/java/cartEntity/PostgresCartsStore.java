@@ -6,6 +6,7 @@ import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.*;
 
+import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -31,26 +32,31 @@ public class PostgresCartsStore implements CartsStore {
     public Future<Void> insert(Cart cart) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("SELECT cid FROM cart WHERE cid = $1")
-                .execute(Tuple.of(cart.cid()))
-                .otherwiseEmpty()
-                .compose(records -> {
-                    if (records == null) {
-                        return client
-                                .preparedQuery("INSERT INTO cart VALUES ($1, $2, $3)")
-                                .execute(Tuple.of(cart.cid(), cart.uid(), cart.dateCreated()))
-                                .compose(r -> client.close());
-                    }
-                    return Future.succeededFuture();
-                })
-                .compose(r -> client.close())
-                .compose(r -> {
-                    cart.items().iterator().forEachRemaining(cartItem -> client
-                            .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4)")
-                            .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), cartItem.quantity()))
-                            .compose(r2 -> client.close()));
-                    return Future.succeededFuture();
-                });
+                .preparedQuery("INSERT INTO cart VALUES ($1, $2, $3);")
+                .execute(Tuple.of(cart.cid(), cart.uid(), cart.dateCreated()))
+                .compose(result -> Future.succeededFuture());
+
+//        return client
+//                .preparedQuery("SELECT cid FROM cart WHERE cid = $1")
+//                .execute(Tuple.of(cart.cid()))
+//                .otherwiseEmpty()
+//                .compose(records -> {
+//                    if (records == null) {
+//                        return client
+//                                .preparedQuery("INSERT INTO cart VALUES ($1, $2, $3)")
+//                                .execute(Tuple.of(cart.cid(), cart.uid(), cart.dateCreated()))
+//                                .compose(r -> client.close());
+//                    }
+//                    return Future.succeededFuture();
+//                })
+//                .compose(r -> client.close())
+//                .compose(r -> {
+//                    cart.items().iterator().forEachRemaining(cartItem -> client
+//                            .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4)")
+//                            .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), cartItem.quantity()))
+//                            .compose(r2 -> client.close()));
+//                    return Future.succeededFuture();
+//                });
     }
 
     @Override
@@ -99,14 +105,10 @@ public class PostgresCartsStore implements CartsStore {
                 .compose(cart -> {
                     if (cart != null) {
                         return client
-                                .preparedQuery("DELETE FROM cartitem WHERE uid = $1;")
+                                .preparedQuery("DELETE FROM cart WHERE uid = $1")
                                 .execute(Tuple.of(uid))
-                                .compose(r -> client.close()
-                                        .compose(v -> client
-                                        .preparedQuery("DELETE FROM cart WHERE uid = $1")
-                                        .execute(Tuple.of(uid))
-                                        .compose(r2 -> client.close())
-                                        .compose(v2 -> Future.succeededFuture())));
+                                .compose(r2 -> client.close())
+                                .compose(v2 -> Future.succeededFuture());
                     }
                     else
                         return Future.failedFuture(new IllegalArgumentException("you don't have any items in your cart"));
@@ -120,10 +122,9 @@ public class PostgresCartsStore implements CartsStore {
                 .preparedQuery("SELECT cid FROM cart WHERE uid = $1")
                 .execute(Tuple.of(cart.uid()))
                 .compose(r -> client.close()
-                        .compose(records -> deleteNext(cart, 0)
+                        .compose(r1 -> deleteNext(cart, 0)
                                 .compose(r2 -> updateNext(cart, 0)
                                         .compose(r3 -> Future.succeededFuture()))));
-
     }
 
     public Future<Void> deleteNext(Cart cart, int position) {

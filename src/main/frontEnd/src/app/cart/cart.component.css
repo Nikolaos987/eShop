@@ -1,0 +1,40 @@
+.columns {
+  text-align: left;
+  color: #3d3d3d;
+}
+
+h1 {
+  font-size: 60px;
+}
+
+th {
+  font-size: 40px;
+  padding: 10px 20px;
+  border-bottom: 1px black solid;
+}
+
+.table {
+  position: relative;
+  width: 100%;
+  margin: auto;
+  background: white;
+}
+
+.total-price {
+  font-size: 30px;
+  padding-top: 40px;
+}
+.total-price button {
+  margin: 0 40px;
+  border-radius: 25px;
+  color: #3d3d3d;
+  padding: 10px 6px;
+  font-size: 26px;
+  font-weight: bold;
+  background: #03f800;
+  width: 100px;
+  height: 60px;
+}
+.total-price button:hover {
+  cursor: pointer;
+}

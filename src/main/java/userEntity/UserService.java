@@ -1,12 +1,16 @@
 package userEntity;
 
 import cartEntity.Cart;
+import cartEntity.CartItem;
 import cartEntity.CartsStore;
 import io.vertx.core.Future;
 
+import javax.print.DocFlavor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class UserService {
 
@@ -44,14 +48,44 @@ public class UserService {
     }
 
     public Future<Void> delete(UUID uid) {
-        return userStore.findUser(uid)
+        return deleteCartItems(uid)
+                .compose(r -> this.cartsStore.deleteCart(uid)
+                        .compose(res -> userStore.deleteUser(uid)));
+
+//        return userStore.findUser(uid)
+//                .otherwiseEmpty()
+//                .compose(user -> {
+//                    if (user != null) {
+//                        return cartsStore.deleteCart(uid)
+//                                .compose(result -> userStore.deleteUser(user));
+//                    } else {
+//                        return Future.failedFuture(new IllegalArgumentException("User was not found"));
+//                    }
+//                });
+    }
+
+    public Future<Void> deleteCartItems(UUID uid) {
+        return this.cartsStore.findCart(uid)
                 .otherwiseEmpty()
-                .compose(user -> {
-                    if (user != null) {
-                        return cartsStore.deleteCart(uid)
-                                .compose(result -> userStore.deleteUser(user));
+                .compose(cart -> {
+                    if (cart == null) {
+                        System.out.println("There is no cart for this user id");
+                        return Future.succeededFuture();
                     } else {
-                        return Future.failedFuture(new IllegalArgumentException("User was not found"));
+                        List<Future<Void>> futureList = cart.items()
+                                .stream()
+                                .map(item -> {
+                                    System.out.println(item.itemId());
+                                    cart.items().add(new CartItem(item.itemId(), item.pid(), 0));
+                                    return cartsStore.update(cart);
+                                }).collect(Collectors.toList());
+                        return Future.all(futureList)
+                                .onFailure(e -> {
+                                    e.printStackTrace();
+                                }).compose(q -> {
+                                    System.out.println(q);
+                                    return Future.succeededFuture();
+                                });
                     }
                 });
     }

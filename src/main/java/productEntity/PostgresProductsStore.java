@@ -36,8 +36,8 @@ public class PostgresProductsStore implements ProductsStore {
     public Future<Void> insert(Product product) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("INSERT INTO product (name, description, price, quantity, brand, category) VALUES ($1, $2, $3, $4, $5, $6);")
-                .execute(Tuple.of(product.name(), product.description(), product.price(), product.quantity(), product.brand(), product.category()))
+                .preparedQuery("INSERT INTO product (name, image, description, price, quantity, brand, category) VALUES ($1, $2, $3, $4, $5, $6, $7);")
+                .execute(Tuple.of(product.name(), product.image(), product.description(), product.price(), product.quantity(), product.brand(), product.category()))
                 .compose(res -> Future.succeededFuture());
     }
 
@@ -70,22 +70,6 @@ public class PostgresProductsStore implements ProductsStore {
                 .otherwiseEmpty();
     }
 
-    // TODO: 7/7/23 DELETE
-    @Override
-    public Future<Collection<Product>> findProducts(String filter) {
-        filter = "%"+filter+"%";
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
-                .preparedQuery("SELECT * FROM product WHERE name LIKE $1;")
-                .execute(Tuple.of(filter))
-                .compose(rows -> {
-                    Collection<Product> products = new ArrayList<>();
-                    rows.forEach(row -> products.add(new Product(row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")))));
-                    return client.close()
-                            .compose(r -> Future.succeededFuture(products));
-                });
-    }
-
     @Override
     public Future<Void> deleteProduct(UUID pid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
@@ -96,11 +80,11 @@ public class PostgresProductsStore implements ProductsStore {
     }
 
     @Override
-    public Future<Void> updateProduct(UUID pid, double price) {
+    public Future<Void> updateProduct(Product product) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("UPDATE product SET price = $2 WHERE pid = $1")
-                .execute(Tuple.of(pid, price))
+                .preparedQuery("UPDATE product SET name = $1, image = $2, description = $3, price = $4, quantity = $5, brand = $6, category = $7  WHERE pid = $8")
+                .execute(Tuple.of(product.name(), product.image(), product.description(), product.price(), product.quantity(), product.brand(), product.category(), product.pid()))
                 .compose(records -> Future.succeededFuture());
     }
 
@@ -128,21 +112,6 @@ public class PostgresProductsStore implements ProductsStore {
                         .execute(Tuple.of(row.getUUID("pid"), uid))
                         .compose(recs -> Future.succeededFuture())))
                 .compose(res -> Future.succeededFuture());
-    }
-
-    @Override
-    public Future<Buffer> findProductImage(UUID pid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client.preparedQuery("SELECT image FROM product WHERE pid = $1;")
-                .execute(Tuple.of(pid))
-                .compose(records -> {
-                    Row row = records.iterator().next();
-                    return vertx.fileSystem().readFile(row.getString("image"))
-                            .compose(file -> {
-                                Buffer buffer = Buffer.buffer(file.getBytes());
-                                return Future.succeededFuture(buffer);
-                            });
-                });
     }
 
     public Future<Void> updateNext(ArrayList<CartItem> items, int position) {

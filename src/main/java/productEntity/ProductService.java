@@ -6,6 +6,7 @@ import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public class ProductService {
@@ -18,34 +19,8 @@ public class ProductService {
         this.cartService = cartService;
     }
 
-    public Future<Buffer> findProductImage(UUID pid) {
-        return productsStore.findProductImage(pid)
-                .compose(Future::succeededFuture);
-    }
-
-    public Future<Product> findProduct(UUID productId) {
-        return productsStore.findProduct(productId)
-                .otherwiseEmpty()
-                .compose(product -> {
-                    if (product != null) {
-                        return Future.succeededFuture(product);
-                    } else {
-                        return Future.failedFuture(new IllegalArgumentException("product not found"));
-                    }
-                });
-    }
-
-    public Future<Collection<Product>> findProducts(String name) {
-        return productsStore.findProducts(name)
-                .otherwiseEmpty()
-                .compose(products -> {
-                    if (products.size() != 0)
-                        return Future.succeededFuture(products);
-                    return Future.failedFuture(new IllegalArgumentException("product not found"));
-                });
-    }
-
     public Future<Void> addProduct(String name, String imagePath, String description, double price, int quantity, String brand, Category category) {
+        System.out.println(imagePath);
         return productsStore.findProduct(name)
                 .otherwiseEmpty()
                 .compose(product -> {
@@ -66,12 +41,12 @@ public class ProductService {
                 });
     }
 
-    public Future<Void> updateProduct(UUID pid, double price) {
+    public Future<Void> updateProduct(UUID pid, String name, String image, String description, double price, int quantity, String brand, Category category) {
         return productsStore.findProduct(pid)
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product != null)
-                        return productsStore.updateProduct(pid, price);
+                        return productsStore.updateProduct(new Product(pid, name, image, description, price, quantity, brand, category));
                     return Future.failedFuture(new IllegalArgumentException("product not found"));
                 });
     }
