@@ -7,19 +7,19 @@
 .container h1 {
   text-align: center;
   font-weight: bold;
-  color: #edfaf5;
+  color: #000000;
   margin: 40px 0;
 }
 
 .container {
   position: absolute;
-  width: 600px;
+  width: 40em;
   height: 80%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 30px;
-  background: #3faee3;
+  background: rgb(240, 240, 240);
 }
 
 .edit-form {
@@ -39,18 +39,50 @@
   padding: 0 12px;
 }
 .edit-form input[type="submit"] {
-  width: 100px;
-  font-weight: 600;
-  color: #0989c6;
+  width: 120px;
+  font-weight: 500;
+  background: #0ed24f;
+  color: white;
   margin: 20px 0;
-  transition: .3s ease;
+  transition: .2s ease;
 }
 .edit-form input[type="submit"]:hover {
+  font-weight: bold;
   color: black;
-  font-size: 22px;
-  background: #38e171;
+  font-size: 26px;
   cursor: pointer;
+  transform: scale(1.06);
 }
 .edit-form input[type="submit"]:active {
-  transform: scale(.94);
+  transform: scale(.96);
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.buttons .cancel-button {
+  background: #ff5858;
+  font-weight: 500;
+  color: white;
+  width: 30%;
+  transition: .2s ease;
+}
+.buttons .cancel-button:hover {
+  font-weight: bold;
+  color: black;
+  font-size: 26px;
+  cursor: pointer;
+  transform: scale(1.06);
+}
+.buttons .cancel-button:active {
+  transform: scale(0.96);
+}
+
+.message-label {
+  margin: 50px 0;
+  text-align: left;
+  font-size: 24px;
+  color: green;
 }

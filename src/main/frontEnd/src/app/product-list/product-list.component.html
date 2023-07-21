@@ -5,7 +5,7 @@
         class="listing-heading">{{product.name}}
       </h2>
       <p
-        class="listing-location">${{product.price}} {{product.category}}
+        class="listing-location">{{product.price}}<span></span>€ {{product.category}}
       </p>
       <a [routerLink]="['/details', product.pid]">
         Details

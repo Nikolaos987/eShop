@@ -6,5 +6,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent {
-  
+  message: string = '';
+
+  showMessage() {
+    this.message = '';
+    this.message = 'password changed successfully!';
+  }
+
 }

@@ -83,13 +83,20 @@ public class PostgresCartsStore implements CartsStore {
     public Future<ArrayList<Cart>> findCarts() {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("SELECT uid FROM cart;")
+                .preparedQuery("SELECT * FROM cart;")
                 .execute()
                 .compose(rows -> {
-
                     ArrayList<Cart> carts = new ArrayList<>();
-                    return findNext(rows.iterator(), carts, 0)
-                            .compose(r -> Future.succeededFuture());
+                    rows.forEach(row -> {
+                        ArrayList<CartItem> cartItems = new ArrayList<>();
+                        carts.add(new Cart(
+                                row.getUUID("cid"),
+                                row.getUUID("uid"),
+                                row.getLocalDateTime("datecreated"),
+                                cartItems));
+
+                    });
+                    return Future.succeededFuture(carts);
                 });
     }
 

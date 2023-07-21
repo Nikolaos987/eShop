@@ -15,8 +15,14 @@
         <div>
           <input type="password" placeholder="Re-enter new password" required>
         </div>
-        <input class="apply-button" type="submit" value="Apply">
+        <div class="buttons">
+          <input class="apply-button" type="submit" value="Apply" (click)="showMessage()">
+          <input class="cancel-button" type="button" value="Cancel" routerLink="/home">
+        </div>
       </form>
+      <div class="message-label">
+        <label>{{message}}</label>
+      </div>
 
     </div>
 

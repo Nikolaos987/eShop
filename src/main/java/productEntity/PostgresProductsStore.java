@@ -49,7 +49,15 @@ public class PostgresProductsStore implements ProductsStore {
                 .execute(Tuple.of(pid))
                 .compose(records -> {
                     Row row = records.iterator().next();
-                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")));
+                    Product product = new Product(
+                            row.getUUID("pid"),
+                            row.getString("name"),
+                            row.getString("image"),
+                            row.getString("description"),
+                            row.getDouble("price"),
+                            row.getInteger("quantity"),
+                            row.getString("brand"),
+                            Category.valueOf(row.getString("category")));
                     return Future.succeededFuture(product);
                 })
                 .otherwiseEmpty();
@@ -64,7 +72,15 @@ public class PostgresProductsStore implements ProductsStore {
                 .execute(Tuple.of(name))
                 .compose(records -> {
                     Row row = records.iterator().next();
-                    Product product = new Product(row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"), row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"), Category.valueOf(row.getString("category")));
+                    Product product = new Product(
+                            row.getUUID("pid"),
+                            row.getString("name"),
+                            row.getString("image"),
+                            row.getString("description"),
+                            row.getDouble("price"),
+                            row.getInteger("quantity"),
+                            row.getString("brand"),
+                            Category.valueOf(row.getString("category")));
                     return Future.succeededFuture(product);
                 })
                 .otherwiseEmpty();

@@ -45,3 +45,7 @@ section.listing a:hover {
   min-height: 50vh;
   gap: 3vh;
 }
+
+.listing p span {
+  
+}
