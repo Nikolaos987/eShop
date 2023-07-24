@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpClientModule} from "@angular/common/http";
+import {HttpClient, HttpClientModule, HttpParams} from "@angular/common/http";
 
 import { Observable, throwError } from "rxjs";
 import { catchError, retry } from "rxjs";
@@ -21,10 +21,15 @@ export class ProductsService {
   }
 
   public fetchFilteredProducts(filter: string) {
+    filter = filter.trim();
+
+    const options = filter ?
+      { params: new HttpParams().set('name', filter) } : {};
+
     if (!filter) {
       return this.fetchProducts();
     }
-    return this.http.get('http://localhost:8084/product/search/'+filter);
+    return this.http.get('http://localhost:8084/product/search/'+filter, options);
   }
 
 }
