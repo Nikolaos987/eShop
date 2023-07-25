@@ -15,10 +15,10 @@ export class RegisterComponent implements OnInit {
   constructor(private usersService: UsersService) {
   }
 
-  register() {
+  register(data: any) {
     if (this.username!='' && this.password!='' && this.passwordAgain!='') {
       if (this.password == this.passwordAgain) {
-        this.usersService.postUser(this.username, this.password)
+        this.usersService.postUser(data)
           .subscribe(user => console.log(user));
       }
     }
