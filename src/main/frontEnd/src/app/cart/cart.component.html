@@ -1,45 +1,54 @@
 <h1>My items</h1>
-<div class="table">
-  <div class="columns">
-    <div><h3>name</h3></div>
-    <div><h3>quantity</h3></div>
-    <div><h3>price</h3></div>
-  </div>
-  <div class="items">
-    <div><h4>phone 1</h4></div>
-    <div>
-      <h4>1</h4>
-      <input type="button" class="decrease" value="-">
-      <input type="button" class="increase" value="+">
-    </div>
-    <div>
-      <h4>100</h4>
-      <input type="button" value="X">
-    </div>
-  </div>
-  <div class="items">
-    <div><h4>phone 2</h4></div>
-    <div>
-      <h4>1</h4>
-      <input type="button" class="decrease" value="-">
-      <input type="button" class="increase" value="+">
-    </div>
-    <div>
-      <h4>399</h4>
-      <input type="button" value="X">
-    </div>
-  </div>
-  <div class="items">
-    <div><h4>phone 3</h4></div>
-    <div>
-      <h4>2</h4>
-      <input type="button" class="decrease" value="-">
-      <input type="button" class="increase" value="+"></div>
-    <div>
-      <h4>57.9</h4>
-      <input type="button" value="X">
-    </div>
-  </div>
+<!--<div class="table">-->
+<!--  <div class="columns">-->
+<!--    <div><h3>name</h3></div>-->
+<!--    <div><h3>quantity</h3></div>-->
+<!--    <div><h3>price</h3></div>-->
+<!--  </div>-->
+
+<!--  <div class="items">-->
+<!--    <div><h4>phone 1</h4></div>-->
+<!--    <div>-->
+<!--      <input type="button" class="decrease" value="-">-->
+<!--      <span>1</span>-->
+<!--      <input type="button" class="increase" value="+">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <h4>100</h4>-->
+<!--      <input type="button" class="delete-btn" value="X">-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="items">-->
+<!--    <div><h4>phone 2</h4></div>-->
+<!--    <div>-->
+<!--      <input type="button" class="decrease" value="-">-->
+<!--      <span>1</span>-->
+<!--      <input type="button" class="increase" value="+">-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <h4>399</h4>-->
+<!--      <input type="button" class="delete-btn" value="X">-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <div class="items">-->
+<!--    <div><h4>phone 3</h4></div>-->
+<!--    <div>-->
+<!--      <input type="button" class="decrease" value="-">-->
+<!--      <span>2</span>-->
+<!--      <input type="button" class="increase" value="+"></div>-->
+<!--    <div>-->
+<!--      <h4>57.9</h4>-->
+<!--      <input type="button" class="delete-btn" value="X">-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<div *ngFor="let item of items | async" class="list">
+  <h4>{{item.name}}</h4>
+  <button class="quantity-btn"><</button><h4>{{item.quantity}}</h4><button class="quantity-btn">></button>
+  <h4>{{item.price}}€</h4><button class="delete-btn">X</button>
 </div>
 
 <div class="total-price">

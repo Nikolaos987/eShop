@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ProductsService } from "../services/products.service";
+import {HttpParams} from "@angular/common/http";
 
 @Component({
   selector: 'app-home',

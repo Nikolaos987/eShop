@@ -22,4 +22,8 @@ export class UsersService {
     return this.http.post('http://localhost:8084/user/register', data);
   }
 
+  public putUser(data:any, uid:string) {
+    return this.http.put('http://localhost:8084/user/'+uid+'/password', data);
+  }
+
 }

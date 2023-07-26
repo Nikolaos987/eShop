@@ -6,7 +6,6 @@ import { ReactiveFormsModule } from "@angular/forms";
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ErrorComponent } from './error/error.component';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
@@ -16,11 +15,12 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
 import { BackNavComponent } from './back-nav/back-nav.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { PageNotFoundComponent } from './error/page-not-found/page-not-found.component';
+import { ProductNotFoundComponent } from './error/product-not-found/product-not-found.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ErrorComponent,
     ProductDetailsComponent,
     HomeComponent,
     ProfileComponent,
@@ -29,7 +29,9 @@ import { RegisterComponent } from './register/register.component';
     SearchBarComponent,
     BackNavComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    PageNotFoundComponent,
+    ProductNotFoundComponent
   ],
   imports: [
     BrowserModule,

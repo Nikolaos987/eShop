@@ -2,8 +2,9 @@ package query.cart;
 
 import io.vertx.core.Future;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public interface CartQueryModelStore {
-    Future<CartQueryModel> findByUserId(UUID uid);
+    Future<ArrayList<CartQueryModel.CartItemQueryModel>> findByUserId(UUID uid);
 }

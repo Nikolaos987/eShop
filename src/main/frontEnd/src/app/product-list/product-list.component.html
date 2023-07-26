@@ -7,11 +7,8 @@
       <p
         class="listing-location">{{product.price}}<span></span>€ {{product.category}}
       </p>
-      <a [routerLink]="['/details', product.pid]">
+      <a [title]="product.name + ' details'" [routerLink]="['/details', product.pid]">
         Details
       </a>
   </section>
 </div>
-
-
-

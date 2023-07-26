@@ -16,6 +16,11 @@ h4 {
   font-size: 30px;
 }
 
+.items span {
+  margin: 0 20px;
+  font-size: 36px;
+}
+
 .columns {
   display: flex;
   padding: 30px;
@@ -36,12 +41,18 @@ h4 {
   text-align: center;
 }
 
-.table {
-  border-radius: 20px;
+.list {
+  display: flex;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px 0;
   position: relative;
   width: 80%;
   margin-left: 40px;
   background: white;
+}
+.list h4 {
+  padding: 0 20px;
 }
 
 .total-price {
@@ -63,18 +74,35 @@ h4 {
   cursor: pointer;
 }
 
-.items input[type="button"] {
-  vertical-align: center;
-  horiz-align: center;
-  color: white;
-  background: red;
-  border-radius: 10px;
-  padding: 10px;
-  margin: 10px 10px;
+.quantity-btn {
+  font-size: 20px;
   width: 50px;
-  font-size: 26px;
+  height: 50px;
+  border: none;
+  background: white;
+  transition: .3s;
+}
+.quantity-btn:active {
+  transform: scale(.95);
+  transition: .05s;
 }
 
-.items input[type="button"] .decrease {
-  background: blue;
+.decrease, .increase {
+  border-radius: 10px;
+  background: rebeccapurple;
+}
+.decrease:hover, .increase:hover {
+  background: #50128d;
+}
+
+.delete-btn {
+  color: white;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #ce1b1b;
+}
+.delete-btn:hover {
+  background: darkred;
 }

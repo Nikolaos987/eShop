@@ -8,13 +8,17 @@
 }
 
 input[type="text"] {
-  border: solid 1px var(--primary-color);
+  background: #dedbdb;
+  border: solid 2px var(--primary-color);
   font-size: 20px;
   padding: 10px;
   border-radius: 8px;
   margin-right: 4px;
   display: inline-block;
   width: 30%;
+}
+input[type="text"]:focus {
+  background: white;
 }
 
 .search-bar {
@@ -37,6 +41,27 @@ input[type="text"] {
   background-color: #0068ff;
   color: white;
   cursor: pointer;
+}
+
+input[type="button"] {
+  width: 50px;
+  height: 37px;
+  margin: 0 5px;
+  transform: translate(-4em, -2px);
+  background: none;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+  border: none;
+  color: red;
+  font-size: 16px;
+  font-weight: bolder;
+}
+input[type="button"]:hover {
+  cursor: pointer;
+  border: 1px red solid;
+  background: #f8f8f8;
 }
 
 @media (min-width: 500px) and (max-width: 768px) {

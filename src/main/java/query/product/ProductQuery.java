@@ -57,8 +57,13 @@ public class ProductQuery implements ProductQueryModelStore {
                         ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
                         rows.forEach(row -> {
                             ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                    row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"),
-                                    row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"),
+                                    row.getUUID("pid"),
+                                    row.getString("name"),
+                                    row.getString("image"),
+                                    row.getString("description"),
+                                    row.getDouble("price"),
+                                    row.getInteger("quantity"),
+                                    row.getString("brand"),
                                     Category.valueOf(row.getString("category")));
                             products.add(product);
                         });
@@ -78,8 +83,13 @@ public class ProductQuery implements ProductQueryModelStore {
                     ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
                     rows.forEach(row -> {
                         ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"),
-                                row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"),
+                                row.getUUID("pid"),
+                                row.getString("name"),
+                                row.getString("image"),
+                                row.getString("description"),
+                                row.getDouble("price"),
+                                row.getInteger("quantity"),
+                                row.getString("brand"),
                                 Category.valueOf(row.getString("category")));
                         products.add(product);
                     });

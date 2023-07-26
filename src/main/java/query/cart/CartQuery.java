@@ -29,22 +29,26 @@ public class CartQuery implements CartQueryModelStore {
                 .setMaxSize(poolSize);
     }
     @Override
-    public Future<CartQueryModel> findByUserId(UUID uid) {
+    public Future<ArrayList<CartQueryModel.CartItemQueryModel>> findByUserId(UUID uid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity, p.name, p.price FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid WHERE uid = $1;")
                 .execute(Tuple.of(uid))
                 .compose(records -> {
-                    List<CartQueryModel.CartItemQueryModel> items = new ArrayList<>();
+                    ArrayList<CartQueryModel.CartItemQueryModel> items = new ArrayList<>();
                     if (records.iterator().next().getUUID("itemid") != null) {
                         records.forEach(row -> {
-                            CartQueryModel.CartItemQueryModel item = new CartQueryModel.CartItemQueryModel(row.getUUID("pid"), row.getString("name"), row.getInteger("price") * row.getInteger("quantity"), row.getInteger("quantity"));
+                            CartQueryModel.CartItemQueryModel item = new CartQueryModel.CartItemQueryModel(
+                                    row.getUUID("pid"),
+                                    row.getString("name"),
+                                    row.getInteger("price") * row.getInteger("quantity"),
+                                    row.getInteger("quantity"));
                             items.add(item);
                         });
                     }
-                    CartQueryModel cart = new CartQueryModel(items);
+//                    CartQueryModel cart = new CartQueryModel(items);
                     return client.close()
-                            .compose(r -> Future.succeededFuture(cart));
+                            .compose(r -> Future.succeededFuture(items));
                 });
     }
 }

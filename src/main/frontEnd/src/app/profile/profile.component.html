@@ -5,15 +5,15 @@
 
     <div class="edit-form">
 
-      <form>
+      <form #passwordForm="ngForm" (ngSubmit)="changePassword(passwordForm.value)">
         <div>
-          <input type="password" placeholder="current password" required>
+          <input name="currentPassword" type="password" placeholder="current password" required [(ngModel)]="currentPassword">
         </div>
         <div>
-          <input type="password" placeholder="New password" required>
+          <input name="newPassword" type="password" placeholder="New password" required [(ngModel)]="password">
         </div>
         <div>
-          <input type="password" placeholder="Re-enter new password" required>
+          <input type="newPasswordAgain" placeholder="Re-enter new password" required [(ngModel)]="passwordAgain">
         </div>
         <div class="buttons">
           <input class="apply-button" type="submit" value="Apply" (click)="showMessage()">
@@ -22,6 +22,9 @@
       </form>
       <div class="message-label">
         <label>{{message}}</label>
+      </div>
+      <div>
+        <input class="delete-btn" type="button" value="Delete User">
       </div>
 
     </div>
