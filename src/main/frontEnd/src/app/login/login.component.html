@@ -1,20 +1,19 @@
 <div class="b">
   <div class="center">
     <h1>Login</h1>
-    <form [formGroup]="profileForm" (ngSubmit)="login">
+    <form [formGroup]="profileForm" (ngSubmit)="login()">
 
       <div class="txt_field">
-        <input id="username" type="text" required>
+        <input id="username" type="text" formControlName="username">
         <label>Username</label>
         <span></span>
       </div>
       <div class="txt_field">
-        <input id="password" type="password" required>
-        <p>Value: </p>
+        <input id="password" type="password" formControlName="password">
         <label>Password</label>
         <span></span>
       </div>
-      <button type="submit" [disabled]="!profileForm.valid">Login</button>
+      <button type="submit" >Login</button>  <!-- [disabled]="!profileForm.valid" -->
       <div class="signup_link">
         Not a member? <a routerLinkActive="active" routerLink="/register">Signup</a>
       </div>

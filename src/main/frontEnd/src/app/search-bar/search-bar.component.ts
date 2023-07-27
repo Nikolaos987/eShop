@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import { HomeComponent } from "../home/home.component";
 import {filter} from "rxjs";
+import {ProductsService} from "../services/products.service";
 
 @Component({
   selector: 'app-search-bar',
@@ -9,10 +10,12 @@ import {filter} from "rxjs";
   providers: []
 })
 export class SearchBarComponent implements OnInit {
+  @Input() help = '';
+  @Output() result = new EventEmitter<string>();
 
   txt: string = '';
 
-  constructor(private homeComponent: HomeComponent) {
+  constructor() {
     this.txt='';
   }
 
@@ -20,7 +23,9 @@ export class SearchBarComponent implements OnInit {
   }
 
   filter(text: string) {
-    this.homeComponent.getFilteredProducts(text);
+    this.result.emit(text);
+
+    // this.homeComponent.getFilteredProducts(text);
   }
 
   clearText(text: string) {

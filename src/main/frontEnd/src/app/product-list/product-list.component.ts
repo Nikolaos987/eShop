@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, Output} from '@angular/core';
 import { HomeComponent } from "../home/home.component";
 import { take } from "rxjs";
 
@@ -10,7 +10,7 @@ import { take } from "rxjs";
 })
 export class ProductListComponent implements OnInit {
 
-  public product: any;
+  // public product: any;
   @Input() products: any;
 
   constructor(private homeComponent: HomeComponent) {

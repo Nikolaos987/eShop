@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpClientModule, HttpParams} from "@angular/common/http";
 
-import { Observable, throwError } from "rxjs";
+import {map, Observable, tap, throwError} from "rxjs";
 import { catchError, retry } from "rxjs";
 
 @Injectable({
@@ -12,7 +12,7 @@ export class CartService {
   constructor(private http:HttpClient) { }
 
   getCart(uid:string) {
-    return this.http.get('http://localhost:8084/user/'+uid+'/cart');
+    return this.http.get('http://localhost:8084/user/'+uid+'/cart')
   }
 
   addToCart(uid:string) {

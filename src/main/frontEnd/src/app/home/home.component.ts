@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { ProductsService } from "../services/products.service";
 import {HttpParams} from "@angular/common/http";
+import {map, tap} from "rxjs";
 
 @Component({
   selector: 'app-home',
@@ -8,18 +9,22 @@ import {HttpParams} from "@angular/common/http";
   styleUrls: ['./home.component.css'],
   providers: [ProductsService]
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit{
 
   productList: any;
+  helpText = "Search any product...";
 
   constructor(private productsService: ProductsService) { }
 
+  ngOnInit(): void {
+  }
+
   public getProducts() {
-    this.productList = this.productList = this.productsService.fetchProducts();
+    this.productList = this.productsService.fetchProducts();
   }
 
   public getFilteredProducts(text: string) {
-    this.productList = this.productsService.fetchFilteredProducts(text);
+    this.productList = this.productsService.fetchFilteredProducts(text)
   }
 
   public showDetails(pid: string): void {

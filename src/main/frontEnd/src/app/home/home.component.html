@@ -1,2 +1,2 @@
-<app-search-bar></app-search-bar>
+<app-search-bar [help]="helpText" (result)="getFilteredProducts($event)"></app-search-bar>
 <app-product-list [products]="productList"></app-product-list>

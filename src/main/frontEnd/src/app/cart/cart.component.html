@@ -45,11 +45,13 @@
 <!--  </div>-->
 <!--</div>-->
 
-<div *ngFor="let item of items | async" class="list">
-  <h4>{{item.name}}</h4>
-  <button class="quantity-btn"><</button><h4>{{item.quantity}}</h4><button class="quantity-btn">></button>
-  <h4>{{item.price}}€</h4><button class="delete-btn">X</button>
-</div>
+<!--<div *ngFor="let item of items | async" class="list">-->
+<!--  <h4>{{item.name}}</h4>-->
+<!--  <button class="quantity-btn"><</button><h4>{{item.quantity}}</h4><button class="quantity-btn">></button>-->
+<!--  <h4>{{item.price}}€</h4><button class="delete-btn">X</button>-->
+<!--</div>-->
+
+<app-product *ngFor="let item of items | async" [product]="item" class="list"></app-product>
 
 <div class="total-price">
   <button>Buy</button>

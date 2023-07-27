@@ -17,6 +17,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { PageNotFoundComponent } from './error/page-not-found/page-not-found.component';
 import { ProductNotFoundComponent } from './error/product-not-found/product-not-found.component';
+import { ProductComponent } from './product/product.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { ProductNotFoundComponent } from './error/product-not-found/product-not-
     LoginComponent,
     RegisterComponent,
     PageNotFoundComponent,
-    ProductNotFoundComponent
+    ProductNotFoundComponent,
+    ProductComponent
   ],
   imports: [
     BrowserModule,
