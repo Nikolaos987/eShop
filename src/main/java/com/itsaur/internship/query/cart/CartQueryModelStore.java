@@ -1,4 +1,4 @@
-package query.cart;
+package com.itsaur.internship.query.cart;
 
 import io.vertx.core.Future;
 

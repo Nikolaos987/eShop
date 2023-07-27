@@ -1,6 +1,6 @@
-package query.product;
+package com.itsaur.internship.query.product;
 
-import productEntity.Category;
+import com.itsaur.internship.productEntity.Category;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package cartEntity;
+package com.itsaur.internship.cartEntity;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -6,7 +6,6 @@ import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.*;
 
-import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.UUID;
 

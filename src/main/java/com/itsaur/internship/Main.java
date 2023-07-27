@@ -1,17 +1,17 @@
 package com.itsaur.internship;
 
-import cartEntity.CartService;
-import cartEntity.PostgresCartsStore;
+import com.itsaur.internship.cartEntity.CartService;
+import com.itsaur.internship.cartEntity.PostgresCartsStore;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import io.vertx.core.Vertx;
-import productEntity.PostgresProductsStore;
-import productEntity.ProductService;
-import query.cart.CartQuery;
-import query.product.ProductQuery;
-import query.user.UserQuery;
-import userEntity.PostgresUsersStore;
-import userEntity.UserService;
+import com.itsaur.internship.productEntity.PostgresProductsStore;
+import com.itsaur.internship.productEntity.ProductService;
+import com.itsaur.internship.query.cart.CartQuery;
+import com.itsaur.internship.query.product.ProductQuery;
+import com.itsaur.internship.query.user.UserQuery;
+import com.itsaur.internship.userEntity.PostgresUsersStore;
+import com.itsaur.internship.userEntity.UserService;
 
 public class Main {
 

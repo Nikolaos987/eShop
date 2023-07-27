@@ -1,11 +1,10 @@
-package userEntity;
+package com.itsaur.internship.userEntity;
 
-import cartEntity.Cart;
-import cartEntity.CartItem;
-import cartEntity.CartsStore;
+import com.itsaur.internship.cartEntity.Cart;
+import com.itsaur.internship.cartEntity.CartItem;
+import com.itsaur.internship.cartEntity.CartsStore;
 import io.vertx.core.Future;
 
-import javax.print.DocFlavor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

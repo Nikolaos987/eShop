@@ -1,11 +1,9 @@
-package productEntity;
+package com.itsaur.internship.productEntity;
 
-import cartEntity.CartItem;
+import com.itsaur.internship.cartEntity.CartItem;
 import io.vertx.core.Future;
-import io.vertx.core.buffer.Buffer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.UUID;
 
 public interface ProductsStore {

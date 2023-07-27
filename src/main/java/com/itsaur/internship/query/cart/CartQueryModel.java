@@ -1,4 +1,4 @@
-package query.cart;
+package com.itsaur.internship.query.cart;
 
 import java.util.List;
 import java.util.UUID;

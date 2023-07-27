@@ -1,12 +1,8 @@
 package com.itsaur.internship;
 
-import cartEntity.CartService;
-import io.vertx.core.Future;
-import productEntity.Category;
-import productEntity.ProductService;
-import userEntity.UserService;
-
-import java.util.UUID;
+import com.itsaur.internship.cartEntity.CartService;
+import com.itsaur.internship.productEntity.ProductService;
+import com.itsaur.internship.userEntity.UserService;
 
 public class Console {
 

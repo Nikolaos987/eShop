@@ -1,4 +1,4 @@
-package productEntity;
+package com.itsaur.internship.productEntity;
 
 import java.util.UUID;
 

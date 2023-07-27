@@ -1,4 +1,4 @@
-package userEntity;
+package com.itsaur.internship.userEntity;
 
 import io.vertx.core.Future;
 

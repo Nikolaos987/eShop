@@ -1,6 +1,6 @@
 package com.itsaur.internship;
 
-import cartEntity.CartService;
+import com.itsaur.internship.cartEntity.CartService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
@@ -8,15 +8,13 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CorsHandler;
-import productEntity.Category;
-import productEntity.ProductService;
-import query.cart.CartQueryModelStore;
-import query.product.ProductQueryModelStore;
-import query.user.UserQueryModelStore;
-import userEntity.UserService;
+import com.itsaur.internship.productEntity.Category;
+import com.itsaur.internship.productEntity.ProductService;
+import com.itsaur.internship.query.cart.CartQueryModelStore;
+import com.itsaur.internship.query.product.ProductQueryModelStore;
+import com.itsaur.internship.query.user.UserQueryModelStore;
+import com.itsaur.internship.userEntity.UserService;
 
-import java.nio.file.Paths;
 import java.util.UUID;
 
 public class Api extends AbstractVerticle {
@@ -60,7 +58,7 @@ public class Api extends AbstractVerticle {
         router.post("/user/login").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.userService.login(body.getString("username"), body.getString("password"))
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user logged in"))
+                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 

@@ -1,4 +1,4 @@
-package query.user;
+package com.itsaur.internship.query.user;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -8,7 +8,7 @@ import io.vertx.sqlclient.PoolOptions;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
-import userEntity.User;
+import com.itsaur.internship.userEntity.User;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;

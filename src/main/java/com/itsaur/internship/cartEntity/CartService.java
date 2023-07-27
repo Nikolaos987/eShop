@@ -1,11 +1,10 @@
-package cartEntity;
+package com.itsaur.internship.cartEntity;
 
 import io.vertx.core.Future;
-import productEntity.ProductsStore;
-import userEntity.UsersStore;
+import com.itsaur.internship.productEntity.ProductsStore;
+import com.itsaur.internship.userEntity.UsersStore;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class CartService {

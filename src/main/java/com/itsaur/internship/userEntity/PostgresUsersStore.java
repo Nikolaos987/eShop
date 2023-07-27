@@ -1,6 +1,5 @@
-package userEntity;
+package com.itsaur.internship.userEntity;
 
-import cartEntity.Cart;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgConnectOptions;
@@ -10,7 +9,6 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
-import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 

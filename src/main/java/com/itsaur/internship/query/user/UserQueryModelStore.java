@@ -1,7 +1,6 @@
-package query.user;
+package com.itsaur.internship.query.user;
 
 import io.vertx.core.Future;
-import query.product.ProductsQueryModel;
 
 import java.util.UUID;
 

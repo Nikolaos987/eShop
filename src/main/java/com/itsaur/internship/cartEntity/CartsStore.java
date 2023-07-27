@@ -1,4 +1,4 @@
-package cartEntity;
+package com.itsaur.internship.cartEntity;
 
 import io.vertx.core.Future;
 

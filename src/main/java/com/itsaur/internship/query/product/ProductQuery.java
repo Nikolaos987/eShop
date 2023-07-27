@@ -1,4 +1,4 @@
-package query.product;
+package com.itsaur.internship.query.product;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -8,10 +8,9 @@ import io.vertx.sqlclient.PoolOptions;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
-import productEntity.Category;
+import com.itsaur.internship.productEntity.Category;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class ProductQuery implements ProductQueryModelStore {
