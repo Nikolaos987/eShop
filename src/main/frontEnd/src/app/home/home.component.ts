@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import { ProductsService } from "../services/products.service";
 import {HttpParams} from "@angular/common/http";
 import {map, tap} from "rxjs";
+import {UsersService} from "../services/users.service";
 
 @Component({
   selector: 'app-home',
@@ -14,7 +15,7 @@ export class HomeComponent implements OnInit{
   productList: any;
   helpText = "Search any product...";
 
-  constructor(private productsService: ProductsService) { }
+  constructor(private productsService: ProductsService, private _usersService: UsersService) { }
 
   ngOnInit(): void {
   }

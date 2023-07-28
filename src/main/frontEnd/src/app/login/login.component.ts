@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup } from "@angular/forms";
-import { UsersService } from "../services/users.service";
+import {Component} from '@angular/core';
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {UsersService} from "../services/users.service";
 import {tap} from "rxjs";
+import {Router} from "@angular/router";
+
+// import { User } from "../user";
 
 @Component({
   selector: 'app-login',
@@ -12,23 +15,21 @@ import {tap} from "rxjs";
 export class LoginComponent {
 
   profileForm = new FormGroup({
-    username: new FormControl(''),
-    password: new FormControl(''),
+    username: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required),
   });
 
-  constructor(private usersService: UsersService) {
+  constructor(private usersService: UsersService, private router: Router) {
   }
 
   login() {
-    window.alert('button pressed');
-    this.usersService.fetchUser(this.profileForm.value)
-      .pipe(
-        tap(user => console.log(user)) //TODO: den leitourgei to user.uid, mono to user
-      )
-      .subscribe();
-
-    // window.alert(this.profileForm.value)
-    // this.usersService.fetchUser(this.profileForm.get("username"), this.profileForm.get("password"))
-    //   .subscribe();
+    window.alert('UID: ' + this.usersService.user.uid)
+    if (this.profileForm.valid) {
+      this.usersService.fetchUser(this.profileForm.value)
+        .subscribe(result => {
+          window.alert('UID: ' + this.usersService.user.uid);
+          this.router.navigateByUrl('/home');
+        });
+    }
   }
 }

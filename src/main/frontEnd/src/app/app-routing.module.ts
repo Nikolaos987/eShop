@@ -8,11 +8,12 @@ import {ProfileComponent} from "./profile/profile.component";
 import {CartComponent} from "./cart/cart.component";
 import {LoginComponent} from "./login/login.component";
 import {RegisterComponent} from "./register/register.component";
+import {authGuardGuard} from "./auth-guard.guard";
 
 const routes: Routes = [
-  {path:'', redirectTo:'/home', pathMatch:'full'},
+  {path:'', redirectTo:'/login', pathMatch:'full'},
   {path:'home', component:HomeComponent},
-  {path:'profile', component:ProfileComponent},
+  {path:'profile', component:ProfileComponent}, // canActivate: [authGuardGuard]
   {path:'cart', component:CartComponent},
   {path:'details/:pid', component:ProductDetailsComponent},
   {path:'login', component:LoginComponent},
