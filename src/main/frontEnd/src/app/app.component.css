@@ -29,6 +29,11 @@ header {
   font-size: 17px;
 }
 
+.right-nav{
+  float: right;
+  background: #2691d9;
+}
+
 /* Change the color of links on hover */
 .topnav a:hover {
   background-color: #ddd;

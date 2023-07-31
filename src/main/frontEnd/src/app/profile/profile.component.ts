@@ -5,7 +5,7 @@ import {UsersService} from "../services/users.service";
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-  // providers: [UsersService]
+  providers: [UsersService]
 })
 export class ProfileComponent implements OnInit {
   message: string = '';

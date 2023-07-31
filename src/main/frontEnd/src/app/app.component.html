@@ -1,10 +1,17 @@
 <!--<app-login></app-login>-->
 
 <div class="topnav">
-  <a routerLinkActive="active" routerLink="home">Home</a>
-  <a routerLinkActive="active" [routerLink]="['profile']">Profile</a>
-  <a routerLinkActive="active" [routerLink]="['cart']">Cart</a>
-  <a routerLink="/login">Logout</a>
+  <nav>
+    <a routerLinkActive="active" routerLink="home">Home</a>
+    <a routerLinkActive="active" [routerLink]="['profile']">Profile</a>
+    <a routerLinkActive="active" [routerLink]="['cart']">Cart</a>
+    <div class="right-nav">
+      <a routerLink="/login">Login</a>
+      <a routerLink="/register">Register</a>
+    </div>
+
+  </nav>
+
 </div>
 
 <router-outlet></router-outlet>
