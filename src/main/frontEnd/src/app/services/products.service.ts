@@ -32,4 +32,8 @@ export class ProductsService {
     return this.http.get('http://localhost:8084/product/search/'+filter, options);
   }
 
+  public fetchProductImage(pid: string) {
+    return this.http.get('http://localhost:8084/image/'+pid);
+  }
+
 }

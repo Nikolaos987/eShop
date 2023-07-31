@@ -14,7 +14,7 @@ import {UsersService} from "./services/users.service";
 const routes: Routes = [
   {path: '', redirectTo: '/home', pathMatch: 'full'},
   {path: 'home', component: HomeComponent},
-  {path: 'profile', component: ProfileComponent, canActivate: [authGuardGuard]}, // canActivate: [authGuardGuard]
+  {path: 'profile', component: ProfileComponent}, // canActivate: [authGuardGuard]
   {path: 'cart', component: CartComponent, canActivate: [authGuardGuard]},
   {path: 'details/:pid', component: ProductDetailsComponent},
   {path: 'login', component: LoginComponent},

@@ -2,6 +2,7 @@ package com.itsaur.internship.productEntity;
 
 import com.itsaur.internship.cartEntity.CartService;
 import io.vertx.core.Future;
+import io.vertx.core.buffer.Buffer;
 
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ public class ProductService {
         this.productsStore = productsStore;
         this.cartService = cartService;
     }
+
 
     public Future<Void> addProduct(String name, String imagePath, String description, double price, int quantity, String brand, Category category) {
         System.out.println(imagePath);

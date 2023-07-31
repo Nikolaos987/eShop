@@ -22,7 +22,7 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     // this.currentUsername = this.usersService.getUsername();
     this.currentUsername = this.usersService.getUsername();
-    window.alert(this.currentUsername);
+    console.log('from profile component: '+this.usersService.user.uid);
     // this.currentUsername = this.usersService.username;
   }
 

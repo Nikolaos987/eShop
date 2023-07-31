@@ -23,11 +23,12 @@ export class LoginComponent {
   }
 
   login() {
-    window.alert('UID: ' + this.usersService.user.uid)
+    // window.alert('UID: ' + this.usersService.user.uid)
     if (this.profileForm.valid) {
       this.usersService.fetchUser(this.profileForm.value)
         .subscribe(result => {
-          window.alert('UID: ' + this.usersService.user.uid);
+          console.log('from login component: ' + result);
+          // window.alert('UID: ' + this.usersService.user.uid)
           this.router.navigateByUrl('/home');
         });
     }

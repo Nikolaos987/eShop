@@ -3,6 +3,7 @@ package com.itsaur.internship;
 import com.itsaur.internship.cartEntity.CartService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -84,6 +85,10 @@ public class Api extends AbstractVerticle {
 
 
         /* PRODUCT ENTITY */
+
+        router.get("/image/:pid").handler(ctx -> this.productQueryModelStore.findImageById(UUID.fromString(ctx.pathParam("pid")))
+                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.get("/product/:pid").handler(ctx -> this.productQueryModelStore.findProductById(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))

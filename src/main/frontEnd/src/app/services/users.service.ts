@@ -12,15 +12,12 @@ import {User} from "../user";
 export class UsersService {
   public user: User = {uid: '', username: '', isLoggedIn: false};
 
-  // public uid: string = '';
-  // username: string = '';
-  // isLoggedIn = false;
-
   constructor(private http: HttpClient) {
   }
 
-  public fetchUser(data: any): Observable<any> {
-    return this.http.post<{ uid: string, username: string, password: string }>('http://localhost:8084/user/login', data)
+  public fetchUser(data: any): Observable<User> {
+    return this.http
+      .post <{ uid: string, username: string, password: string }>('http://localhost:8084/user/login', data)
       .pipe(
         map(response => {
           this.user = {
@@ -28,6 +25,7 @@ export class UsersService {
             username: response.username,
             isLoggedIn: true
           }
+          return this.user;
 
           // this.uid = response.uid
           // this.username = response.username;

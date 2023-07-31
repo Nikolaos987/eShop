@@ -1,5 +1,6 @@
 package com.itsaur.internship.query.product;
 
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgConnectOptions;
@@ -97,4 +98,23 @@ public class ProductQuery implements ProductQueryModelStore {
                             .compose(r -> Future.succeededFuture(products));
                 });
     }
+
+    @Override
+    public Future<Buffer> findImageById(UUID pid) {
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client.preparedQuery("SELECT image FROM product WHERE pid = $1;")
+                .execute(Tuple.of(pid))
+                .compose(records -> {
+                    Row row = records.iterator().next();
+                    return vertx.fileSystem().readFile(row.getString("image"))
+                            .compose(file -> {
+                                Buffer buffer = Buffer.buffer(file.getBytes());
+                                return Future.succeededFuture(buffer);
+                            });
+
+//                    return Future.succeededFuture(records.iterator().next().getString("image"));
+                });
+    }
+
+
 }

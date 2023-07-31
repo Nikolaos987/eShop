@@ -11,6 +11,7 @@ import { take } from "rxjs";
 export class ProductListComponent implements OnInit {
 
   // public product: any;
+  @Input() image: any;
   @Input() products: any;
 
   constructor(private homeComponent: HomeComponent) {

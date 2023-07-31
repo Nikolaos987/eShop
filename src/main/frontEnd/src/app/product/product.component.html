@@ -1,0 +1,13 @@
+<section class="listing">
+  <img [src]='product.image' class="listing-photo" alt="could not load photo of {{product.image}}">
+  <h2
+    class="listing-heading">{{product.name}}
+  </h2>
+  <p
+    class="listing-location">{{product.price}}<span></span>€ {{product.category}}
+  </p>
+  <a [title]="product.name + ' details'" [routerLink]="['/details', product.pid]">
+    Details
+  </a>
+</section>
+
