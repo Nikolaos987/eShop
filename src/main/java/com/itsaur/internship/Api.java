@@ -44,15 +44,15 @@ public class Api extends AbstractVerticle {
 
 //        router.route().handler(CorsHandler.create("http://localhost:8084"));
 
-        router.route().handler(io.vertx.ext.web.handler.CorsHandler.create()
-                .allowedMethod(io.vertx.core.http.HttpMethod.GET)
-                .allowedMethod(io.vertx.core.http.HttpMethod.POST)
-                .allowedMethod(io.vertx.core.http.HttpMethod.OPTIONS)
-                .allowedHeader("Access-Control-Request-Method")
-                .allowedHeader("Access-Control-Allow-Credentials")
-                .allowedHeader("Access-Control-Allow-Origin")
-                .allowedHeader("Access-Control-Allow-Headers")
-                .allowedHeader("Content-Type"));
+//        router.route().handler(io.vertx.ext.web.handler.CorsHandler.create()
+//                .allowedMethod(io.vertx.core.http.HttpMethod.GET)
+//                .allowedMethod(io.vertx.core.http.HttpMethod.POST)
+//                .allowedMethod(io.vertx.core.http.HttpMethod.OPTIONS)
+//                .allowedHeader("Access-Control-Request-Method")
+//                .allowedHeader("Access-Control-Allow-Credentials")
+//                .allowedHeader("Access-Control-Allow-Origin")
+//                .allowedHeader("Access-Control-Allow-Headers")
+//                .allowedHeader("Content-Type"));
 
         /* USER ENTITY */
 
