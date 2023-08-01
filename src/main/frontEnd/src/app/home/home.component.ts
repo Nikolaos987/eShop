@@ -25,7 +25,6 @@ export class HomeComponent implements OnInit{
 
   public getProducts() {
     this.productList = this.productsService.fetchProducts();
-    this.image = this.productsService.fetchProductImage('ae7c94b7-423f-4d4d-afc3-3f181fd5ba5a');
   }
 
   public getFilteredProducts(text: string) {

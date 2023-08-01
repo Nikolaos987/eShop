@@ -2,7 +2,7 @@
 <div *ngIf="product" class="float-container">
 
   <div class="listing-photo">
-    <img [src]='product.image' alt="could not load photo of {{product.name}}">
+    <img [src]="'/api/image/'+product.pid" alt="could not load photo of {{product.name}}">
   </div>
 
   <div class="listing-description">
