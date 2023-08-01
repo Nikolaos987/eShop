@@ -5,7 +5,6 @@ import {UsersService} from "../services/users.service";
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
-  providers: [UsersService]
 })
 export class ProfileComponent implements OnInit {
   message: string = '';
@@ -14,7 +13,7 @@ export class ProfileComponent implements OnInit {
   passwordAgain: string = '';
   uid: string = '';
 
-  currentUsername: string = '';
+  currentUsername: string = this.usersService.user.username;
 
   constructor(public usersService: UsersService) {
   }
