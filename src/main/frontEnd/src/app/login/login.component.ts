@@ -10,7 +10,6 @@ import {Router} from "@angular/router";
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  providers: [UsersService]
 })
 export class LoginComponent {
 
@@ -23,12 +22,9 @@ export class LoginComponent {
   }
 
   login() {
-    // window.alert('UID: ' + this.usersService.user.uid)
     if (this.profileForm.valid) {
       this.usersService.fetchUser(this.profileForm.value)
         .subscribe(result => {
-          console.log('from login component: ' + result);
-          // window.alert('UID: ' + this.usersService.user.uid)
           this.router.navigateByUrl('/home');
         });
     }

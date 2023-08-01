@@ -17,7 +17,7 @@ export class UsersService {
 
   public fetchUser(data: any): Observable<User> {
     return this.http
-      .post <{ uid: string, username: string, password: string }>('http://localhost:8084/user/login', data)
+      .post <{ uid: string, username: string, password: string }>('/api/user/login', data)
       .pipe(
         map(response => {
           this.user = {
