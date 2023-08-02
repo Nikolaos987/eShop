@@ -1,5 +1,6 @@
 import { Component, OnInit} from '@angular/core';
 import {UsersService} from "../services/users.service";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-register',
@@ -8,25 +9,34 @@ import {UsersService} from "../services/users.service";
   providers: [UsersService]
 })
 export class RegisterComponent implements OnInit {
-  username: string = '';
-  password: string = '';
-  passwordAgain: string = '';
+
+  validators: Validators = {
+
+  }
+
+  // TODO: Add validators
+  registerForm = new FormGroup({
+    username: new FormControl('',
+      [Validators.required, Validators.min(3)]),
+    password: new FormControl('',
+      [Validators.required, Validators.min(4)]),
+    passwordAgain: new FormControl('',
+      [Validators.required, Validators.min(4)])
+  });
 
   constructor(private usersService: UsersService) {
   }
 
-  register(data: any) {
-    if (this.username!='' && this.password!='' && this.passwordAgain!='') {
-      if (this.password == this.passwordAgain) {
-        this.usersService.postUser(data)
-          .subscribe(user => console.log(user));
-      }
-    }
+  ngOnInit(): void {
   }
 
-  ngOnInit(): void {
-    this.username = '';
-    this.password = '';
-    this.passwordAgain = '';
+  register() {
+    // if (this.registerForm.value.username!='' && this.registerForm.value.password!='' && this.passwordAgain!='') {
+    //   if (this.registerForm.value.password == this.passwordAgain) { // ===
+        this.usersService.postUser(this.registerForm.value)
+          .subscribe(user => console.log(user));
+      // } else window.alert('passwords do not match');
+    // } else window.alert('empty inputs');
   }
+
 }

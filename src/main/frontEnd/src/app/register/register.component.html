@@ -1,26 +1,29 @@
 <div class="b">
   <div class="center">
     <h1>Sign Up</h1>
-    <form #registerForm="ngForm" (ngSubmit)="register(registerForm.value)">
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
 
       <div class="txt_field">
-        <input name="username" type="text" required [(ngModel)]="username">
+        <input name="username" type="text" formControlName="username">
         <label>Username</label>
         <span></span>
       </div>
       <div class="txt_field">
-        <input name="password" type="password" required [(ngModel)]="password">
+        <input name="password" type="password" formControlName="password">
         <label>Password</label>
         <span></span>
       </div>
       <div class="txt_field">
-        <input name="passwordAgain" type="password" required [(ngModel)]="passwordAgain">
+        <input name="passwordAgain" type="password" formControlName="passwordAgain">
         <label>Type your password again</label>
         <span></span>
       </div>
       <button type="submit">Register</button>
       <div class="back-btn">
-        Already have an account? <a routerLink="/login">Login</a>
+        Already have an account? <a routerLink="/login">Sign In</a>
+      </div>
+      <div *ngIf="">
+
       </div>
     </form>
 

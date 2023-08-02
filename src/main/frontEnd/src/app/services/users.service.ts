@@ -46,7 +46,11 @@ export class UsersService {
   // }
 
   public postUser(data: any) {
-    return this.http.post('http://localhost:8084/user/register', data);
+    return this.http.post('/api/user/register',
+      {
+        "username": data.username,
+        "password": data.password
+      });
   }
 
   public putUser(data: any, uid: string) {
