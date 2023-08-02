@@ -53,8 +53,12 @@ export class UsersService {
       });
   }
 
-  public putUser(data: any, uid: string) {
-    return this.http.put('http://localhost:8084/user/' + uid + '/password', data);
+  public putUser(data: any) {
+    return this.http.put('/api/user/' + this.user.uid + '/password',
+      {
+        "currentPassword": data.currentPassword,
+        "newPassword": data.password
+      });
   }
 
 }

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UsersService} from "../services/users.service";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-profile',
@@ -8,21 +9,23 @@ import {UsersService} from "../services/users.service";
 })
 export class ProfileComponent implements OnInit {
   message: string = '';
-  currentPassword: string = '';
-  password: string = '';
-  passwordAgain: string = '';
-  uid: string = '';
+  currentUsername: string = this._usersService.user.username;
 
-  currentUsername: string = this.usersService.user.username;
+  // currentPassword: string = '';
+  // password: string = '';
+  // passwordAgain: string = '';
+  // uid: string = '';
 
-  constructor(public usersService: UsersService) {
+  profileForm = new FormGroup({
+    currentPassword: new FormControl(''),
+    password: new FormControl(''),
+    passwordAgain: new FormControl('')
+  });
+
+  constructor(private _usersService: UsersService) {
   }
 
   ngOnInit(): void {
-    // this.currentUsername = this.usersService.getUsername();
-    this.currentUsername = this.usersService.getUsername();
-    console.log('from profile component: '+this.usersService.user.uid);
-    // this.currentUsername = this.usersService.username;
   }
 
   showMessage() {
@@ -30,13 +33,17 @@ export class ProfileComponent implements OnInit {
     this.message = 'password changed successfully!';
   }
 
-  changePassword(data: any) {
-    if (this.currentPassword != '' && this.password != '' && this.passwordAgain != '') {
-      if (this.password == this.passwordAgain) {
-        this.usersService.putUser(data, this.uid)
+  changePassword() {
+    // if (this.currentPassword != '' && this.password != '' && this.passwordAgain != '') {
+    //   if (this.password == this.passwordAgain) {
+        this._usersService.putUser(this.profileForm.value)
           .subscribe(result => console.log(result));
-      }
-    }
+    //   }
+    // }
+  }
+
+  deleteUser() {
+
   }
 
 }
