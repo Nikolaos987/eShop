@@ -4,6 +4,7 @@ import {ProductsService} from "../services/products.service";
 import {map, tap} from "rxjs";
 
 import { Item } from "../item";
+import {UsersService} from "../services/users.service";
 
 @Component({
   selector: 'app-cart',
@@ -17,12 +18,12 @@ export class CartComponent implements OnInit{
 
   cart:any;
 
-  constructor(private _cartService:CartService, private _productsService:ProductsService) {
+  constructor(private _cartService:CartService, private _productsService:ProductsService, private _usersService: UsersService) {
   }
 
   ngOnInit(): void {
     // TODO: put the uid for the logged in user
-    this.items = this._cartService.getCart('14bc8ced-3049-4df2-a262-fe36213617c8');
+    this.items = this._cartService.getCart(this._usersService.user.uid);
 
 // .pipe(
 //   tap(cart => console.log(cart)),
