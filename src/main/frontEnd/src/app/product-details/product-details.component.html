@@ -6,15 +6,20 @@
   </div>
 
   <div class="listing-description">
-    <h2>{{product.name}} ({{product.brand}})</h2>
-    <span></span>
-    <p>{{product.description}}</p>
-    <div class="listing-info">
-      <h3>price: {{product.price}}€</h3>
-      <h3>stock: {{product.quantity}}</h3>
-      <h3>{{product.category}}</h3>
-    </div>
-    <button class="button-56" role="button" (click)="addToCart(product)">Add To Cart</button>
+    <form [formGroup]="addToCartForm" (ngSubmit)="addToCart()">
+      <h2>{{product.name}} ({{product.brand}})</h2>
+      <span></span>
+      <p>{{product.description}}</p>
+      <div class="listing-info">
+        <h3>price: {{product.price}}€</h3>
+        <h3>stock: {{product.quantity}}</h3>
+        <h3>{{product.category}}</h3>
+      </div>
+      <input type="submit" class="button-56" role="button" value="Add To Cart">
+      <div class="quantity-div">
+        <input type="number" id="quantity" formControlName="quantity">
+      </div>
+    </form>
   </div>
 
 </div>

@@ -117,6 +117,14 @@ h2 {
   outline: 0;
 }
 
+.quantity-div {
+  display: flex;
+  width: 50%;
+}
+.quantity-div button {
+  width: 50px;
+}
+
 @media (min-width: 768px) {
   .button-56 {
     padding: 0 40px;

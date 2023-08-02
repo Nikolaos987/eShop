@@ -1,8 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { ProductsService } from "../services/products.service";
-import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
+import {ProductsService} from "../services/products.service";
+import {ActivatedRoute} from '@angular/router';
+import {Location} from '@angular/common';
 import {CartService} from "../services/cart.service";
+import {UsersService} from "../services/users.service";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-product-details',
@@ -13,12 +15,19 @@ import {CartService} from "../services/cart.service";
 export class ProductDetailsComponent implements OnInit {
   @Input() product?: any;
 
+  // quantity: number = 1;
+
+  addToCartForm = new FormGroup({
+    quantity: new FormControl(1)
+  })
+
   constructor(
     private productsService: ProductsService,
     private cartService: CartService,
     private route: ActivatedRoute,
-    private location: Location
-  ) { }
+    private location: Location,
+    private _usersService: UsersService
+  ) {}
 
   ngOnInit(): void {
     this.getProduct();
@@ -31,9 +40,12 @@ export class ProductDetailsComponent implements OnInit {
       .subscribe(response => this.product = response)
   }
 
-  addToCart(item:any) {
-    this.cartService.addToCart(item);
-    window.alert(item.name + ' has been added to the cart');
+  addToCart() {
+    if (this._usersService.user.isLoggedIn) {
+      this.cartService.addToCart(this._usersService.user.uid, this.product.pid, this.addToCartForm.value.quantity);
+      window.alert(this.product.name + ' has been added to the cart');
+    } else
+      window.alert('you are not logged in!');
   }
 
 }

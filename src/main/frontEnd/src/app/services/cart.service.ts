@@ -1,29 +1,31 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpClientModule, HttpParams} from "@angular/common/http";
 
 import {map, Observable, tap, throwError} from "rxjs";
-import { catchError, retry } from "rxjs";
+import {catchError, retry} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
 
-  constructor(private http:HttpClient) { }
-
-  getCart(uid:string) {
-    return this.http.get('http://localhost:8084/user/'+uid+'/cart')
+  constructor(private http: HttpClient) {
   }
 
-  addToCart(uid:string) {
-    // this.http.put('http://localhost:8084/user/'+uid+'/cart')
+  getCart(uid: string) {
+    return this.http.get('/api/user/' + uid + '/cart')
   }
 
-  updateCart(itemid:string, quantity:number) {
+  addToCart(uid: string, pid: string, quantity: any) {
+    return this.http.put('/api/user/' + uid + '/product/' + pid + '/' + quantity, {})
+      .subscribe();
+  }
+
+  updateCart(itemid: string, quantity: number) {
 
   }
 
-  removeItem(itemid:string) {
+  removeItem(itemid: string) {
 
   }
 
