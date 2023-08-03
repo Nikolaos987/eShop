@@ -20,7 +20,7 @@
           <input class="cancel-button" type="button" value="Cancel" routerLink="/home"> <!-- TODO: go to previous page -->
         </div>
       </form>
-      <div class="message-label">
+      <div class="message-label" *ngIf="message">
         <label>{{message}}</label>
       </div>
       <div>

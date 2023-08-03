@@ -10,8 +10,9 @@ import {User} from "../user";
   providedIn: 'root'
 })
 export class UsersService {
-  public user: User = {uid: '', username: '', isLoggedIn: false};
-  public errorMessage: string = 'error';
+  public user: User | undefined = {uid: '', username: '', isLoggedIn: false};
+
+  // public errorMessage: string = 'error';
 
   constructor(private http: HttpClient) {
   }
@@ -20,9 +21,8 @@ export class UsersService {
     return this.http
       .post <{ uid: string, username: string, password: string }>('/api/user/login', data) // TODO: don't return the "password: string from server"
       .pipe(
-        retry(3),
         map(response => {
-          this.errorMessage = 'no error'
+          // this.errorMessage = 'no error'
           this.user = {
             uid: response.uid,
             username: response.username,
@@ -41,39 +41,40 @@ export class UsersService {
   //   return this.http.post('http://localhost:8084/user/login', {params});
   // }
 
-  public postUser(data: any) {
+  public postUser(data: any): Observable<any> {
     return this.http
       .post('/api/user/register',
-      {
-        "username": data.username,
-        "password": data.password
-      })
+        {
+          "username": data.username,
+          "password": data.password
+        })
       .pipe(
-        retry(3),
         catchError(this.handleError)
       );
   }
 
-  public putUser(data: any) {
+  public putUser(data: any): Observable<string> {
     return this.http
-      .put('/api/user/' + this.user.uid + '/password',
-      {
-        "currentPassword": data.currentPassword,
-        "newPassword": data.password
-      });
+      .put<{ message: string }>('/api/user/' + this.user?.uid + '/password',
+        {
+          "currentPassword": data.currentPassword,
+          "newPassword": data.password
+        })
+      .pipe(
+        map((response) => {
+          return response.message;
+        }),
+        catchError(this.handleError));
   }
 
   public deleteUser() {
     return this.http
-      .delete('/api/user/'+this.user.uid)
+      .delete('/api/user/' + this.user?.uid)
       .pipe(
         map(() => {
-          this.user = {
-            uid: '',
-            username: '',
-            isLoggedIn: false
-          }
-        }));
+          this.user = undefined;
+        }),
+        catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {

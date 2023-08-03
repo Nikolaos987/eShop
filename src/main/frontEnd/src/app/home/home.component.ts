@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { ProductsService } from "../services/products.service";
 import {HttpParams} from "@angular/common/http";
 import {map, tap} from "rxjs";
@@ -17,10 +17,11 @@ export class HomeComponent implements OnInit{
   productList: any;
   helpText = "Search any product...";
 
-  constructor(private productsService: ProductsService, private _usersService: UsersService) { }
+  constructor(private productsService: ProductsService, private _usersService: UsersService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    console.log('UID from home component: ' + this.uid);
+    this.cdr.detectChanges();
+    console.log('UID from home component: ' + this._usersService.user?.isLoggedIn);
   }
 
   public getProducts() {

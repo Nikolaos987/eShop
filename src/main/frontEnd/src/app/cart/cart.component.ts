@@ -23,7 +23,7 @@ export class CartComponent implements OnInit{
 
   ngOnInit(): void {
     // TODO: put the uid for the logged in user
-    this.items = this._cartService.getCart(this._usersService.user.uid);
+    this.items = this._cartService.getCart(this._usersService.user?.uid);
 
 // .pipe(
 //   tap(cart => console.log(cart)),

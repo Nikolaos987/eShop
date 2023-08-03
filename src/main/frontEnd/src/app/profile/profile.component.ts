@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UsersService} from "../services/users.service";
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 
 @Component({
@@ -10,7 +10,7 @@ import {Router} from "@angular/router";
 })
 export class ProfileComponent implements OnInit {
   message: string = '';
-  currentUsername: string = this._usersService.user.username;
+  currentUsername: string | undefined = this._usersService.user?.username;
 
   // currentPassword: string = '';
   // password: string = '';
@@ -18,9 +18,9 @@ export class ProfileComponent implements OnInit {
   // uid: string = '';
 
   profileForm = new FormGroup({
-    currentPassword: new FormControl(''),
-    password: new FormControl(''),
-    passwordAgain: new FormControl('')
+    currentPassword: new FormControl('', Validators.required),
+    password: new FormControl('', Validators.required),
+    passwordAgain: new FormControl('', Validators.required)
   });
 
   constructor(private _usersService: UsersService, private router: Router) {
@@ -35,12 +35,17 @@ export class ProfileComponent implements OnInit {
   }
 
   changePassword() {
-    // if (this.currentPassword != '' && this.password != '' && this.passwordAgain != '') {
-    //   if (this.password == this.passwordAgain) {
-        this._usersService.putUser(this.profileForm.value)
-          .subscribe(result => console.log(result));
-    //   }
-    // }
+    if (this.profileForm.valid
+      && this.profileForm.value.password === this.profileForm.value.passwordAgain
+      && this.profileForm.value.currentPassword !== this.profileForm.value.password) {
+      this._usersService.putUser(this.profileForm.value)
+        .subscribe(result => {
+          console.log('this is the result emitted: '+ result);
+          this.router.navigateByUrl('/home')
+        }, (error) => {
+          this.message = error;
+        });
+    }
   }
 
   deleteUser() {
@@ -48,6 +53,8 @@ export class ProfileComponent implements OnInit {
       .subscribe((result) => {
         window.alert('this is result:');
         this.router.navigateByUrl('/home');
+      }, (error) => {
+        console.log(error);
       });
   }
 

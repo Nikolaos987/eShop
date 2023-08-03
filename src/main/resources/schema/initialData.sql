@@ -5,9 +5,7 @@ VALUES ('One'   , '1'),
        ('Two'   , '12'),
        ('Three' , '123'),
        ('Four'  , '1234'),
-       ('Five'  , '12345'),
-       ('Six'   , '123456'),
-       ('Seven' , '1234567');
+       ('Five'  , '12345');
 
 INSERT INTO cart (uid)
 SELECT uid FROM users;

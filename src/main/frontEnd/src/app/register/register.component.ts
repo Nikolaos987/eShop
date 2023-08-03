@@ -32,11 +32,15 @@ export class RegisterComponent implements OnInit {
   register() {
     // if (this.registerForm.value.username!='' && this.registerForm.value.password!='' && this.passwordAgain!='') {
     //   if (this.registerForm.value.password == this.passwordAgain) { // ===
-    this.usersService.postUser(this.registerForm.value)
-      .subscribe(user => console.log(user),
-        (error) => {
-          this.errorMessage = error;
-        });
+    if (this.registerForm.valid && this.registerForm.value.password === this.registerForm.value.passwordAgain) {
+      this.usersService.postUser(this.registerForm.value)
+        .subscribe(response => console.log(response),
+          (error) => {
+            this.errorMessage = error;
+          });
+    } else {
+      this.errorMessage = 'incorrect fields'
+    }
     // } else window.alert('passwords do not match');
     // } else window.alert('empty inputs');
   }

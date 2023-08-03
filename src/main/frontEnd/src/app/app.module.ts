@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {ReactiveFormsModule} from "@angular/forms";
 
@@ -19,6 +19,7 @@ import {PageNotFoundComponent} from './error/page-not-found/page-not-found.compo
 import {ProductNotFoundComponent} from './error/product-not-found/product-not-found.component';
 import {ProductComponent} from './product/product.component';
 import {UsersService} from "./services/users.service";
+import {InterceptorService} from "./services/interceptor.service";
 
 @NgModule({
   declarations: [
