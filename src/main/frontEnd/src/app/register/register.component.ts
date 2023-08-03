@@ -1,6 +1,7 @@
-import { Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {error} from "@angular/compiler-cli/src/transformers/util";
 
 @Component({
   selector: 'app-register',
@@ -10,9 +11,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 })
 export class RegisterComponent implements OnInit {
 
-  validators: Validators = {
-
-  }
+  errorMessage: string = '';
 
   // TODO: Add validators
   registerForm = new FormGroup({
@@ -33,9 +32,12 @@ export class RegisterComponent implements OnInit {
   register() {
     // if (this.registerForm.value.username!='' && this.registerForm.value.password!='' && this.passwordAgain!='') {
     //   if (this.registerForm.value.password == this.passwordAgain) { // ===
-        this.usersService.postUser(this.registerForm.value)
-          .subscribe(user => console.log(user));
-      // } else window.alert('passwords do not match');
+    this.usersService.postUser(this.registerForm.value)
+      .subscribe(user => console.log(user),
+        (error) => {
+          this.errorMessage = error;
+        });
+    // } else window.alert('passwords do not match');
     // } else window.alert('empty inputs');
   }
 

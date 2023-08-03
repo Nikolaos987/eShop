@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup} from "@angular/forms";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-profile',
@@ -22,7 +23,7 @@ export class ProfileComponent implements OnInit {
     passwordAgain: new FormControl('')
   });
 
-  constructor(private _usersService: UsersService) {
+  constructor(private _usersService: UsersService, private router: Router) {
   }
 
   ngOnInit(): void {
@@ -43,7 +44,11 @@ export class ProfileComponent implements OnInit {
   }
 
   deleteUser() {
-
+    this._usersService.deleteUser()
+      .subscribe((result) => {
+        window.alert('this is result:');
+        this.router.navigateByUrl('/home');
+      });
   }
 
 }

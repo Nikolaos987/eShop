@@ -22,8 +22,8 @@
       <div class="back-btn">
         Already have an account? <a routerLink="/login">Sign In</a>
       </div>
-      <div *ngIf="">
-
+      <div class="danger" *ngIf="errorMessage">
+        <p>{{errorMessage}}</p>
       </div>
     </form>
 

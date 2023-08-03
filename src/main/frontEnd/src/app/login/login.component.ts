@@ -13,6 +13,8 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent {
 
+  errorMessage: string = '';
+
   profileForm = new FormGroup({
     username: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required),
@@ -26,6 +28,9 @@ export class LoginComponent {
       this.usersService.fetchUser(this.profileForm.value)
         .subscribe(result => {
           this.router.navigateByUrl('/home');
+        }, (error) => {
+          console.log(error);
+          this.errorMessage = error;
         });
     }
   }
