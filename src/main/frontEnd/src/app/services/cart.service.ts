@@ -14,12 +14,12 @@ export class CartService {
   }
 
   getCart(uid: string | undefined) {
-    return this.http.get('/api/user/' + uid + '/cart')
+    return this.http
+      .get('/api/user/' + uid + '/cart') // TODO .get<[{item: Item}]>(url...)
   }
 
-  addToCart(uid: string, pid: string, quantity: any) {
-    return this.http.put('/api/user/' + uid + '/product/' + pid + '/' + quantity, {})
-      .subscribe();
+  addToCart(uid: string | undefined, pid: string, quantity: any) {
+    return this.http.put('/api/user/' + uid + '/product/' + pid + '/' + quantity, {}, {responseType: "text"})
   }
 
   updateCart(itemid: string, quantity: number) {

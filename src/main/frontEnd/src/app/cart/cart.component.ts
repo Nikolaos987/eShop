@@ -22,12 +22,36 @@ export class CartComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    // TODO: put the uid for the logged in user
     this.items = this._cartService.getCart(this._usersService.user?.uid);
+  }
 
-// .pipe(
-//   tap(cart => console.log(cart)),
-//   map(cart => cart.cid));
+  // TODO: wait for a few seconds before sending the request
+  decrease(product: any, quant: number) {
+    if (product.quantity > 1) {
+      product.quantity -= 1;
+      this.items = this._cartService.addToCart(this._usersService.user?.uid, product.pid, product.quantity)
+        .subscribe(response => {
+          this.items = this._cartService.getCart(this._usersService.user?.uid);
+        });
+    }
+  }
+
+  increase(product: any, quant: number) {
+    // stock = api call PRODUCT BY ID (ID = this.product.pid
+    if (product.quantity < 9 /* stock */) {
+      product.quantity += 1;
+      this.items = this._cartService.addToCart(this._usersService.user?.uid, product.pid, product.quantity)
+        .subscribe(response => {
+          this.items = this._cartService.getCart(this._usersService.user?.uid);
+        });
+    }
+  }
+
+  remove(product: any) {
+    this._cartService.addToCart(this._usersService.user?.uid, product.pid, 0)
+      .subscribe(response => {
+        this.items = this._cartService.getCart(this._usersService.user?.uid);
+      });
   }
 
 }

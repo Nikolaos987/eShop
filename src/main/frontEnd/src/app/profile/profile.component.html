@@ -20,11 +20,15 @@
           <input class="cancel-button" type="button" value="Cancel" routerLink="/home"> <!-- TODO: go to previous page -->
         </div>
       </form>
-      <div class="message-label" *ngIf="message">
-        <label>{{message}}</label>
-      </div>
       <div>
         <input class="delete-btn" type="button" value="Delete User" (click)="deleteUser()">
+      </div>
+
+      <div class="error-label" *ngIf="errorMessage != '' && successMessage == '' && changePswdBtnClicked">
+        <p>{{errorMessage}}</p>
+      </div>
+      <div class="success-label" *ngIf="errorMessage == '' && successMessage != '' && changePswdBtnClicked">
+        <p>{{successMessage}}</p>
       </div>
 
     </div>

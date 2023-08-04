@@ -12,6 +12,11 @@ export class ProfileComponent implements OnInit {
   message: string = '';
   currentUsername: string | undefined = this._usersService.user?.username;
 
+  errorMessage: string = '';
+  successMessage: string = '';
+  delBtnClicked: boolean = false;
+  changePswdBtnClicked: boolean = false;
+
   // currentPassword: string = '';
   // password: string = '';
   // passwordAgain: string = '';
@@ -35,26 +40,33 @@ export class ProfileComponent implements OnInit {
   }
 
   changePassword() {
+    this.changePswdBtnClicked = true;
     if (this.profileForm.valid
       && this.profileForm.value.password === this.profileForm.value.passwordAgain
       && this.profileForm.value.currentPassword !== this.profileForm.value.password) {
       this._usersService.putUser(this.profileForm.value)
         .subscribe(result => {
+          this.successMessage = result;
+          this.errorMessage = '';
           console.log('this is the result emitted: '+ result);
-          this.router.navigateByUrl('/home')
+          // this.router.navigateByUrl('/home')
         }, (error) => {
-          this.message = error;
+          this.successMessage = '';
+          this.errorMessage = error;
         });
+    } else {
+      this.successMessage = '';
+      this.errorMessage = 'passwords do not match';
     }
   }
 
   deleteUser() {
     this._usersService.deleteUser()
       .subscribe((result) => {
-        window.alert('this is result:');
         this.router.navigateByUrl('/home');
       }, (error) => {
         console.log(error);
+        this.errorMessage = error;
       });
   }
 

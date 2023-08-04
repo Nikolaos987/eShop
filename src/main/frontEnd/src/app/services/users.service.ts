@@ -10,16 +10,16 @@ import {User} from "../user";
   providedIn: 'root'
 })
 export class UsersService {
-  public user: User | undefined = {uid: '', username: '', isLoggedIn: false};
+  public user: User | undefined = {uid: '92905352-ed39-4c4d-9e97-4c81ed03cab1', username: 'One', isLoggedIn: true}; // TODO: clear the fields
 
   // public errorMessage: string = 'error';
 
   constructor(private http: HttpClient) {
   }
 
-  public fetchUser(data: any): Observable<User> {
+  public fetchUser(data: any): Observable<any> {
     return this.http
-      .post <{ uid: string, username: string, password: string }>('/api/user/login', data) // TODO: don't return the "password: string from server"
+      .post <{ uid: string, username: string, password: string }>('/api/user/login', data, {responseType: "json"}) // TODO: don't return the "password: string from server"
       .pipe(
         map(response => {
           // this.errorMessage = 'no error'
@@ -28,7 +28,6 @@ export class UsersService {
             username: response.username,
             isLoggedIn: true
           }
-          return this.user;
         }),
         catchError(this.handleError)
       );
@@ -41,13 +40,13 @@ export class UsersService {
   //   return this.http.post('http://localhost:8084/user/login', {params});
   // }
 
-  public postUser(data: any): Observable<any> {
+  public postUser(data: any): Observable<string> {
     return this.http
       .post('/api/user/register',
         {
           "username": data.username,
           "password": data.password
-        })
+        }, {responseType: "text"})
       .pipe(
         catchError(this.handleError)
       );
@@ -55,21 +54,21 @@ export class UsersService {
 
   public putUser(data: any): Observable<string> {
     return this.http
-      .put<{ message: string }>('/api/user/' + this.user?.uid + '/password',
+      .put('/api/user/' + this.user?.uid + '/password',
         {
           "currentPassword": data.currentPassword,
           "newPassword": data.password
-        })
+        }, {responseType: "text"})
       .pipe(
-        map((response) => {
-          return response.message;
-        }),
+        // map((response) => {
+        //   return response.message;
+        // }),
         catchError(this.handleError));
   }
 
-  public deleteUser() {
+  public deleteUser(): Observable<void> {
     return this.http
-      .delete('/api/user/' + this.user?.uid)
+      .delete('/api/user/' + this.user?.uid, {responseType: "text"})
       .pipe(
         map(() => {
           this.user = undefined;
@@ -84,7 +83,7 @@ export class UsersService {
     } else {
       // the backend returned an unsuccessful response code.
       // the response body may contain clues as to what went wrong.
-      console.error(`Backend returned code ${error.status}, body was: `, error.error);
+      console.error(`Backend returned code ${error.status}, body was: `, error);
     }
     // return an observable with a user-facing error message.
     // this.errorMessage = error.error;

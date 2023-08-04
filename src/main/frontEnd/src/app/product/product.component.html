@@ -1,4 +1,5 @@
 <section class="listing">
+
   <img [src]="'/api/image/'+product.pid" class="listing-photo" alt="could not load photo of {{product.image}}">
   <h2
     class="listing-heading">{{product.name}}
@@ -9,5 +10,17 @@
   <a [title]="product.name + ' details'" [routerLink]="['/details', product.pid]">
     Details
   </a>
+
+  <div *ngIf="quant != 0" class="quantity-display">
+    <div class="quantity">
+      <input type="button" value="<" (click)="decrease()">
+      {{quant}}
+      <input type="button" value=">" (click)="increase()">
+    </div>
+    <div class="remove-item">
+      <input type="button" value="X" (click)="remove()">
+    </div>
+  </div>
+
 </section>
 

@@ -107,3 +107,7 @@ input[type="submit"]:hover {
 .danger {
   color: indianred;
 }
+
+.success {
+  color: seagreen;
+}

@@ -22,11 +22,11 @@
       <div class="back-btn">
         Already have an account? <a routerLink="/login">Sign In</a>
       </div>
-      <div class="danger" *ngIf="errorMessage != ''">
+      <div class="danger" *ngIf="errorMessage != '' && successMessage == '' && buttonClicked">
         <p>{{errorMessage}}</p>
       </div>
-      <div *ngIf="errorMessage == null">
-        <p>user register successful!</p>
+      <div class="success" *ngIf="errorMessage == '' && successMessage != '' && buttonClicked">
+        <p>{{successMessage}}</p>
       </div>
     </form>
 

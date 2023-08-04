@@ -27,6 +27,7 @@ export class LoginComponent {
     if (this.profileForm.valid) {
       this.usersService.fetchUser(this.profileForm.value)
         .subscribe(result => {
+          console.log(result);
           this.router.navigateByUrl('/home');
         }, (error) => {
           console.log(error);

@@ -12,6 +12,8 @@ import {error} from "@angular/compiler-cli/src/transformers/util";
 export class RegisterComponent implements OnInit {
 
   errorMessage: string = '';
+  successMessage: string = '';
+  buttonClicked: boolean = false;
 
   // TODO: Add validators
   registerForm = new FormGroup({
@@ -30,15 +32,22 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
+    this.buttonClicked = true;
     // if (this.registerForm.value.username!='' && this.registerForm.value.password!='' && this.passwordAgain!='') {
     //   if (this.registerForm.value.password == this.passwordAgain) { // ===
     if (this.registerForm.valid && this.registerForm.value.password === this.registerForm.value.passwordAgain) {
       this.usersService.postUser(this.registerForm.value)
-        .subscribe(response => console.log(response),
+        .subscribe(response => {
+            console.log(response);
+            this.successMessage = response;
+            this.errorMessage = '';
+          },
           (error) => {
+            this.successMessage = '';
             this.errorMessage = error;
           });
     } else {
+      this.successMessage = '';
       this.errorMessage = 'incorrect fields'
     }
     // } else window.alert('passwords do not match');

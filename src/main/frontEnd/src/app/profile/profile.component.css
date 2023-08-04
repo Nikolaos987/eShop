@@ -80,7 +80,7 @@
   transform: scale(0.96);
 }
 
-.message-label {
+.success-label {
   margin: 50px 0;
   text-align: left;
   font-size: 24px;
@@ -90,3 +90,12 @@
 .delete-btn {
   margin-bottom: 50px;
 }
+
+.error-label {
+  margin: 50px 0;
+  text-align: left;
+  font-size: 24px;
+  color: indianred;
+}
+
+
