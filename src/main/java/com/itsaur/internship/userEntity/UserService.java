@@ -95,7 +95,7 @@ public class UserService {
                     if (user.matches(currentPassword)) {
                         return userStore.updateUser(user.username(), newPassword);
                     } else {
-                        return Future.failedFuture(new IllegalArgumentException("passwords do not match"));
+                        return Future.failedFuture(new IllegalArgumentException("wrong current password"));
                     }
                 });
     }
