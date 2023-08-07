@@ -1,30 +1,32 @@
-<app-back-nav></app-back-nav>
-<div *ngIf="product" class="float-container">
+<div class="main">
+  <app-back-nav></app-back-nav>
+  <div *ngIf="product" class="float-container">
 
-  <div class="listing-photo">
-    <img [src]="'/api/image/'+product.pid" alt="could not load photo of {{product.name}}">
+    <div class="listing-photo">
+      <img [src]="'/api/image/'+product.pid" alt="could not load photo of {{product.name}}">
+    </div>
+
+    <div class="listing-description">
+      <form [formGroup]="addToCartForm" (ngSubmit)="addToCart()">
+        <h2>{{product.name}} ({{product.brand}})</h2>
+        <span></span>
+        <p>{{product.description}}</p>
+        <div class="listing-info">
+          <h3>price: {{product.price}}€</h3>
+          <h3>stock: {{product.quantity}}</h3>
+          <h3>{{product.category}}</h3>
+        </div>
+        <input type="submit" class="button-56" role="button" value="Add To Cart">
+        <div class="quantity-div">
+          <input type="number" id="quantity" formControlName="quantity">
+        </div>
+      </form>
+    </div>
+
   </div>
 
-  <div class="listing-description">
-    <form [formGroup]="addToCartForm" (ngSubmit)="addToCart()">
-      <h2>{{product.name}} ({{product.brand}})</h2>
-      <span></span>
-      <p>{{product.description}}</p>
-      <div class="listing-info">
-        <h3>price: {{product.price}}€</h3>
-        <h3>stock: {{product.quantity}}</h3>
-        <h3>{{product.category}}</h3>
-      </div>
-      <input type="submit" class="button-56" role="button" value="Add To Cart">
-      <div class="quantity-div">
-        <input type="number" id="quantity" formControlName="quantity">
-      </div>
-    </form>
+  <div *ngIf="!product">
+    <app-product-not-found></app-product-not-found>
   </div>
-
-</div>
-
-<div *ngIf="!product">
-  <app-product-not-found></app-product-not-found>
 </div>
 
