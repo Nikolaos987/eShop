@@ -1,10 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnChanges, OnInit} from '@angular/core';
 import { CartService } from "../services/cart.service";
 import {ProductsService} from "../services/products.service";
 import {map, tap} from "rxjs";
 
 import { Item } from "../item";
 import {UsersService} from "../services/users.service";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-cart',
@@ -12,7 +13,7 @@ import {UsersService} from "../services/users.service";
   styleUrls: ['./cart.component.css'],
   providers: [CartService, ProductsService]
 })
-export class CartComponent implements OnInit{
+export class CartComponent implements OnInit {
 
   items:any;
 
@@ -22,25 +23,29 @@ export class CartComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    this.fetchCart();
+  }
+
+  fetchCart(): void {
     this.items = this._cartService.getCart(this._usersService.user?.uid);
   }
 
   // TODO: wait for a few seconds before sending the request
-  decrease(product: any, quant: number) {
-    if (product.quantity > 1) {
-      product.quantity -= 1;
-      this.items = this._cartService.addToCart(this._usersService.user?.uid, product.pid, product.quantity)
+  decrease(event: any) {
+    if (event.q > 1) {
+      // product.quantity -= 1;
+      this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q - 1)
         .subscribe(response => {
           this.items = this._cartService.getCart(this._usersService.user?.uid);
         });
     }
   }
 
-  increase(product: any, quant: number) {
+  increase(event: any) {
     // stock = api call PRODUCT BY ID (ID = this.product.pid
-    if (product.quantity < 9 /* stock */) {
-      product.quantity += 1;
-      this.items = this._cartService.addToCart(this._usersService.user?.uid, product.pid, product.quantity)
+    if (event.q < 9 /* stock */) {
+      // event.q += 1;
+      this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q + 1)
         .subscribe(response => {
           this.items = this._cartService.getCart(this._usersService.user?.uid);
         });
@@ -53,5 +58,4 @@ export class CartComponent implements OnInit{
         this.items = this._cartService.getCart(this._usersService.user?.uid);
       });
   }
-
 }
