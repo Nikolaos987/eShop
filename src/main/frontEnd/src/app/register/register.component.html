@@ -1,31 +1,43 @@
 <div class="b">
   <div class="center">
     <h1>Sign Up</h1>
-    <form [formGroup]="registerForm" (ngSubmit)="register()">
+    <form [formGroup]="registerForm" (ngSubmit)="register()" #form="ngForm">
 
       <div class="txt_field">
         <input name="username" type="text" formControlName="username">
         <label>Username</label>
         <span></span>
       </div>
+      <div class="danger" *ngIf="(registerForm.controls.username.dirty || form.submitted)
+                              && !registerForm.controls.username.valid">Username must have at least 3 characters!
+      </div>
+
       <div class="txt_field">
         <input name="password" type="password" formControlName="password">
         <label>Password</label>
         <span></span>
       </div>
+      <div class="danger" *ngIf="(registerForm.controls.password.dirty || form.submitted)
+                              && !registerForm.controls.password.valid">Password must have at least 4 characters!
+      </div>
+
       <div class="txt_field">
         <input name="passwordAgain" type="password" formControlName="passwordAgain">
         <label>Type your password again</label>
         <span></span>
       </div>
-      <button type="submit">Register</button>
+      <div class="danger" *ngIf="(registerForm.controls.passwordAgain.dirty || form.submitted)
+                              && registerForm.hasError('passwordMatch')">Passwords do not match!
+      </div>
+
+      <button class="submit" type="submit" [disabled]="!form.valid">Register</button>
       <div class="back-btn">
         Already have an account? <a routerLink="/login">Sign In</a>
       </div>
-      <div class="danger" *ngIf="errorMessage != '' && successMessage == '' && buttonClicked">
+      <div class="danger" *ngIf="errorMessage != '' && successMessage == '' && form.submitted">
         <p>{{errorMessage}}</p>
       </div>
-      <div class="success" *ngIf="errorMessage == '' && successMessage != '' && buttonClicked">
+      <div class="success" *ngIf="errorMessage == '' && successMessage != '' && form.submitted">
         <p>{{successMessage}}</p>
       </div>
     </form>
