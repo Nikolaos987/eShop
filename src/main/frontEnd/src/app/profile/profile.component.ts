@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
+import {passwordMatchesValidator} from "../passwordMatchesValidator";
 
 @Component({
   selector: 'app-profile',
@@ -23,10 +24,17 @@ export class ProfileComponent implements OnInit {
   // uid: string = '';
 
   profileForm = new FormGroup({
-    currentPassword: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required),
-    passwordAgain: new FormControl('', Validators.required)
-  });
+    currentPassword: new FormControl('',
+      [Validators.required, Validators.minLength(4)]),
+    password: new FormControl('',
+      [Validators.required, Validators.minLength(4)]),
+    passwordAgain: new FormControl('',
+      [Validators.required, Validators.minLength(4)]),
+  },
+    {
+      updateOn: 'change',
+      validators: [passwordMatchesValidator]
+    });
 
   constructor(private _usersService: UsersService, private router: Router) {
   }
@@ -41,9 +49,7 @@ export class ProfileComponent implements OnInit {
 
   changePassword() {
     this.changePswdBtnClicked = true;
-    if (this.profileForm.valid
-      && this.profileForm.value.password === this.profileForm.value.passwordAgain
-      && this.profileForm.value.currentPassword !== this.profileForm.value.password) {
+    if (this.profileForm.valid) {
       this._usersService.putUser(this.profileForm.value)
         .subscribe(result => {
           this.successMessage = result;

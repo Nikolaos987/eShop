@@ -5,18 +5,30 @@
 
     <div class="edit-form">
 
-      <form [formGroup]="profileForm" (ngSubmit)="changePassword()">
+      <form [formGroup]="profileForm" (ngSubmit)="changePassword()" #form="ngForm">
         <div>
           <input name="currentPassword" type="password" placeholder="current password" formControlName="currentPassword">
         </div>
+        <div class="danger" *ngIf="(profileForm.controls.currentPassword.dirty || form.submitted)
+                              && !profileForm.controls.currentPassword.valid">Password must have at least 4 characters!
+        </div>
+
         <div>
           <input name="newPassword" type="password" placeholder="New password" formControlName="password">
         </div>
+        <div class="danger" *ngIf="(profileForm.controls.password.dirty || form.submitted)
+                              && !profileForm.controls.password.valid">Password must have at least 4 characters!
+        </div>
+
         <div>
           <input name="newPasswordAgain" type="password" placeholder="Re-enter new password" formControlName="passwordAgain">
         </div>
+        <div class="danger" *ngIf="(profileForm.controls.passwordAgain.dirty || form.submitted)
+                              && profileForm.hasError('passwordMatch')">Passwords do not match!
+        </div>
+
         <div class="buttons">
-          <input class="apply-button" type="submit" value="Apply">
+          <input class="submit" type="submit" value="Apply" [disabled]="!form.valid">
           <input class="cancel-button" type="button" value="Cancel" routerLink="/home"> <!-- TODO: go to previous page -->
         </div>
       </form>

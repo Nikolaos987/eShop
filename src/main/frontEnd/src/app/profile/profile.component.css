@@ -56,6 +56,12 @@
 .edit-form input[type="submit"]:active {
   transform: scale(.96);
 }
+.edit-form input[type="submit"]:disabled {
+  opacity: 40%;
+}
+.edit-form input[type="submit"]:enabled {
+  background: #0ed24f;
+}
 
 .buttons {
   display: flex;
@@ -89,6 +95,7 @@
 
 .delete-btn {
   margin-bottom: 50px;
+  cursor: pointer;
 }
 
 .error-label {
@@ -97,5 +104,3 @@
   font-size: 24px;
   color: indianred;
 }
-
-
