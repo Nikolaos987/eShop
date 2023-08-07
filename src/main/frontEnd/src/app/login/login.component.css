@@ -111,3 +111,14 @@ input[type="submit"]:hover {
 .success {
   color: seagreen;
 }
+
+.submit:disabled {
+  /*background: grey;*/
+  opacity: 40%;
+  border: none;
+}
+
+.submit:enabled {
+  /*background: green;*/
+  border: none;
+}

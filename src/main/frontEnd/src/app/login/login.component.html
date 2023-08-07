@@ -1,18 +1,26 @@
 <div class="b">
   <div class="center">
     <h1>Sign In</h1>
-    <form [formGroup]="profileForm" (ngSubmit)="login()">
+    <form [formGroup]="profileForm" (ngSubmit)="login()" #form="ngForm">
       <div class="txt_field">
         <input id="username" type="text" formControlName="username">
         <label>Username</label>
         <span></span>
       </div>
+      <div class="danger" *ngIf="(profileForm.controls.username.dirty || form.submitted)
+                              && !profileForm.controls.username.valid">Username must have at least 3 characters!
+      </div>
+
       <div class="txt_field">
         <input id="password" type="password" formControlName="password">
         <label>Password</label>
         <span></span>
       </div>
-      <button type="submit" >Login</button>  <!-- [disabled]="!profileForm.valid" -->
+      <div class="danger" *ngIf="(profileForm.controls.password.dirty || form.submitted)
+                              && !profileForm.controls.password.valid">Password must have at least 4 characters!
+      </div>
+
+      <button class="submit" type="submit" [disabled]="!form.valid">Login</button>  <!-- [disabled]="!profileForm.valid" -->
       <div class="signup_link">
         Not a member? <a routerLinkActive="active" routerLink="/register">Signup</a>
       </div>
