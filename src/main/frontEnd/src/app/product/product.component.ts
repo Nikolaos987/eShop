@@ -14,7 +14,7 @@ export class ProductComponent implements OnInit {
   @Input() quant: number = 0;
 
   @Output() removeItem = new EventEmitter<any>();
-  @Output() incrementItem = new EventEmitter<any>();
+  @Output() incrementItem = new EventEmitter<{p: any, q: number}>();
   @Output() decrementItem = new EventEmitter<any>();
 
   constructor(private _cartService: CartService, private usersService: UsersService) {
@@ -25,11 +25,12 @@ export class ProductComponent implements OnInit {
 
   // TODO: wait for a few seconds before sending the request
   decrease() {
-    // this.decrementItem.emit(this.product)
+    this.decrementItem.emit({p: this.product, q: this.quant})
   }
 
   increase() {
-    // this.incrementItem.emit({p: this.product, q: this.quant});
+    this.incrementItem.emit({p: this.product, q: this.quant});
+
   }
 
   remove() {
