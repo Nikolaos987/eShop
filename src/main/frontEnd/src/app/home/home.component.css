@@ -1,3 +1,8 @@
+.main {
+  position: relative;
+  top: 50px;
+}
+
 .results {
   display: grid;
   column-gap: 14px;
@@ -22,6 +27,7 @@ input[type="text"]:focus {
 }
 
 .search-bar {
+  position: relative;
   padding: 14px;
   text-align: center;
 }

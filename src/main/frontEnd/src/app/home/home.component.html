@@ -1,2 +1,4 @@
-<app-search-bar [help]="helpText" (result)="getFilteredProducts($event)"></app-search-bar>
-<app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
+<div class="main">
+  <app-search-bar [help]="helpText" (result)="getFilteredProducts($event)"></app-search-bar>
+  <app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
+</div>
