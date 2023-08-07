@@ -1,9 +1,9 @@
 /* add rows */
 
 INSERT INTO users (username, password)
-VALUES ('One'   , '1'),
-       ('Two'   , '12'),
-       ('Three' , '123'),
+VALUES ('One'   , '1111'),
+       ('Two'   , '2222'),
+       ('Three' , '3333'),
        ('Four'  , '1234'),
        ('Five'  , '12345');
 
