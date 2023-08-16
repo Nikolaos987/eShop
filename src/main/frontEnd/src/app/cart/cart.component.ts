@@ -32,18 +32,18 @@ export class CartComponent implements OnInit {
 
   // TODO: wait for a few seconds before sending the request
   decrease(event: any) {
-    if (event.q > 1) {
+    // if (event.q > 1) {
       // product.quantity -= 1;
       this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
-    }
+    // }
   }
 
   increase(event: any) {
     // stock = api call PRODUCT BY ID (ID = this.product.pid
-    if (event.q < 9 /* stock */) {
+    // if (event.q < 9 /* stock */) {
       // event.q += 1;
       this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
-    }
+    // }
   }
 
   remove(product: any) {
