@@ -12,14 +12,15 @@
   </a>
 
   <div *ngIf="quant != 0" class="quantity-display">
-    <div class="quantity">
-      <input type="button" value="<" (click)="decrease()">
-      {{quant}}
-      <input type="button" value=">" (click)="increase()">
-    </div>
-    <div class="remove-item">
-      <input type="button" value="X" (click)="remove()">
-    </div>
+<!--    <div class="quantity">-->
+<!--      <input type="button" value="<" (click)="decrease()">-->
+<!--      {{quant}}-->
+<!--      <input type="button" value=">" (click)="increase()">-->
+<!--    </div>-->
+<!--    <div class="remove-item">-->
+<!--      <input type="button" value="X" (click)="remove()">-->
+<!--    </div>-->
+    <app-quantity-number [currentQuantity]="quant" (decreaseQuantity)="decrease($event)" (increaseQuantity)="increase($event)"></app-quantity-number>
   </div>
 
 </section>

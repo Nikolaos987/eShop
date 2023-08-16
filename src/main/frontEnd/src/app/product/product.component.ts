@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CartService} from "../services/cart.service";
 import {UsersService} from "../services/users.service";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-product',
@@ -15,8 +16,9 @@ export class ProductComponent implements OnInit {
 
   @Output() removeItem = new EventEmitter<any>();
   @Output() incrementItem = new EventEmitter<{p: any, q: number}>();
-  @Output() decrementItem = new EventEmitter<any>();
+  @Output() decrementItem = new EventEmitter<{p: any, q: number}>();
 
+  // TODO: remove constructor, unused declarations
   constructor(private _cartService: CartService, private usersService: UsersService) {
   }
 
@@ -24,18 +26,18 @@ export class ProductComponent implements OnInit {
   }
 
   // TODO: wait for a few seconds before sending the request
-  decrease() {
-    if (this.quant > 1) {
-      this.quant = this.quant - 1;
-      this.decrementItem.emit({p: this.product, q: this.quant})
-    }
+  decrease(quantity: any) {
+    // if (quantity > 1) {
+      // quantity = quantity - 1;
+      this.decrementItem.emit({p: this.product, q: quantity})
+    // }
   }
 
-  increase() {
-    if (this.quant < 9) {
-      this.quant = this.quant + 1;
-      this.incrementItem.emit({p: this.product, q: this.quant});
-    }
+  increase(quantity: any) {
+    // if (quantity < 9) {
+      // quantity = quantity + 1;
+      this.incrementItem.emit({p: this.product, q: quantity});
+    // }
   }
 
   remove() {
