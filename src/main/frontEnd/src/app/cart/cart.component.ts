@@ -34,10 +34,7 @@ export class CartComponent implements OnInit {
   decrease(event: any) {
     if (event.q > 1) {
       // product.quantity -= 1;
-      this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q - 1)
-        .subscribe(response => {
-          this.items = this._cartService.getCart(this._usersService.user?.uid);
-        });
+      this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
     }
   }
 
@@ -45,10 +42,7 @@ export class CartComponent implements OnInit {
     // stock = api call PRODUCT BY ID (ID = this.product.pid
     if (event.q < 9 /* stock */) {
       // event.q += 1;
-      this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q + 1)
-        .subscribe(response => {
-          this.items = this._cartService.getCart(this._usersService.user?.uid);
-        });
+      this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
     }
   }
 

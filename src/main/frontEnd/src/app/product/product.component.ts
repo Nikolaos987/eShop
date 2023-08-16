@@ -25,12 +25,17 @@ export class ProductComponent implements OnInit {
 
   // TODO: wait for a few seconds before sending the request
   decrease() {
-    this.decrementItem.emit({p: this.product, q: this.quant})
+    if (this.quant > 1) {
+      this.quant = this.quant - 1;
+      this.decrementItem.emit({p: this.product, q: this.quant})
+    }
   }
 
   increase() {
-    this.incrementItem.emit({p: this.product, q: this.quant});
-
+    if (this.quant < 9) {
+      this.quant = this.quant + 1;
+      this.incrementItem.emit({p: this.product, q: this.quant});
+    }
   }
 
   remove() {
