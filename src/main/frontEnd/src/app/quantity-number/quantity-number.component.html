@@ -1,6 +1,6 @@
 <form [formGroup]="formQuantity">
+  <div class="quantity-label">quantity</div>
   <div class="quantity-div" >
-    <div class="quantity-label">quantity</div>
     <input type="button" (click)="stepDown()" value="-">
     <input class="quantity" type="number" min="1" [max]="9" id="quantity" formControlName="quantity" readonly> <!--product.quantity-->
     <input type="button" class="plus" (click)="stepUp()" value="+">
