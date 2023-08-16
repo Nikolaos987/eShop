@@ -19,6 +19,7 @@ import {PageNotFoundComponent} from './error/page-not-found/page-not-found.compo
 import {ProductNotFoundComponent} from './error/product-not-found/product-not-found.component';
 import {ProductComponent} from './product/product.component';
 import {UsersService} from "./services/users.service";
+import { QuantityNumberComponent } from './quantity-number/quantity-number.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import {UsersService} from "./services/users.service";
     PageNotFoundComponent,
     ProductNotFoundComponent,
     ProductComponent,
+    QuantityNumberComponent,
   ],
   imports: [
     BrowserModule,
