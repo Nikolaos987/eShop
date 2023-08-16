@@ -17,9 +17,12 @@
           <h3>{{product.category}}</h3>
         </div>
         <input type="submit" class="button-56" role="button" value="Add To Cart">
-        <div class="quantity-div">
-          <input type="number" id="quantity" formControlName="quantity">
-        </div>
+<!--        <div class="quantity-div">-->
+<!--          <input type="button" (click)="stepDown()" value="-">-->
+<!--          <input class="quantity" type="number" min="1" [max]="product.quantity" id="quantity" formControlName="quantity" readonly>-->
+<!--          <input type="button" class="plus" (click)="stepUp()" value="+">-->
+<!--        </div>-->
+        <app-quantity-number (decreaseQuantity)="stepDown($event)" (increaseQuantity)="stepUp($event)"></app-quantity-number>
       </form>
     </div>
 

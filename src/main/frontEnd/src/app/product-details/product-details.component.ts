@@ -44,9 +44,19 @@ export class ProductDetailsComponent implements OnInit {
     if (this._usersService.user?.isLoggedIn) {
       this.cartService.addToCart(this._usersService.user?.uid, this.product.pid, this.addToCartForm.value.quantity)
         .subscribe((response) => window.alert(this.product.name + ' has been added to the cart'));
-
     } else
       window.alert('you are not logged in!');
   }
 
+  stepDown(quantity: any) {
+    // if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value > 1) {
+      this.addToCartForm.controls['quantity'].setValue(quantity);
+    // }
+  }
+
+  stepUp(quantity: any) {
+    // if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value < 9) {
+      this.addToCartForm.controls['quantity'].setValue(quantity);
+    // }
+  }
 }

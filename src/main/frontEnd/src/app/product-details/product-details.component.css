@@ -130,6 +130,79 @@ h2 {
   width: 50px;
 }
 
+/*.quantity {*/
+/*  width: 50px;*/
+/*  background: #2937ff;*/
+/*  color: white;*/
+/*  font-weight: bold;*/
+/*}*/
+
+input[type="number"] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  background: #2937ff;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.quantity-div {
+  width: auto;
+  border: 2px solid #ddd;
+  display: inline-flex;
+  border-radius: 10px;
+}
+
+.quantity-div,
+.quantity-div * {
+  box-sizing: border-box;
+}
+
+.quantity-div input[type=button] {
+  outline:none;
+  -webkit-appearance: none;
+  background-color: transparent;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
+  margin: 0;
+  position: relative;
+  font-size: 30px;
+  color: #2937ff;
+}
+
+.quantity-div input[type=button]:before,
+.quantity-div input[type=button]:after {
+  display: inline-block;
+  position: absolute;
+  content: '';
+  width: 1rem;
+  height: 2px;
+  background-color: #212121;
+  transform: translate(-50%, -50%);
+}
+.quantity-div input[type=button].plus:after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.quantity-div input[type=number] {
+  font-family: sans-serif;
+  max-width: 5rem;
+  padding: .5rem;
+  border: solid #ddd;
+  border-width: 0 2px;
+  text-align: center;
+}
+
 @media (min-width: 768px) {
   .button-56 {
     padding: 0 40px;
