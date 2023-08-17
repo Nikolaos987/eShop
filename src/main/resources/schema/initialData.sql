@@ -26,4 +26,26 @@ VALUES ('Samsung Galaxy S23 Ultra', 'src/main/resources/assets/Samsung_Galaxy_S2
 Equipped with a large 0.66-inch OLED screen, the L8STAR BM10 offers you the ultimate visual experience. It uses the MTK6261D processor, which makes you listen to music smoothly. Besides, dual card dual standby design combined with low radiation, it is healthy and convenient for your life. Large 350mAh capacity battery offers you a very great experience.',
         11.71, 27, 'L8STAR', 'cellphone'),
        ('Ulefone Armor Mini 2', 'src/main/resources/assets/Ulefone_Armor_Mini_2.jpeg', 'Robust and waterproof (IP68) mobile phone, with an imposing design and high-quality frame, resistant to hard use. It is equipped with a battery with a capacity of 2100mAh which offers a long autonomy and a lens.',
-        40.0, 35, 'Ulefone', 'cellphone');
+        40.0, 35, 'Ulefone', 'cellphone'),
+       ('Apple MacBook Air', 'src/main/resources/assets/Apple_MacBook_Air.jpeg', 'Υψηλές επιδόσεις χάρις τον 6πύρηνο επεξεργαστή Intel® Core™ i5 5350U 1.80 Ghz με τεχνολογία Turbo Boost χρονίζεται στα 2.90 Ghz  το σύστημα σου αλλάζει εποχή στην ταχύτητα. Τρέχει τα κυριολεκτικά τα πάντα, απροβλημάτιστα!',
+        771.2, 52, 'Apple', 'laptop'),
+       ('Lenovo IdeaPad 3', 'src/main/resources/assets/Lenovo_IdeaPad_3.jpeg', 'Το Lenovo IdeaPad 3 απευθύνεται σε φοιτητές και οικιακούς χρήστες που αναζητούν έναν αξιόπιστο φορητό υπολογιστή για καθημερινή χρήση. Με τον επεξεργαστή i3-1215U και την οθόνη FHD, μπορεί να χειριστεί καθημερινές εργασίες όπως τον περιηγητή ιστού, το Office, τα email, τα κοινωνικά δίκτυα και πολλά άλλα.',
+        428.05, 87, 'Lenovo', 'laptop'),
+       ('Lenovo IdeaPad Flex 5', 'src/main/resources/assets/Lenovo_IdeaPad_Flex_5.jpeg', 'Το Lenovo IdeaPad Flex 5 14IAU7 είναι ένα laptop με οθόνη 14 ιντσών IPS touchscreen και ανάλυση Full HD, που σημαίνει ότι προσφέρει εξαιρετική ποιότητα εικόνας. Είναι εξοπλισμένο με έναν ισχυρό επεξεργαστή i7-1255U και 16GB RAM, τα οποία επιτρέπουν την άνετη εκτέλεση πολλών εργασιών ταυτόχρονα. Έχει επίσης μια μεγάλη μονάδα αποθήκευσης 512GB SSD, η οποία προσφέρει γρήγορους χρόνους φόρτωσης και εκκίνησης του συστήματος, καθώς και αρκετό αποθηκευτικό χώρο για τα αρχεία σας.',
+        998, 47, 'Lenovo', 'laptop'),
+       ('HP Victus 15-fa0013nv', 'src/main/resources/assets/HP_Victus_15-fa0013nv.jpeg', 'Το HP Victus 15-fa0013nv απευθύνεται σε απαιτητικούς χρήστες που αναζητούν ένα φορητό υπολογιστή για gaming και εργασίες πολυμέσων. Πρόκειται για ένα κομψό μηχάνημα βάρους 2.29 κιλών.',
+        1245, 97, 'HP', 'laptop'),
+       ('Dell G16 7630', 'src/main/resources/assets/Dell_G16_7630.jpeg', 'Το Dell G16 7630 είναι ένα Laptop που προορίζεται για Gaming με οθόνη 16".
+
+• Μοντέλο 2023
+• Οθόνη 16" 2560x1600
+• Core i9 13900HX-2.2GHz/Raptor Lake (13th Gen)
+• Ethernet, HDMI, Thunderbolt 4, USB 3.2
+• Βάρος 2.73Kg',
+        2714.89, 34, 'Dell', 'laptop'),
+
+       ('Apple Watch SE 2022', 'src/main/resources/assets/Apple_Watch_SE_2022.jpeg', 'Το Apple Watch SE είναι σχεδιασμένο για αυτούς που θέλουν ένα πιο οικονομικό και προσιτό έξυπνο ρολόι από την σειρά της Apple Watch. Απευθύνεται σε αυτούς που επιθυμούν να παρακολουθούν την υγεία τους, να λαμβάνουν ειδοποιήσεις και ενημερώσεις, να ακούν μουσική και να εκτελούν βασικές λειτουργίες όπως απάντηση σε τηλεφωνήματα και αποστολή μηνυμάτων.',
+        364, 21, 'Apple', 'watch'),
+       ('Samsung Galaxy Watch 6', 'src/main/resources/assets/Samsung_Galaxy_Watch6.jpeg', 'Το smartwatch που σας γνωρίζει καλύτερα επέστρεψε με μια εξατομικευμένη εμπειρία ευεξίας. Ξεκινήστε την ημέρα σας με έναν απολαυστικό ύπνο χάρη στην Παρακολούθηση ύπνου που είναι τώρα διαθέσιμη στο Galaxy Watch6.',
+        664.28, 1, 'Samsung', 'watch');
+
