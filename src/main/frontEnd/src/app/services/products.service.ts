@@ -21,6 +21,14 @@ export class ProductsService {
     return this.http.get('/api/product/' + pid);
   }
 
+  public postProduct(data: any): Observable<any> {
+    return this.http
+      .post(
+        '/api/product/insert/'+data.name+'/'+data.imagepath+'/'+data.description+'/'+data.price+'/'+data.quantity+'/'+data.brand+'/'+data.category,
+        {},
+        {responseType: "text"})
+  }
+
   public fetchFilteredProducts(filter: string) {
     filter = filter.trim();
 
