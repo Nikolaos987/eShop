@@ -1,0 +1,82 @@
+<div class="b">
+  <div class="center">
+    <h1>Sign Up</h1>
+    <form [formGroup]="createForm" (ngSubmit)="apply()" #form="ngForm">
+
+      <div class="txt_field">
+        <input name="name" type="text" formControlName="name">
+        <label>Name</label>
+        <span></span>
+      </div>
+      <div class="danger" *ngIf="(createForm.controls.name.dirty || form.submitted)
+                              && !createForm.controls.name.valid">Username must have at least 3 characters!
+      </div>
+
+      <div class="txt_field">
+        <input name="imagepath" type="text" formControlName="imagepath">
+        <label>Image Path</label>
+        <span></span>
+      </div>
+      <div class="danger" *ngIf="(createForm.controls.imagepath.dirty || form.submitted)
+                              && !createForm.controls.imagepath.valid">Image path must have at least 3 characters!
+      </div>
+
+      <div class="txt_field">
+        <textarea name="description" type="" formControlName="description" rows="5" cols="28"></textarea>
+        <label>Description</label>
+        <span></span>
+      </div>
+      <div class="danger" *ngIf="(createForm.controls.description.dirty || form.submitted)
+                              && !createForm.controls.description.valid">Description must have at least 10 characters!
+      </div>
+
+      <div class="txt_field">
+        <input name="price" type="text" formControlName="price">
+        <label>Price</label>
+        <span></span>
+      </div>
+      <div class="danger" *ngIf="(createForm.controls.price.dirty || form.submitted)
+                              && !createForm.controls.price.valid">Price must be at least 1!
+      </div>
+
+      <div class="txt_field">
+        <input name="quantity" type="text" formControlName="quantity">
+        <label>Quantity</label>
+        <span></span>
+      </div>
+      <div class="danger" *ngIf="(createForm.controls.quantity.dirty || form.submitted)
+                              && !createForm.controls.quantity.valid">Quantity must have at least 1!
+      </div>
+
+      <div class="txt_field">
+        <input name="brand" type="text" formControlName="brand">
+        <label>Brand</label>
+        <span></span>
+      </div>
+      <div class="danger" *ngIf="(createForm.controls.brand.dirty || form.submitted)
+                              && !createForm.controls.brand.valid">Brand must have at least 3 characters!
+      </div>
+
+      <div class="txt_field">
+        <input name="category" type="text" formControlName="category">
+        <label>Category</label>
+        <span></span>
+      </div>
+      <div class="danger" *ngIf="(createForm.controls.category.dirty || form.submitted)
+                              && !createForm.controls.category.valid">Category must have at least 3 characters!
+      </div>
+
+
+      <button class="submit" type="submit" [disabled]="!form.valid">Register</button>
+<!--      <div class="danger" *ngIf="errorMessage != '' && successMessage == '' && form.submitted">-->
+<!--        <p>{{errorMessage}}</p>-->
+<!--      </div>-->
+<!--      <div class="success" *ngIf="errorMessage == '' && successMessage != '' && form.submitted">-->
+<!--        <p>{{successMessage}}</p>-->
+<!--      </div>-->
+
+    </form>
+
+  </div>
+</div>
+
