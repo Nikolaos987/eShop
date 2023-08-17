@@ -20,6 +20,7 @@ import {ProductNotFoundComponent} from './error/product-not-found/product-not-fo
 import {ProductComponent} from './product/product.component';
 import {UsersService} from "./services/users.service";
 import { QuantityNumberComponent } from './quantity-number/quantity-number.component';
+import { ManagementComponent } from './management/management.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { QuantityNumberComponent } from './quantity-number/quantity-number.compo
     ProductNotFoundComponent,
     ProductComponent,
     QuantityNumberComponent,
+    ManagementComponent,
   ],
   imports: [
     BrowserModule,
