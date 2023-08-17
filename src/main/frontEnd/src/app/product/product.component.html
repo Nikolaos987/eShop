@@ -11,15 +11,16 @@
     Details
   </a>
 
+  <div *ngIf="quant != 0" class="quantity-display" class="remove-item" (click)="remove()">
+    <input name="image" type="image" src="/assets/icons8-delete-60.png" alt="X" width="40px" height="40px">
+  </div>
   <div *ngIf="quant != 0" class="quantity-display">
 <!--    <div class="quantity">-->
 <!--      <input type="button" value="<" (click)="decrease()">-->
 <!--      {{quant}}-->
 <!--      <input type="button" value=">" (click)="increase()">-->
 <!--    </div>-->
-<!--    <div class="remove-item">-->
-<!--      <input type="button" value="X" (click)="remove()">-->
-<!--    </div>-->
+
     <app-quantity-number [currentQuantity]="quant" (decreaseQuantity)="decrease($event)" (increaseQuantity)="increase($event)"></app-quantity-number>
   </div>
 
