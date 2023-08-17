@@ -31,7 +31,11 @@ public class CartQuery implements CartQueryModelStore {
     public Future<ArrayList<CartQueryModel.CartItemQueryModel>> findByUserId(UUID uid) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity, p.name, p.price FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid WHERE uid = $1;")
+                .preparedQuery(
+                        "SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity, p.name, p.price " +
+                        "FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid " +
+                        "WHERE uid = $1 " +
+                        "ORDER BY ci.itemid;")
                 .execute(Tuple.of(uid))
                 .compose(records -> {
                     ArrayList<CartQueryModel.CartItemQueryModel> items = new ArrayList<>();
