@@ -10,16 +10,18 @@ import {LoginComponent} from "./login/login.component";
 import {RegisterComponent} from "./register/register.component";
 import {authGuardGuard} from "./auth-guard.guard";
 import {UsersService} from "./services/users.service";
+import {ManagementComponent} from "./management/management.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/home', pathMatch: 'full'},
-  {path: 'home', component: HomeComponent},
-  {path: 'profile', component: ProfileComponent, canActivate: [authGuardGuard]}, // canActivate: [authGuardGuard]
-  {path: 'cart', component: CartComponent, canActivate: [authGuardGuard]},
-  {path: 'details/:pid', component: ProductDetailsComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'register', component: RegisterComponent},
-  {path: '**', component: PageNotFoundComponent}
+  {path: 'home',          component: HomeComponent},
+  {path: 'profile',       component: ProfileComponent,          canActivate: [authGuardGuard]}, // canActivate: [authGuardGuard]
+  {path: 'cart',          component: CartComponent,             canActivate: [authGuardGuard]},
+  {path: 'details/:pid',  component: ProductDetailsComponent},
+  {path: 'login',         component: LoginComponent},
+  {path: 'register',      component: RegisterComponent},
+  {path: 'products',      component: ManagementComponent},
+  {path: '**',            component: PageNotFoundComponent}
 ];
 
 @NgModule({
