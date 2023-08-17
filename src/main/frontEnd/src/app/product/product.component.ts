@@ -27,17 +27,17 @@ export class ProductComponent implements OnInit {
 
   // TODO: wait for a few seconds before sending the request
   decrease(quantity: any) {
-    // if (quantity > 1) {
-      // quantity = quantity - 1;
-      this.decrementItem.emit({p: this.product, q: quantity})
-    // }
+    this.decrementItem.emit({p: this.product, q: quantity})
+    console.log("this.product.price: " + this.product.price + "\nthis.product.quantity: " + this.product.quantity + "\nquant: " + this.quant + "\nquantity: " + quantity)
+    console.log("decrease: " + "this.product.price = (" + this.product.price + "/(" + (quantity + 1) + ")) * " + quantity)
+    this.product.price = (this.product.price/(quantity+1)) * quantity;
   }
 
   increase(quantity: any) {
-    // if (quantity < 9) {
-      // quantity = quantity + 1;
-      this.incrementItem.emit({p: this.product, q: quantity});
-    // }
+    this.incrementItem.emit({p: this.product, q: quantity});
+    console.log("this.product.price: " + this.product.price + "\nthis.product.quantity: " + this.product.quantity + "\nquant: " + this.quant + "\nquantity: " + quantity)
+    console.log("increase: " + "this.product.price = (" + this.product.price + "/(" + (quantity - 1) + ")) * " + quantity)
+    this.product.price = (this.product.price/(quantity-1)) * quantity;
   }
 
   remove() {
