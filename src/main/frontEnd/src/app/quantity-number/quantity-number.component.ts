@@ -32,7 +32,7 @@ export class QuantityNumberComponent implements OnInit {
   stepUp() {
     if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value < 9) {
       this.formQuantity.controls['quantity'].setValue(this.formQuantity.controls['quantity'].value + 1);
-      this.decreaseQuantity.emit(this.formQuantity.controls['quantity'].value)
+      this.increaseQuantity.emit(this.formQuantity.controls['quantity'].value)
     }
   }
 
