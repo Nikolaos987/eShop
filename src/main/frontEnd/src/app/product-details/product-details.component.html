@@ -22,7 +22,9 @@
 <!--          <input class="quantity" type="number" min="1" [max]="product.quantity" id="quantity" formControlName="quantity" readonly>-->
 <!--          <input type="button" class="plus" (click)="stepUp()" value="+">-->
 <!--        </div>-->
-        <app-quantity-number (decreaseQuantity)="stepDown($event)" (increaseQuantity)="stepUp($event)"></app-quantity-number>
+        <div class="quantity-display">
+          <app-quantity-number (decreaseQuantity)="stepDown($event)" (increaseQuantity)="stepUp($event)"></app-quantity-number>
+        </div>
       </form>
     </div>
 

@@ -39,6 +39,7 @@ h2 {
 }
 
 .listing-description {
+  position: relative;
   border: 5px #b393d3 dashed;
   border-radius: 15px;
   background: white;
@@ -201,6 +202,14 @@ input[type=number]::-webkit-outer-spin-button {
   border: solid #ddd;
   border-width: 0 2px;
   text-align: center;
+}
+
+.quantity-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
 }
 
 @media (min-width: 768px) {
