@@ -119,13 +119,13 @@ public class Api extends AbstractVerticle {
 
         router.post("/product/insert/:name/:imagepath/:description/:price/:quantity/:brand/:category").handler(ctx -> {
             try {
-                String path = "assets/" + ctx.pathParam("imagepath");
+                String path = "src/main/resources/assets/" + ctx.pathParam("imagepath");
                 System.out.println(path);
                         this.productService.addProduct(ctx.pathParam("name"), path, ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), Category.valueOf(ctx.pathParam("category")))
                         .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product created successfully"))
                         .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
             } catch (IllegalArgumentException e) {
-                ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end("category should be either cellphone or smartphone!");
+                ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end("category should be either cellphone, smartphone or watch!");
             }
         });
 
