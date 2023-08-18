@@ -16,6 +16,7 @@
   background: antiquewhite;
   padding: 20px;
   border-radius: 10px;
+  overflow: hidden;
 }
 
 .center h1 {

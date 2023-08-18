@@ -16,7 +16,6 @@ import {FormControl, FormGroup} from "@angular/forms";
 export class CartComponent implements OnInit {
 
   items:any;
-
   cart:any;
 
   constructor(private _cartService:CartService, private _productsService:ProductsService, private _usersService: UsersService) {

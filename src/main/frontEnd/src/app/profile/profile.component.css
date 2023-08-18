@@ -20,6 +20,7 @@
   transform: translate(-50%, -50%);
   border-radius: 30px;
   background: rgb(240, 240, 240);
+  overflow: hidden;
 }
 
 .edit-form {

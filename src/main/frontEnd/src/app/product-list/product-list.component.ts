@@ -1,12 +1,13 @@
 import {Component, Input, OnInit, Output} from '@angular/core';
-import { HomeComponent } from "../home/home.component";
-import { take } from "rxjs";
+import {HomeComponent} from "../home/home.component";
+import {take} from "rxjs";
+import {MatPaginatorModule} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
   styleUrls: ['../home/home.component.css', './product-list.component.css'],
-  providers: []
+  providers: [],
 })
 export class ProductListComponent implements OnInit {
 

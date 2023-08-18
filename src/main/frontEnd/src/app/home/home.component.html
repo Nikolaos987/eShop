@@ -1,4 +1,9 @@
 <div class="main">
   <app-search-bar [help]="helpText" (result)="getFilteredProducts($event)"></app-search-bar>
   <app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
+<!--  <mat-paginator [length]=""-->
+<!--                 [pageSize]="10"-->
+<!--                 [pageSizeOptions]="[5, 10, 25, 100]"-->
+<!--                 aria-label="Select page">-->
+<!--  </mat-paginator>-->
 </div>

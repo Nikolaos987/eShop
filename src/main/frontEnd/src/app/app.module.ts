@@ -19,8 +19,11 @@ import {PageNotFoundComponent} from './error/page-not-found/page-not-found.compo
 import {ProductNotFoundComponent} from './error/product-not-found/product-not-found.component';
 import {ProductComponent} from './product/product.component';
 import {UsersService} from "./services/users.service";
-import { QuantityNumberComponent } from './quantity-number/quantity-number.component';
-import { ManagementComponent } from './management/management.component';
+import {QuantityNumberComponent} from './quantity-number/quantity-number.component';
+import {ManagementComponent} from './management/management.component';
+// import {PaginatorComponent} from './paginator/paginator.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import {MatPaginatorModule} from "@angular/material/paginator";
 
 @NgModule({
   declarations: [
@@ -39,13 +42,16 @@ import { ManagementComponent } from './management/management.component';
     ProductComponent,
     QuantityNumberComponent,
     ManagementComponent,
+    // PaginatorComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    MatPaginatorModule
   ],
   providers: [{provide: UsersService, useClass: UsersService}],
   bootstrap: [AppComponent]

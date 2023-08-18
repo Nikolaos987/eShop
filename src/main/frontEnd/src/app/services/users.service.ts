@@ -10,7 +10,7 @@ import {User} from "../user";
   providedIn: 'root'
 })
 export class UsersService {
-  public user: User | undefined = {uid: '92905352-ed39-4c4d-9e97-4c81ed03cab1', username: 'One', isLoggedIn: true}; // TODO: clear the fields
+  public user: User | undefined = {uid: '167b25f0-2e0e-4de7-8059-ce771de3b55f', username: 'Two', isLoggedIn: true}; // TODO: clear the fields
 
   // public errorMessage: string = 'error';
 

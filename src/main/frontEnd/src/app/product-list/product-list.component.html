@@ -1,3 +1,10 @@
 <div class="flex-box-listing">
   <app-product *ngFor="let product of products | async" [product]="product" [image]="image"></app-product>
+
+
+<!--    <mat-paginator [length]="products"-->
+<!--                   [pageSize]="10"-->
+<!--                   [pageSizeOptions]="[5, 10, 25, 100]"-->
+<!--                   aria-label="Select page">-->
+<!--    </mat-paginator>-->
 </div>

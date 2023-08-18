@@ -13,7 +13,7 @@ export class ProductsService {
   constructor(private http: HttpClient) {
   }
 
-  public fetchProducts() {
+  public fetchProducts(): Observable<any> {
     return this.http.get('/api/products');
   }
 

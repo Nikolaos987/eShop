@@ -3,6 +3,8 @@ import { ProductsService } from "../services/products.service";
 import {HttpParams} from "@angular/common/http";
 import {map, tap} from "rxjs";
 import {UsersService} from "../services/users.service";
+import {MatPaginatorModule} from "@angular/material/paginator";
+
 
 @Component({
   selector: 'app-home',

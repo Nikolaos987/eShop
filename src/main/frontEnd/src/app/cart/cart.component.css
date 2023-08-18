@@ -50,12 +50,13 @@ h4 {
   overflow: scroll;
   display: flex;
   gap: 120px;
-  border-radius: 10px;
+  border-radius: 30px;
   padding: 20px;
   position: relative;
   width: auto;
   margin: 10px 120px;
-  background: linear-gradient(90deg, #2980b9, #8e44ad);
+  background: linear-gradient(90deg, #2980b9, #8e44ad), no-repeat;
+
 }
 .list h4 {
   padding: 0 20px;
