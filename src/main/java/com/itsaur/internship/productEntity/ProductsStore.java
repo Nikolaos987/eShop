@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface ProductsStore {
 
-    Future<Void> insert(Product product);
+    Future<Product> insert(Product product);
 
     Future<Product> findProduct(UUID pid);
 

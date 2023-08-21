@@ -1,11 +1,13 @@
 package com.itsaur.internship.userEntity;
 
 import io.vertx.core.Future;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 
 import java.util.UUID;
 
 public interface UsersStore {
-    Future<Void> insert(User user);
+    Future<UUID> insert(User user);
 
     Future<User> findUser(String username);
 
@@ -13,6 +15,6 @@ public interface UsersStore {
 
     Future<Void> deleteUser(UUID uid);
 
-    Future<Void> updateUser(String username, String password);
+    Future<UUID> updateUser(String username, String password);
 
 }

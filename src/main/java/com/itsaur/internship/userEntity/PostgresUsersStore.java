@@ -2,6 +2,7 @@ package com.itsaur.internship.userEntity;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.PoolOptions;
@@ -9,6 +10,7 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
+import java.nio.file.FileSystem;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -29,12 +31,12 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Void> insert(User user) {
+    public Future<UUID> insert(User user) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("INSERT INTO users VALUES ($1, $2, $3);")
                 .execute(Tuple.of(user.uid(), user.username(), user.password()))
-                .compose(v -> Future.succeededFuture());
+                .compose(v -> Future.succeededFuture(user.uid()));
     }
 
     @Override
@@ -84,13 +86,15 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
-    public Future<Void> updateUser(String username, String password) {
+    public Future<UUID> updateUser(String username, String password) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("UPDATE users SET password = $2 WHERE username = $1;")
                 .execute(Tuple.of(username, password))
-                .compose(v -> client.close())
-                .compose(v -> Future.succeededFuture());
+                .compose(v -> client
+                        .preparedQuery("SELECT uid FROM users WHERE username = $1")
+                        .execute(Tuple.of(username))
+                        .compose(records -> Future.succeededFuture(records.iterator().next().getUUID("uid"))));
     }
 
 }

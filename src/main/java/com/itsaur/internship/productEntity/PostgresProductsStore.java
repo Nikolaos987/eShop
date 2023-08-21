@@ -11,6 +11,7 @@ import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class PostgresProductsStore implements ProductsStore {
@@ -31,12 +32,30 @@ public class PostgresProductsStore implements ProductsStore {
     }
 
     @Override
-    public Future<Void> insert(Product product) {
+    public Future<Product> insert(Product product) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
-                .preparedQuery("INSERT INTO product (name, image, description, price, quantity, brand, category) VALUES ($1, $2, $3, $4, $5, $6, $7);")
-                .execute(Tuple.of(product.name(), product.image(), product.description(), product.price(), product.quantity(), product.brand(), product.category()))
-                .compose(res -> Future.succeededFuture());
+                .preparedQuery("INSERT INTO product (pid, name, image, description, price, quantity, brand, category) " +
+                                "VALUES ($1, $2, $3, $4, $5, $6, $7, $8);")
+                .execute(Tuple.of(product.pid(), product.name(), product.image(), product.description(), product.price(),
+                        product.quantity(), product.brand(), product.category()))
+                .compose(res -> client
+                        .preparedQuery("SELECT * FROM product WHERE pid = $1")
+                        .execute(Tuple.of(product.pid()))
+                        .compose(records -> {
+                            try {
+                                Row row = records.iterator().next();
+                                Product newProduct = new Product(
+                                        row.getUUID("pid"), row.getString("name"),
+                                        row.getString("image"), row.getString("description"),
+                                        row.getDouble("price"), row.getInteger("quantity"),
+                                        row.getString("brand"), Category.valueOf(row.getString("category")));
+                                return client.close()
+                                        .compose(r -> Future.succeededFuture(newProduct));
+                            } catch (Exception e) {
+                                return Future.failedFuture(new IllegalArgumentException("error"));
+                            }
+                        }));
     }
 
     @Override

@@ -17,13 +17,16 @@ public class ProductService {
     }
 
 
-    public Future<Void> addProduct(String name, String imagePath, String description, double price, int quantity, String brand, Category category) {
-        System.out.println(imagePath);
+    public Future<Product> addProduct(String name, String imagePath, String description,
+                                   double price, int quantity, String brand, Category category) {
         return productsStore.findProduct(name)
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product == null)
-                        return productsStore.insert(new Product(UUID.randomUUID(), name, imagePath, description, price, quantity, brand, category));
+                        return productsStore.insert(
+                                new Product(UUID.randomUUID(),
+                                name, imagePath, description, price, quantity, brand, category))
+                                .compose(newProduct -> Future.succeededFuture(newProduct));
                     return Future.failedFuture(new IllegalArgumentException("product with this name already exists!"));
                 });
     }
