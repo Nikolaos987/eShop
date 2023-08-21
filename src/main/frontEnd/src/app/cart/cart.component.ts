@@ -1,9 +1,9 @@
 import {Component, OnChanges, OnInit} from '@angular/core';
-import { CartService } from "../services/cart.service";
+import {CartService} from "../services/cart.service";
 import {ProductsService} from "../services/products.service";
-import {map, tap} from "rxjs";
+import {map, Observable, tap} from "rxjs";
 
-import { Item } from "../item";
+import {Item} from "../interfaces/item";
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup} from "@angular/forms";
 
@@ -15,10 +15,12 @@ import {FormControl, FormGroup} from "@angular/forms";
 })
 export class CartComponent implements OnInit {
 
-  items:any;
-  cart:any;
+  items: Observable<Item[]> | undefined;
+  cart: any;
 
-  constructor(private _cartService:CartService, private _productsService:ProductsService, private _usersService: UsersService) {
+  constructor(private _cartService: CartService,
+              private _productsService: ProductsService,
+              private _usersService: UsersService) {
   }
 
   ngOnInit(): void {
@@ -31,18 +33,12 @@ export class CartComponent implements OnInit {
 
   // TODO: wait for a few seconds before sending the request
   decrease(event: any) {
-    // if (event.q > 1) {
-      // product.quantity -= 1;
-      this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
-    // }
+    this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
   }
 
   increase(event: any) {
     // stock = api call PRODUCT BY ID (ID = this.product.pid
-    // if (event.q < 9 /* stock */) {
-      // event.q += 1;
-      this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
-    // }
+    this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
   }
 
   remove(product: any) {
