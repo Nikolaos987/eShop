@@ -66,7 +66,10 @@ public class Api extends AbstractVerticle {
         router.post("/user/register").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.userService.register(body.getString("username"), body.getString("password"))
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user registered"))
+                    .onSuccess(v -> {
+                        JsonObject json = new JsonObject().put("uid", v);
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(json));
+                    })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
@@ -77,7 +80,10 @@ public class Api extends AbstractVerticle {
         router.put("/user/:uid/password").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.userService.update(UUID.fromString(ctx.pathParam("uid")), body.getString("currentPassword"), body.getString("newPassword"))
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user updated"))
+                    .onSuccess(v -> {
+                        JsonObject json = new JsonObject().put("uid", v);
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(json));
+                    })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
@@ -117,12 +123,19 @@ public class Api extends AbstractVerticle {
 //                    ctx.response().sendFile(Paths.get("images", ctx.pathParam("uuidimage")));
 //                });
 
-        router.post("/product/insert/:name/:imagepath/:description/:price/:quantity/:brand/:category").handler(ctx -> {
+        router.post("/product/insert").handler(ctx -> {
             try {
-                String path = "src/main/resources/assets/" + ctx.pathParam("imagepath");
-                System.out.println(path);
-                        this.productService.addProduct(ctx.pathParam("name"), path, ctx.pathParam("description"), Double.parseDouble(ctx.pathParam("price")), Integer.parseInt(ctx.pathParam("quantity")), ctx.pathParam("brand"), Category.valueOf(ctx.pathParam("category")))
-                        .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("product created successfully"))
+                final JsonObject body = ctx.body().asJsonObject();
+                String path = "src/main/resources/assets/" + body.getString("imagepath");
+                this.productService.addProduct(
+                                body.getString("name"),
+                                path,
+                                body.getString("description"),
+                                body.getDouble("price"),
+                                body.getInteger("quantity"),
+                                body.getString("brand"),
+                                Category.valueOf(body.getString("category")))
+                        .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                         .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
             } catch (IllegalArgumentException e) {
                 ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end("category should be either cellphone, smartphone or watch!");
