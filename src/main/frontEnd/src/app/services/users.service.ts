@@ -4,33 +4,27 @@ import {HttpClient, HttpClientModule, HttpErrorResponse, HttpParams} from "@angu
 import {map, Observable, of, tap, throwError} from "rxjs";
 import {catchError, retry} from "rxjs";
 
-import {User} from "../user";
+import {User} from "../interfaces/user";
+import {Profile} from "../interfaces/profile";
+import {Credentials} from "../interfaces/credentials";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  public user: User | undefined = {uid: '167b25f0-2e0e-4de7-8059-ce771de3b55f', username: 'Two', isLoggedIn: true}; // TODO: clear the fields
+  public user: User | undefined = {uid: '', username: '', isLoggedIn: false}; // TODO: clear these fields
 
   // public errorMessage: string = 'error';
 
   constructor(private http: HttpClient) {
   }
 
-  public fetchUser(data: any): Observable<any> {
+  public fetchUser(data: Credentials): Observable<{ uid: string, username: string, password: string }> {
     return this.http
-      .post <{ uid: string, username: string, password: string }>('/api/user/login', data, {responseType: "json"}) // TODO: don't return the "password: string from server"
+      .post <{ uid: string, username: string, password: string }>
+      ('/api/user/login', {"username": data.username, "password": data.password}, {responseType: "json"}) // TODO: don't return the "password: string from server"
       .pipe(
-        map(response => {
-          // this.errorMessage = 'no error'
-          this.user = {
-            uid: response.uid,
-            username: response.username,
-            isLoggedIn: true
-          }
-        }),
-        catchError(this.handleError)
-      );
+        catchError(this.handleError));
   }
 
   // public fetchUser(username: string, password: string) {
@@ -40,25 +34,24 @@ export class UsersService {
   //   return this.http.post('http://localhost:8084/user/login', {params});
   // }
 
-  public postUser(data: any): Observable<string> {
+  public postUser(data: Credentials): Observable<{ uid: string }> {
     return this.http
-      .post('/api/user/register',
+      .post<{ uid: string }>('/api/user/register',
         {
           "username": data.username,
           "password": data.password
-        }, {responseType: "text"})
+        }, {responseType: "json"})
       .pipe(
-        catchError(this.handleError)
-      );
+        catchError(this.handleError));
   }
 
-  public putUser(data: any): Observable<string> {
+  public putUser(data: Profile): Observable<{ uid: string }> {
     return this.http
-      .put('/api/user/' + this.user?.uid + '/password',
+      .put<{ uid: string }>('/api/user/' + this.user?.uid + '/password',
         {
           "currentPassword": data.currentPassword,
           "newPassword": data.password
-        }, {responseType: "text"})
+        }, {responseType: "json"})
       .pipe(
         // map((response) => {
         //   return response.message;

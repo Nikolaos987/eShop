@@ -3,6 +3,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {UsersService} from "../services/users.service";
 import {tap} from "rxjs";
 import {Router} from "@angular/router";
+import {Credentials} from "../interfaces/credentials";
 
 // import { User } from "../user";
 
@@ -12,6 +13,10 @@ import {Router} from "@angular/router";
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  loginCredentials: Credentials = {
+    username: undefined,
+    password: undefined
+  }
 
   errorMessage: string = '';
 
@@ -30,9 +35,18 @@ export class LoginComponent {
 
   login() {
     if (this.profileForm.valid) {
-      this.usersService.fetchUser(this.profileForm.value)
+      this.loginCredentials = {
+        username: this.profileForm.value.username,
+        password: this.profileForm.value.password
+      }
+      this.usersService.fetchUser(this.loginCredentials)
         .subscribe(result => {
           console.log(result);
+          this.usersService.user = {
+            uid: result.uid,
+            username: result.username,
+            isLoggedIn: true
+          }
           this.router.navigateByUrl('/home');
         }, (error) => {
           console.log(error);

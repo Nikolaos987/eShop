@@ -1,44 +1,63 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpClientModule, HttpParams} from "@angular/common/http";
 
-import {Observable, throwError} from "rxjs";
+import {map, Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs";
+import {Product} from "../interfaces/product";
+import {getXHRResponse} from "rxjs/internal/ajax/getXHRResponse";
+import {AbstractControl, FormControl, FormGroup, ɵFormGroupValue, ɵTypedOrUntyped} from "@angular/forms";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductsService {
-  products: any;
+  products: Product[] = [];
 
   constructor(private http: HttpClient) {
   }
 
-  public fetchProducts(): Observable<any> {
-    return this.http.get('/api/products');
-  }
-
-  public fetchProduct(pid: string) {
-    return this.http.get('/api/product/' + pid);
-  }
-
-  public postProduct(data: any): Observable<any> {
+  public fetchProducts(): Observable<Product[]> {
     return this.http
-      .post(
-        '/api/product/insert/'+data.name+'/'+data.imagepath+'/'+data.description+'/'+data.price+'/'+data.quantity+'/'+data.brand+'/'+data.category,
-        {},
-        {responseType: "text"})
+      .get<[Product]>('/api/products', {responseType: "json"})
   }
 
-  public fetchFilteredProducts(filter: string) {
-    filter = filter.trim();
+  public fetchProduct(pid: string): Observable<Product> {
+    return this.http.get<Product>('/api/product/' + pid);
+  }
 
+  public postProduct(product: Product): Observable<Product> {
+    return this.http
+      .post<{
+        pid: string,
+        name: string,
+        image: string,
+        description: string,
+        price: number,
+        quantity: number,
+        brand: string,
+        category: string
+      }>(
+        '/api/product/insert',
+        {
+          "name": product.name,
+          "imagepath": product.image,
+          "description": product.description,
+          "price": Number(product.price),
+          "quantity": Number(product.quantity),
+          "brand": product.brand,
+          "category": product.category
+        },
+        {responseType: "json"})
+  }
+
+  public fetchFilteredProducts(filter: string): Observable<Product[]> {
+    filter = filter.trim();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
-
     if (!filter) {
       return this.fetchProducts();
     }
-    return this.http.get('/api/product/search/' + filter, options);
+    return this.http.get<[Product]>('/api/product/search/' + filter, options);
   }
 
 }

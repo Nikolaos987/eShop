@@ -3,6 +3,7 @@ import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {error} from "@angular/compiler-cli/src/transformers/util";
 import {passwordMatchesValidator} from "../passwordMatchesValidator";
+import {Credentials} from "../interfaces/credentials";
 
 @Component({
   selector: 'app-register',
@@ -11,6 +12,10 @@ import {passwordMatchesValidator} from "../passwordMatchesValidator";
   providers: [UsersService]
 })
 export class RegisterComponent implements OnInit {
+  registerCredentials: Credentials = {
+    username: undefined,
+    password: undefined
+  }
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -41,10 +46,14 @@ export class RegisterComponent implements OnInit {
     // if (this.registerForm.value.username!='' && this.registerForm.value.password!='' && this.passwordAgain!='') {
     //   if (this.registerForm.value.password == this.passwordAgain) { // ===
     if (this.registerForm.valid) {
-      this.usersService.postUser(this.registerForm.value)
+      this.registerCredentials = {
+        username: this.registerForm.value.username,
+        password: this.registerForm.value.password
+      }
+      this.usersService.postUser(this.registerCredentials)
         .subscribe(response => {
             console.log(response);
-            this.successMessage = response;
+            this.successMessage = 'User registered!';
             this.errorMessage = '';
           },
           (error) => {

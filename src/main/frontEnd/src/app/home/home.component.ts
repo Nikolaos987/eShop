@@ -1,9 +1,10 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import { ProductsService } from "../services/products.service";
 import {HttpParams} from "@angular/common/http";
-import {map, tap} from "rxjs";
+import {map, Observable, tap} from "rxjs";
 import {UsersService} from "../services/users.service";
 import {MatPaginatorModule} from "@angular/material/paginator";
+import {Product} from "../interfaces/product";
 
 
 @Component({
@@ -16,7 +17,7 @@ export class HomeComponent implements OnInit{
 
   uid:string = 'sth';
   image: any;
-  productList: any;
+  productList: Observable<Product[]> | undefined;
   helpText = "Search any product...";
 
   constructor(private productsService: ProductsService, private _usersService: UsersService, private cdr: ChangeDetectorRef) { }
@@ -27,7 +28,14 @@ export class HomeComponent implements OnInit{
   }
 
   public getProducts() {
-    this.productList = this.productsService.fetchProducts();
+    this.productList = this.productsService.fetchProducts()
+    this.productList.forEach(p => console.log(p))
+    // this.productsService.fetchProducts()
+    //   .subscribe(response => {
+    //     this.productList = response;
+    //     response.forEach(p => console.log("products: " + p))
+    //   });
+
   }
 
   public getFilteredProducts(text: string) {

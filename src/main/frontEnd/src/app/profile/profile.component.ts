@@ -3,6 +3,7 @@ import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {passwordMatchesValidator} from "../passwordMatchesValidator";
+import {Profile} from "../interfaces/profile";
 
 @Component({
   selector: 'app-profile',
@@ -10,6 +11,11 @@ import {passwordMatchesValidator} from "../passwordMatchesValidator";
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
+  profile: Profile = {
+    currentPassword: undefined,
+    password: undefined
+  }
+
   message: string = '';
   currentUsername: string | undefined = this._usersService.user?.username;
 
@@ -50,9 +56,13 @@ export class ProfileComponent implements OnInit {
   changePassword() {
     this.changePswdBtnClicked = true;
     if (this.profileForm.valid) {
-      this._usersService.putUser(this.profileForm.value)
+      this.profile = {
+        currentPassword: this.profileForm.value.currentPassword,
+        password: this.profileForm.value.password
+      }
+      this._usersService.putUser(this.profile)
         .subscribe(result => {
-          this.successMessage = result;
+          this.successMessage = 'Password changed!';
           this.errorMessage = '';
           console.log('this is the result emitted: '+ result);
           // this.router.navigateByUrl('/home')
