@@ -1,10 +1,10 @@
 export interface Product {
-  pid: string;
-  name: string;
-  image: string;
-  description: string;
-  price: number;
-  quantity: number;
-  brand: string;
-  category: string;
+  pid: string | null | undefined;
+  name: string | null | undefined;
+  image: string | null | undefined;
+  description: string | null | undefined;
+  price: number | null | undefined;
+  quantity: number | null | undefined;
+  brand: string | null | undefined;
+  category: string | null | undefined;
 }
