@@ -6,6 +6,7 @@ import {map, Observable, tap} from "rxjs";
 import {Item} from "../interfaces/item";
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup} from "@angular/forms";
+import {Product} from "../interfaces/product";
 
 @Component({
   selector: 'app-cart',
@@ -16,7 +17,7 @@ import {FormControl, FormGroup} from "@angular/forms";
 export class CartComponent implements OnInit {
 
   items: Observable<Item[]> | undefined;
-  cart: any;
+  // cart: any;any
 
   constructor(private _cartService: CartService,
               private _productsService: ProductsService,
@@ -28,23 +29,29 @@ export class CartComponent implements OnInit {
   }
 
   fetchCart(): void {
-    this.items = this._cartService.getCart(this._usersService.user?.uid);
+    this.items = this._cartService
+      .getCart(this._usersService.user?.uid);
   }
 
   // TODO: wait for a few seconds before sending the request
-  decrease(event: any) {
-    this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
+  decrease(event: {p: Product, q: number}) {
+    this._cartService
+      .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
+      .subscribe(result => console.log(result))
   }
 
-  increase(event: any) {
+  increase(event: {p: Product, q: number}) {
     // stock = api call PRODUCT BY ID (ID = this.product.pid
-    this._cartService.addToCart(this._usersService.user?.uid, event.p.pid, event.q).subscribe()
+    this._cartService
+      .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
+      .subscribe(result => console.log(result))
   }
 
-  remove(product: any) {
+  remove(product: Product) {
     this._cartService.addToCart(this._usersService.user?.uid, product.pid, 0)
       .subscribe(response => {
         this.items = this._cartService.getCart(this._usersService.user?.uid);
+        console.log(response);
       });
   }
 }

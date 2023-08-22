@@ -12,7 +12,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 export class ProductListComponent implements OnInit {
 
   // public product: any;
-  @Input() image: any;
+  @Input() image: string | undefined;
   @Input() products: any;
 
   constructor(private homeComponent: HomeComponent) {

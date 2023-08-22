@@ -4,9 +4,11 @@
   <div *ngIf="items">
     <div class="list">
       <section *ngFor="let item of items | async">
-        <app-product [product]="item" [quant]="item.quantity"
+        <app-product [product]="item"
+                     [quant]="item.quantity"
                      (incrementItem)="increase($event)"
-                     (decrementItem)="decrease($event)" (removeItem)="remove($event)"></app-product> <!--[quant]="item.quantity" (incrementItem)="increase($event)" (removeItem)="remove($event)"-->
+                     (decrementItem)="decrease($event)"
+                     (removeItem)="remove($event)"></app-product> <!--[quant]="item.quantity" (incrementItem)="increase($event)" (removeItem)="remove($event)"-->
         <!--  <form [formGroup]="quantForm">-->
         <!--    <div class="quantity">-->
         <!--      <input type="button" value="<" (click)="decrease()">-->

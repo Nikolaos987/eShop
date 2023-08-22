@@ -17,15 +17,17 @@ export class CartService {
 
   getCart(uid: string | undefined): Observable<Item[]> {
     return this.http
-      .get<Item[]>('/api/user/' + uid + '/cart', {responseType:"json"})
+      .get<Item[]>('/api/user/' + uid + '/cart', {responseType: "json"})
       .pipe(
         catchError(this.handleError));
   }
 
-  addToCart(uid: string | undefined, pid: string, quantity: any) {
-    return this.http.put('/api/user/' + uid + '/product/' + pid + '/' + quantity,
+  addToCart(uid: string | null | undefined, pid: string | null | undefined, quantity: number | null | undefined): Observable<{ itemid: string }> {
+    return this.http.put<{ itemid: string }>('/api/user/' + uid + '/product/' + pid + '/' + quantity,
       {},
-      {responseType: "text"})
+      {responseType: "json"})
+      .pipe(
+        catchError(this.handleError));
   }
 
   updateCart(itemid: string, quantity: number) {

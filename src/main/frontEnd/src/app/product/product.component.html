@@ -1,4 +1,4 @@
-<section class="listing">
+<div class="listing">
 
   <img [src]="'/api/image/'+product.pid" class="listing-photo" alt="could not load photo of {{product.image}}">
   <h2
@@ -8,13 +8,13 @@
     class="listing-location">{{product.price}}<span></span>€ {{product.category}}
   </p>
   <a [title]="product.name + ' details'" [routerLink]="['/details', product.pid]">
-    Details
+    <p class="details-text">Details ></p>
   </a>
 
-  <div *ngIf="quant != 0" class="quantity-display" class="remove-item" (click)="remove()">
+  <div *ngIf="quant !== undefined" class="quantity-display" class="remove-item" (click)="remove()">
     <input name="image" type="image" src="/assets/icons8-delete-60.png" alt="X" width="40px" height="40px">
   </div>
-  <div *ngIf="quant != 0" class="quantity-display">
+  <div *ngIf="quant !== undefined" class="quantity-display">
 <!--    <div class="quantity">-->
 <!--      <input type="button" value="<" (click)="decrease()">-->
 <!--      {{quant}}-->
@@ -24,5 +24,5 @@
     <app-quantity-number [currentQuantity]="quant" (decreaseQuantity)="decrease($event)" (increaseQuantity)="increase($event)"></app-quantity-number>
   </div>
 
-</section>
+</div>
 

@@ -21,7 +21,7 @@ export class ProductsService {
       .get<[Product]>('/api/products', {responseType: "json"})
   }
 
-  public fetchProduct(pid: string): Observable<Product> {
+  public fetchProduct(pid: string | null | undefined): Observable<Product> {
     return this.http.get<Product>('/api/product/' + pid);
   }
 
@@ -57,7 +57,8 @@ export class ProductsService {
     if (!filter) {
       return this.fetchProducts();
     }
-    return this.http.get<[Product]>('/api/product/search/' + filter, options);
+    return this.http.get<Product[]>('/api/product/search/' + filter, options);
+    //                  <[Product]>
   }
 
 }

@@ -2,6 +2,8 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CartService} from "../services/cart.service";
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup} from "@angular/forms";
+import {Product} from "../interfaces/product";
+import {Item} from "../interfaces/item";
 
 @Component({
   selector: 'app-product',
@@ -10,13 +12,20 @@ import {FormControl, FormGroup} from "@angular/forms";
   providers: [CartService]
 })
 export class ProductComponent implements OnInit {
-  @Input() image: any;
-  @Input() product: any;
-  @Input() quant: number = 0;
+  // @Input() image: string | undefined;
 
-  @Output() removeItem = new EventEmitter<any>();
-  @Output() incrementItem = new EventEmitter<{p: any, q: number}>();
-  @Output() decrementItem = new EventEmitter<{p: any, q: number}>();
+  // @Input() item: Item = {
+  //   pid: undefined,
+  //   price: 0,
+  //   quantity: 0,
+  //   name: undefined
+  // };
+  @Input() product: any;
+  @Input() quant: number | undefined;
+
+  @Output() removeItem = new EventEmitter<Product>();
+  @Output() incrementItem = new EventEmitter<{p: Product, q: number}>();
+  @Output() decrementItem = new EventEmitter<{p: Product, q: number}>();
 
   // TODO: remove constructor, unused declarations
   constructor(private _cartService: CartService, private usersService: UsersService) {
@@ -26,14 +35,14 @@ export class ProductComponent implements OnInit {
   }
 
   // TODO: wait for a few seconds before sending the request
-  decrease(quantity: any) {
+  decrease(quantity: number) {
     this.decrementItem.emit({p: this.product, q: quantity})
     console.log("this.product.price: " + this.product.price + "\nthis.product.quantity: " + this.product.quantity + "\nquant: " + this.quant + "\nquantity: " + quantity)
     console.log("decrease: " + "this.product.price = (" + this.product.price + "/(" + (quantity + 1) + ")) * " + quantity)
     this.product.price = (this.product.price/(quantity+1)) * quantity;
   }
 
-  increase(quantity: any) {
+  increase(quantity: number) {
     this.incrementItem.emit({p: this.product, q: quantity});
     console.log("this.product.price: " + this.product.price + "\nthis.product.quantity: " + this.product.quantity + "\nquant: " + this.quant + "\nquantity: " + quantity)
     console.log("increase: " + "this.product.price = (" + this.product.price + "/(" + (quantity - 1) + ")) * " + quantity)

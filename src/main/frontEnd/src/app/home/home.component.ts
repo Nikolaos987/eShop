@@ -16,11 +16,13 @@ import {Product} from "../interfaces/product";
 export class HomeComponent implements OnInit{
 
   uid:string = 'sth';
-  image: any;
+  // image: string | undefined;
   productList: Observable<Product[]> | undefined;
   helpText = "Search any product...";
 
-  constructor(private productsService: ProductsService, private _usersService: UsersService, private cdr: ChangeDetectorRef) { }
+  constructor(private productsService: ProductsService,
+              private _usersService: UsersService,
+              private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.cdr.detectChanges();

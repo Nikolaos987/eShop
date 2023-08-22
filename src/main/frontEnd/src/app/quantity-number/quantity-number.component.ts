@@ -8,19 +8,20 @@ import {FormControl, FormGroup} from "@angular/forms";
 })
 export class QuantityNumberComponent implements OnInit {
 
-  @Input() currentQuantity: any;
+  @Input() currentQuantity: number | undefined;
   formQuantity = new FormGroup({
     quantity: new FormControl(1)
   })
 
+  @Output() decreaseQuantity = new EventEmitter<number>();
+  @Output() increaseQuantity = new EventEmitter<number>();
+
   ngOnInit(): void {
-    if (this.currentQuantity >= 0) {
+    // TODO: can be deleted, it is never used
+    if (this.currentQuantity != undefined && this.currentQuantity >= 0) {
       this.formQuantity.controls['quantity'].setValue(this.currentQuantity)
     }
   }
-
-  @Output() decreaseQuantity = new EventEmitter<any>();
-  @Output() increaseQuantity = new EventEmitter<any>();
 
   stepDown() {
     if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value > 1) {

@@ -5,6 +5,7 @@ import {Location} from '@angular/common';
 import {CartService} from "../services/cart.service";
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup} from "@angular/forms";
+import {Product} from "../interfaces/product";
 
 @Component({
   selector: 'app-product-details',
@@ -13,7 +14,16 @@ import {FormControl, FormGroup} from "@angular/forms";
   providers: [ProductsService, CartService]
 })
 export class ProductDetailsComponent implements OnInit {
-  @Input() product?: any;
+  @Input() product: Product = {
+    pid: String(this.route.snapshot.paramMap.get('pid')),
+    name: undefined,
+    image: undefined,
+    description: undefined,
+    price: undefined,
+    quantity: undefined,
+    brand: undefined,
+    category: undefined,
+  };
 
   // quantity: number = 1;
 
@@ -34,10 +44,13 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   getProduct(): void {
-    const pid = String(this.route.snapshot.paramMap.get('pid'));
+    // const pid = String(this.route.snapshot.paramMap.get('pid'));
 
-    this.productsService.fetchProduct(pid)
-      .subscribe(response => this.product = response)
+    this.productsService.fetchProduct(this.product.pid)
+      .subscribe(response => {
+        this.product = response
+        console.log("input product: " + this.product.name);
+      })
   }
 
   addToCart() {
@@ -48,13 +61,13 @@ export class ProductDetailsComponent implements OnInit {
       window.alert('you are not logged in!');
   }
 
-  stepDown(quantity: any) {
+  stepDown(quantity: number) {
     // if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value > 1) {
       this.addToCartForm.controls['quantity'].setValue(quantity);
     // }
   }
 
-  stepUp(quantity: any) {
+  stepUp(quantity: number) {
     // if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value < 9) {
       this.addToCartForm.controls['quantity'].setValue(quantity);
     // }
