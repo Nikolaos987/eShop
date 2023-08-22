@@ -106,12 +106,6 @@ public class Api extends AbstractVerticle {
 
         // TODO: 7/7/23 findProducts
         router.get("/products").handler(ctx -> {
-//            ctx.request().headers().set("Access-Control-Allow-Origin", "http://localhost:4200/");
-//            ctx.request().headers().add("Access-Control-Allow-Origin", "http://localhost:4200/");
-//            ctx.response().putHeader("Access-Control-Allow-Origin", "http://localhost:4200/");
-//            ctx.response().headers().set("Access-Control-Allow-Origin", "http://localhost:4200/");
-//            ctx.response().headers().add("Access-Control-Allow-Origin", "http://localhost:4200/");
-
             this.productQueryModelStore.findProducts()
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
@@ -172,8 +166,13 @@ public class Api extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.put("/user/:uid/product/:pid/:quantity").handler(ctx -> this.cartService.addItem(UUID.fromString(ctx.pathParam("uid")), UUID.fromString(ctx.pathParam("pid")), Integer.parseInt(ctx.pathParam("quantity")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("item updated!"))
+        router.put("/user/:uid/product/:pid/:quantity").handler(ctx -> this.cartService.addItem(UUID.fromString(ctx.pathParam("uid")),
+                        UUID.fromString(ctx.pathParam("pid")), Integer.parseInt(ctx.pathParam("quantity")))
+                .onSuccess(v -> {
+                    JsonObject json = new JsonObject()
+                            .put("itemid", v);
+                    ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(json));
+                })
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.delete("/user/:uid/cart").handler(ctx -> this.cartService.buyCart(UUID.fromString(ctx.pathParam("uid")))

@@ -74,7 +74,7 @@ public class UserService {
                         System.out.println("There is no cart for this user id");
                         return Future.succeededFuture();
                     } else {
-                        List<Future<Void>> futureList = cart.items()
+                        List<Future<UUID>> futureList = cart.items() // TODO edited: FROM Future<Void> -> Future<UUID>
                                 .stream()
                                 .map(item -> {
                                     System.out.println(item.itemId());

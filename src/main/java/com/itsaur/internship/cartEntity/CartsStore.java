@@ -1,6 +1,7 @@
 package com.itsaur.internship.cartEntity;
 
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -15,6 +16,6 @@ public interface CartsStore {
 
     Future<Void> deleteCart(UUID uid);
 
-    Future<Void> update(Cart cart);
+    Future<UUID> update(Cart cart);
 
 }

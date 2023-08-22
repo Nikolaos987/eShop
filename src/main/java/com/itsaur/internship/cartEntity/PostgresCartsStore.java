@@ -2,6 +2,7 @@ package com.itsaur.internship.cartEntity;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.*;
@@ -122,15 +123,22 @@ public class PostgresCartsStore implements CartsStore {
     }
 
     @Override
-    public Future<Void> update(Cart cart) {
+    public Future<UUID> update(Cart cart) {
         SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return client
                 .preparedQuery("SELECT cid FROM cart WHERE uid = $1")
                 .execute(Tuple.of(cart.uid()))
-                .compose(r -> client.close()
+
                         .compose(r1 -> deleteNext(cart, 0)
                                 .compose(r2 -> updateNext(cart, 0)
-                                        .compose(r3 -> Future.succeededFuture()))));
+                                        .compose(r3 -> client
+                                                .preparedQuery("SELECT itemid FROM cartitem JOIN cart c2 ON cartitem.cid = c2.cid WHERE uid = $1")
+                                                .execute(Tuple.of(cart.uid()))
+                                                .compose(records -> {
+                                                    System.out.println("item: "+ records.iterator().next().getUUID("itemid"));
+                                                    return client.close()
+                                                            .compose(r -> Future.succeededFuture(records.iterator().next().getUUID("itemid")));
+                                                }))));
     }
 
     public Future<Void> deleteNext(Cart cart, int position) {

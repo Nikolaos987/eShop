@@ -5,10 +5,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
-import io.vertx.sqlclient.PoolOptions;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.SqlClient;
-import io.vertx.sqlclient.Tuple;
+import io.vertx.sqlclient.*;
 import com.itsaur.internship.productEntity.Category;
 
 import java.util.ArrayList;
@@ -48,35 +45,36 @@ public class ProductQuery implements ProductQueryModelStore {
 
     @Override
     public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex) {
-            regex = "%"+regex+"%".toLowerCase();
-            SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-            return client
-                    .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1;")
-                    .execute(Tuple.of(regex))
-                    .compose(rows -> {
-                        ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
-                        rows.forEach(row -> {
-                            ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                    row.getUUID("pid"),
-                                    row.getString("name"),
-                                    row.getString("image"),
-                                    row.getString("description"),
-                                    row.getDouble("price"),
-                                    row.getInteger("quantity"),
-                                    row.getString("brand"),
-                                    Category.valueOf(row.getString("category")));
-                            products.add(product);
-                        });
-//                        ProductsQueryModel productList = new ProductsQueryModel(products);
-                        return client.close()
-                                .compose(r -> Future.succeededFuture(products));
+        regex = "%" + regex + "%".toLowerCase();
+        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        return client
+                .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1;")
+                .execute(Tuple.of(regex))
+                .compose(rows -> {
+                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
+                    rows.forEach(row -> {
+                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+                                row.getUUID("pid"),
+                                row.getString("name"),
+                                row.getString("image"),
+                                row.getString("description"),
+                                row.getDouble("price"),
+                                row.getInteger("quantity"),
+                                row.getString("brand"),
+                                Category.valueOf(row.getString("category")));
+                        products.add(product);
                     });
+//                        ProductsQueryModel productList = new ProductsQueryModel(products);
+                    return client.close()
+                            .compose(r -> Future.succeededFuture(products));
+                });
     }
 
     @Override
     public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProducts() {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+//        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
+        PgPool pool = PgPool.pool(vertx, connectOptions, poolOptions);
+        return pool
                 .preparedQuery("SELECT * FROM product;")
                 .execute()
                 .compose(rows -> {
@@ -94,7 +92,7 @@ public class ProductQuery implements ProductQueryModelStore {
                         products.add(product);
                     });
 //                    ProductsQueryModel productList = new ProductsQueryModel(products);
-                    return client.close()
+                    return pool.close()
                             .compose(r -> Future.succeededFuture(products));
                 });
     }

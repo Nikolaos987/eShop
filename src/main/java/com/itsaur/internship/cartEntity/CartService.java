@@ -3,6 +3,7 @@ package com.itsaur.internship.cartEntity;
 import io.vertx.core.Future;
 import com.itsaur.internship.productEntity.ProductsStore;
 import com.itsaur.internship.userEntity.UsersStore;
+import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -20,7 +21,7 @@ public class CartService {
     }
 
 
-    public Future<Void> addItem(UUID uid, UUID pid, int quantity) {
+    public Future<UUID> addItem(UUID uid, UUID pid, int quantity) {
         return usersStore.findUser(uid)
                 .otherwiseEmpty()
                 .compose(user -> {
@@ -46,7 +47,7 @@ public class CartService {
                 });
     }
 
-    public Future<Void> buyCart(UUID uid) {
+    public Future<UUID> buyCart(UUID uid) {
         return usersStore.findUser(uid)
                 .otherwiseEmpty()
                 .compose(user -> {
