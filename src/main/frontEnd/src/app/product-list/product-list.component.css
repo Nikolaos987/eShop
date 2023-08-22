@@ -1,10 +1,15 @@
 .flex-box-listing {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  justify-content: center;
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow: scroll;
+  /*grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));*/
+  justify-content: space-evenly;
   align-items: center;
+  align-content: space-around;
+  align-self: stretch;
   min-height: 50vh;
-  gap: 3vh;
+  gap: 3vh 3vw;
 }
 
 .listing p span {

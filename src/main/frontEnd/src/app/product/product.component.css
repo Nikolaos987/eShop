@@ -28,6 +28,11 @@
   content: url("/assets/location-pin.svg") / "";
 }
 
+.details-text {
+  text-align: right;
+  margin-right: 20px;
+}
+
 .quantity-display {
   position: absolute;
   top: ;
