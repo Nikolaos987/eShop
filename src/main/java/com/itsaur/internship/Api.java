@@ -27,7 +27,9 @@ public class Api extends AbstractVerticle {
     private final ProductQueryModelStore productQueryModelStore;
     private final UserQueryModelStore userQueryModelStore;
 
-    public Api(UserService userService, ProductService productService, CartService cartService, CartQueryModelStore cartQueryModelStore, ProductQueryModelStore productQueryModelStore, UserQueryModelStore userQueryModelStore) {
+    public Api(UserService userService, ProductService productService, CartService cartService,
+               CartQueryModelStore cartQueryModelStore, ProductQueryModelStore productQueryModelStore,
+               UserQueryModelStore userQueryModelStore) {
         this.userService = userService;
         this.productService = productService;
         this.cartService = cartService;
@@ -105,8 +107,9 @@ public class Api extends AbstractVerticle {
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         // TODO: 7/7/23 findProducts
-        router.get("/products").handler(ctx -> {
-            this.productQueryModelStore.findProducts()
+        router.get("/products/:from/:to").handler(ctx -> {
+            this.productQueryModelStore.findProducts(Integer.parseInt(ctx.pathParam("from")),
+                            Integer.parseInt(ctx.pathParam("to")))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });

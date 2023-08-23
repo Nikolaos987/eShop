@@ -60,10 +60,10 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
-    public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProducts() {
+    public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProducts(int from, int range) {
         return pgPool
-                .preparedQuery("SELECT * FROM product;")
-                .execute()
+                .preparedQuery("SELECT * FROM product LIMIT $2 OFFSET $1;")
+                .execute(Tuple.of(from, range))
                 .compose(rows -> {
                     ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
                     rows.forEach(row -> {

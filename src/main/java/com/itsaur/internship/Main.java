@@ -4,6 +4,7 @@ import com.itsaur.internship.cartEntity.CartService;
 import com.itsaur.internship.cartEntity.PostgresCartsStore;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.itsaur.internship.productEntity.Product;
 import io.vertx.core.Vertx;
 import com.itsaur.internship.productEntity.PostgresProductsStore;
 import com.itsaur.internship.productEntity.ProductService;
@@ -26,38 +27,35 @@ public class Main {
                 .programName("jcommander")
                 .build();
 
-        PgConnectOptions connectOptions = new PgConnectOptions()
-                .setPort(opts.port)
-                .setHost(opts.host)
-                .setDatabase(opts.database)
-                .setUser(opts.user)
-                .setPassword(opts.password);
-
-        PoolOptions poolOptions = new PoolOptions().setMaxSize(opts.poolSize);
-
-
-        PgPool pgPool = PgPool.pool(vertx, connectOptions, poolOptions);
-
         try {
             jc.parse(args);
+            PgConnectOptions connectOptions = new PgConnectOptions()
+                    .setPort(opts.port)
+                    .setHost(opts.host)
+                    .setDatabase(opts.database)
+                    .setUser(opts.user)
+                    .setPassword(opts.postPasword);
+            PoolOptions poolOptions = new PoolOptions().setMaxSize(opts.poolSize);
+            PgPool pgPool = PgPool.pool(vertx, connectOptions, poolOptions);
+
+            UserService userService = new UserService(new PostgresUsersStore(pgPool),
+                    new PostgresCartsStore(pgPool));
+
+            CartService cartService = new CartService(new PostgresCartsStore(pgPool),
+                    new PostgresProductsStore(pgPool),
+                    new PostgresUsersStore(pgPool));
+
+            ProductService productService = new ProductService(new PostgresProductsStore(pgPool),
+                    cartService);
+
             switch (opts.method) {
                 case "server" -> {
                     if (opts.database != null) {
                         /* Server stores to Postgres */
                         vertx.deployVerticle(new Api(
-                                new UserService(
-                                        new PostgresUsersStore(pgPool),
-                                        new PostgresCartsStore(pgPool)),
-                                new ProductService(
-                                        new PostgresProductsStore(pgPool),
-                                        new CartService(
-                                                new PostgresCartsStore(pgPool),
-                                                new PostgresProductsStore(pgPool),
-                                                new PostgresUsersStore(pgPool))),
-                                new CartService(
-                                        new PostgresCartsStore(pgPool),
-                                        new PostgresProductsStore(pgPool),
-                                        new PostgresUsersStore(pgPool)),
+                                userService,
+                                productService,
+                                cartService,
                                 new CartQuery(pgPool),
                                 new ProductQuery(pgPool),
                                 new UserQuery(pgPool)));
@@ -85,7 +83,7 @@ public class Main {
 //                    }
 //                }
             }
-        }  catch (ParameterException e) {
+        } catch (ParameterException e) {
             e.printStackTrace();
             jc.usage();
         }
