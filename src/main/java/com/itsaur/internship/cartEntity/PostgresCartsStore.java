@@ -13,25 +13,16 @@ import java.util.UUID;
 public class PostgresCartsStore implements CartsStore {
 
     Vertx vertx = Vertx.vertx();
-    private final PgConnectOptions connectOptions;
-    private final PoolOptions poolOptions;
+    private final PgPool pgPool;
 
-    public PostgresCartsStore(int port, String host, String db, String user, String password, int poolSize) {
-        this.connectOptions = new PgConnectOptions()
-                .setPort(port)
-                .setHost(host)
-                .setDatabase(db)
-                .setUser(user)
-                .setPassword(password);
-        this.poolOptions = new PoolOptions()
-                .setMaxSize(poolSize);
+    public PostgresCartsStore(PgPool pgPool) {
+        this.pgPool = pgPool;
     }
 
 
     @Override
     public Future<Void> insert(Cart cart) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("INSERT INTO cart VALUES ($1, $2, $3);")
                 .execute(Tuple.of(cart.cid(), cart.uid(), cart.dateCreated()))
                 .compose(result -> Future.succeededFuture());
@@ -61,28 +52,35 @@ public class PostgresCartsStore implements CartsStore {
 
     @Override
     public Future<Cart> findCart(UUID uid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
-                .preparedQuery("SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid WHERE uid = $1;")
+        return pgPool
+                .preparedQuery("SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity " +
+                        "FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid " +
+                        "WHERE uid = $1;")
                 .execute(Tuple.of(uid))
                 .compose(records -> {
                     ArrayList<CartItem> items = new ArrayList<>();
                     if (records.iterator().next().getUUID("itemid") != null) {
                         records.forEach(row -> {
-                            CartItem item = new CartItem(row.getUUID("itemid"), row.getUUID("pid"), row.getInteger("quantity"));
+                            CartItem item = new CartItem(
+                                    row.getUUID("itemid"),
+                                    row.getUUID("pid"),
+                                    row.getInteger("quantity"));
                             items.add(item);
                         });
                     }
                     Row row = records.iterator().next();
-                    Cart cart = new Cart(row.getUUID("cid"), row.getUUID("uid"), row.getLocalDateTime("datecreated"), items);
-                    return client.close().compose(r -> Future.succeededFuture(cart));
+                    Cart cart = new Cart(
+                            row.getUUID("cid"),
+                            row.getUUID("uid"),
+                            row.getLocalDateTime("datecreated"),
+                            items);
+                    return Future.succeededFuture(cart);
                 });
     }
 
     @Override
     public Future<ArrayList<Cart>> findCarts() {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT * FROM cart;")
                 .execute()
                 .compose(rows -> {
@@ -107,14 +105,12 @@ public class PostgresCartsStore implements CartsStore {
 
     @Override
     public Future<Void> deleteCart(UUID uid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         return findCart(uid)
                 .compose(cart -> {
                     if (cart != null) {
-                        return client
+                        return pgPool
                                 .preparedQuery("DELETE FROM cart WHERE uid = $1")
                                 .execute(Tuple.of(uid))
-                                .compose(r2 -> client.close())
                                 .compose(v2 -> Future.succeededFuture());
                     }
                     else
@@ -124,42 +120,38 @@ public class PostgresCartsStore implements CartsStore {
 
     @Override
     public Future<UUID> update(Cart cart) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT cid FROM cart WHERE uid = $1")
                 .execute(Tuple.of(cart.uid()))
-
                         .compose(r1 -> deleteNext(cart, 0)
                                 .compose(r2 -> updateNext(cart, 0)
-                                        .compose(r3 -> client
-                                                .preparedQuery("SELECT itemid FROM cartitem JOIN cart c2 ON cartitem.cid = c2.cid WHERE uid = $1")
+                                        .compose(r3 -> pgPool
+                                                .preparedQuery("SELECT itemid " +
+                                                        "FROM cartitem JOIN cart c2 ON cartitem.cid = c2.cid " +
+                                                        "WHERE uid = $1")
                                                 .execute(Tuple.of(cart.uid()))
                                                 .compose(records -> {
                                                     System.out.println("item: "+ records.iterator().next().getUUID("itemid"));
-                                                    return client.close()
-                                                            .compose(r -> Future.succeededFuture(records.iterator().next().getUUID("itemid")));
+                                                    return Future.succeededFuture(records.iterator().next().getUUID("itemid"));
                                                 }))));
     }
 
     public Future<Void> deleteNext(Cart cart, int position) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         CartItem cartItem = cart.items().get(position);
-        return client
+        return pgPool
                 .preparedQuery("DELETE FROM cartitem WHERE pid = $1 AND cid = $2")
                 .execute(Tuple.of(cartItem.pid(), cart.cid()))
-                .compose(r -> client.close()
-                        .compose(r2 -> {
+                .compose(r -> {
                             if (position+1 < cart.items().size())
                                 return deleteNext(cart, position+1);
                             else
                                 return Future.succeededFuture();
-                        }));
+                        });
     }
 
     public Future<Void> updateNext(Cart cart, int position) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
         CartItem cartItem = cart.items().get(position);
-        return client
+        return pgPool
                 .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
                 .execute(Tuple.of(cartItem.pid()))
                 .compose(rows -> {
@@ -168,16 +160,15 @@ public class PostgresCartsStore implements CartsStore {
                     // if the quantity to update is higher than the stock then update with the highest amount (stock)
                     if (cartItem.quantity() > stock) {
                         if (stock > 0)
-                            return client
+                            return pgPool
                                     .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
                                     .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), stock))
-                                    .compose(r -> client.close()
-                                            .compose(r2 -> {
+                                    .compose(r -> {
                                                 if (position+1 < cart.items().size())
                                                     return updateNext(cart, position+1);
                                                 else
                                                     return Future.succeededFuture();
-                                            }));
+                                            });
                         else {
                             if (position + 1 < cart.items().size())
                                 return updateNext(cart, position + 1);
@@ -187,28 +178,26 @@ public class PostgresCartsStore implements CartsStore {
                     }
 
                     else if (cartItem.quantity() > 0)
-                        return client
+                        return pgPool
                                 .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
                                 .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), cartItem.quantity()))
-                                .compose(r -> client.close()
-                                        .compose(r2 -> {
+                                .compose(r -> {
                                             if (position+1 < cart.items().size())
                                                 return updateNext(cart, position+1);
                                             else
                                                 return Future.succeededFuture();
-                                        }));
+                                        });
 
                     else
-                        return client
+                        return pgPool
                             .preparedQuery("DELETE FROM cartitem WHERE itemid = $1;")
                             .execute(Tuple.of(cartItem.itemId()))
-                            .compose(r -> client.close()
-                                    .compose(r2 -> {
+                            .compose(r -> {
                                         if (position+1 < cart.items().size())
                                             return updateNext(cart, position+1);
                                         else
                                             return Future.succeededFuture();
-                                    }));
+                                    });
                 });
     }
 

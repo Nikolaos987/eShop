@@ -12,6 +12,9 @@ import com.itsaur.internship.query.product.ProductQuery;
 import com.itsaur.internship.query.user.UserQuery;
 import com.itsaur.internship.userEntity.PostgresUsersStore;
 import com.itsaur.internship.userEntity.UserService;
+import io.vertx.pgclient.PgConnectOptions;
+import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.PoolOptions;
 
 public class Main {
 
@@ -23,6 +26,18 @@ public class Main {
                 .programName("jcommander")
                 .build();
 
+        PgConnectOptions connectOptions = new PgConnectOptions()
+                .setPort(opts.port)
+                .setHost(opts.host)
+                .setDatabase(opts.database)
+                .setUser(opts.user)
+                .setPassword(opts.password);
+
+        PoolOptions poolOptions = new PoolOptions().setMaxSize(opts.poolSize);
+
+
+        PgPool pgPool = PgPool.pool(vertx, connectOptions, poolOptions);
+
         try {
             jc.parse(args);
             switch (opts.method) {
@@ -31,21 +46,21 @@ public class Main {
                         /* Server stores to Postgres */
                         vertx.deployVerticle(new Api(
                                 new UserService(
-                                        new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
-                                        new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
+                                        new PostgresUsersStore(pgPool),
+                                        new PostgresCartsStore(pgPool)),
                                 new ProductService(
-                                        new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
+                                        new PostgresProductsStore(pgPool),
                                         new CartService(
-                                                new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
-                                                new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
-                                                new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize))),
+                                                new PostgresCartsStore(pgPool),
+                                                new PostgresProductsStore(pgPool),
+                                                new PostgresUsersStore(pgPool))),
                                 new CartService(
-                                        new PostgresCartsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
-                                        new PostgresProductsStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
-                                        new PostgresUsersStore(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)),
-                                new CartQuery(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
-                                new ProductQuery(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize),
-                                new UserQuery(opts.port, opts.host, opts.database, opts.user, opts.postPasword, opts.poolSize)));
+                                        new PostgresCartsStore(pgPool),
+                                        new PostgresProductsStore(pgPool),
+                                        new PostgresUsersStore(pgPool)),
+                                new CartQuery(pgPool),
+                                new ProductQuery(pgPool),
+                                new UserQuery(pgPool)));
                     }
                 }
 //                case "console" -> {

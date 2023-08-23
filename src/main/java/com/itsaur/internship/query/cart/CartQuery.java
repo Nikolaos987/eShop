@@ -14,23 +14,14 @@ import java.util.UUID;
 public class CartQuery implements CartQueryModelStore {
 
     Vertx vertx = Vertx.vertx();
-    private final PgConnectOptions connectOptions;
-    private final PoolOptions poolOptions;
+    private final PgPool pgPool;
 
-    public CartQuery(int port, String host, String db, String user, String password, int poolSize) {
-        this.connectOptions = new PgConnectOptions()
-                .setPort(port)
-                .setHost(host)
-                .setDatabase(db)
-                .setUser(user)
-                .setPassword(password);
-        this.poolOptions = new PoolOptions()
-                .setMaxSize(poolSize);
+    public CartQuery(PgPool pgPool) {
+        this.pgPool = pgPool;
     }
     @Override
     public Future<ArrayList<CartQueryModel.CartItemQueryModel>> findByUserId(UUID uid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery(
                         "SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity, p.name, p.price " +
                         "FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid " +
@@ -50,8 +41,7 @@ public class CartQuery implements CartQueryModelStore {
                         });
                     }
 //                    CartQueryModel cart = new CartQueryModel(items);
-                    return client.close()
-                            .compose(r -> Future.succeededFuture(items));
+                    return Future.succeededFuture(items);
                 });
     }
 }

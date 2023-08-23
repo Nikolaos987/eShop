@@ -13,24 +13,15 @@ import java.util.UUID;
 
 public class ProductQuery implements ProductQueryModelStore {
     Vertx vertx = Vertx.vertx();
-    private final PgConnectOptions connectOptions;
-    private final PoolOptions poolOptions;
+    private final PgPool pgPool;
 
-    public ProductQuery(int port, String host, String db, String user, String password, int poolSize) {
-        this.connectOptions = new PgConnectOptions()
-                .setPort(port)
-                .setHost(host)
-                .setDatabase(db)
-                .setUser(user)
-                .setPassword(password);
-        this.poolOptions = new PoolOptions()
-                .setMaxSize(poolSize);
+    public ProductQuery(PgPool pgPool) {
+        this.pgPool = pgPool;
     }
 
     @Override
     public Future<ProductsQueryModel.ProductQueryModel> findProductById(UUID pid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT * FROM product WHERE pid = $1;")
                 .execute(Tuple.of(pid))
                 .compose(records -> {
@@ -46,8 +37,7 @@ public class ProductQuery implements ProductQueryModelStore {
     @Override
     public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex) {
         regex = "%" + regex + "%".toLowerCase();
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1;")
                 .execute(Tuple.of(regex))
                 .compose(rows -> {
@@ -65,16 +55,13 @@ public class ProductQuery implements ProductQueryModelStore {
                         products.add(product);
                     });
 //                        ProductsQueryModel productList = new ProductsQueryModel(products);
-                    return client.close()
-                            .compose(r -> Future.succeededFuture(products));
+                    return Future.succeededFuture(products);
                 });
     }
 
     @Override
     public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProducts() {
-//        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        PgPool pool = PgPool.pool(vertx, connectOptions, poolOptions);
-        return pool
+        return pgPool
                 .preparedQuery("SELECT * FROM product;")
                 .execute()
                 .compose(rows -> {
@@ -92,15 +79,14 @@ public class ProductQuery implements ProductQueryModelStore {
                         products.add(product);
                     });
 //                    ProductsQueryModel productList = new ProductsQueryModel(products);
-                    return pool.close()
-                            .compose(r -> Future.succeededFuture(products));
+                    return Future.succeededFuture(products);
                 });
     }
 
     @Override
     public Future<Buffer> findImageById(UUID pid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client.preparedQuery("SELECT image FROM product WHERE pid = $1;")
+        return pgPool
+                .preparedQuery("SELECT image FROM product WHERE pid = $1;")
                 .execute(Tuple.of(pid))
                 .compose(records -> {
                     Row row = records.iterator().next();

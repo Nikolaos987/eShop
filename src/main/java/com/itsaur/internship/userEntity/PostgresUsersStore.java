@@ -16,24 +16,15 @@ import java.util.UUID;
 
 public class PostgresUsersStore implements UsersStore {
     Vertx vertx = Vertx.vertx();
-    private final PgConnectOptions connectOptions;
-    private final PoolOptions poolOptions;
+    private final PgPool pgPool;
 
-    public PostgresUsersStore(int port, String host, String db, String user, String password, int poolSize) {
-        this.connectOptions = new PgConnectOptions()
-                .setPort(port)
-                .setHost(host)
-                .setDatabase(db)
-                .setUser(user)
-                .setPassword(password);
-        this.poolOptions = new PoolOptions()
-                .setMaxSize(poolSize);
+    public PostgresUsersStore(PgPool pgPool) {
+        this.pgPool = pgPool;
     }
 
     @Override
     public Future<UUID> insert(User user) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("INSERT INTO users VALUES ($1, $2, $3);")
                 .execute(Tuple.of(user.uid(), user.username(), user.password()))
                 .compose(v -> Future.succeededFuture(user.uid()));
@@ -41,16 +32,14 @@ public class PostgresUsersStore implements UsersStore {
 
     @Override
     public Future<User> findUser(String username) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT * FROM users WHERE username = $1")
                 .execute(Tuple.of(username))
                 .compose(rows -> {
                     try {
                         Row row = rows.iterator().next();
                         User user = new User(row.getUUID("uid"), row.getString("username"), row.getString("password"));
-                        return client.close()
-                                .compose(r -> Future.succeededFuture(user));
+                        return Future.succeededFuture(user);
                     } catch (NoSuchElementException e) {
                         return Future.failedFuture(new IllegalArgumentException("User not found"));
                     }
@@ -59,16 +48,14 @@ public class PostgresUsersStore implements UsersStore {
 
     @Override
     public Future<User> findUser(UUID userId) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT * FROM users WHERE uid = $1")
                 .execute(Tuple.of(userId))
                 .compose(rows -> {
                     try {
                         Row row = rows.iterator().next();
                         User user = new User(row.getUUID("uid"), row.getString("username"), row.getString("password"));
-                        return client.close()
-                                .compose(r -> Future.succeededFuture(user));
+                        return Future.succeededFuture(user);
                     } catch (NoSuchElementException e) {
                         return Future.failedFuture(new IllegalArgumentException("User not found"));
                     }
@@ -77,21 +64,18 @@ public class PostgresUsersStore implements UsersStore {
 
     @Override
     public Future<Void> deleteUser(UUID uid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("DELETE FROM users WHERE uid = $1;")
                 .execute(Tuple.of(uid))
-                .compose(v2 -> client.close())
                 .compose(v2 -> Future.succeededFuture());
     }
 
     @Override
     public Future<UUID> updateUser(String username, String password) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("UPDATE users SET password = $2 WHERE username = $1;")
                 .execute(Tuple.of(username, password))
-                .compose(v -> client
+                .compose(v -> pgPool
                         .preparedQuery("SELECT uid FROM users WHERE username = $1")
                         .execute(Tuple.of(username))
                         .compose(records -> Future.succeededFuture(records.iterator().next().getUUID("uid"))));

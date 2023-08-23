@@ -15,33 +15,22 @@ import java.util.UUID;
 
 public class UserQuery implements UserQueryModelStore {
     Vertx vertx = Vertx.vertx();
-    private final PgConnectOptions connectOptions;
-    private final PoolOptions poolOptions;
+    private final PgPool pgPool;
 
-    public UserQuery(int port, String host, String db, String user, String password, int poolSize) {
-        this.connectOptions = new PgConnectOptions()
-                .setPort(port)
-                .setHost(host)
-                .setDatabase(db)
-                .setUser(user)
-                .setPassword(password);
-        this.poolOptions = new PoolOptions()
-                .setMaxSize(poolSize);
+    public UserQuery(PgPool pgPool) {
+        this.pgPool = pgPool;
     }
 
     @Override
     public Future<UserQueryModel> findUserById(UUID uid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT * FROM users WHERE uid = $1")
                 .execute(Tuple.of(uid))
                 .compose(rows -> {
                     try {
                         Row row = rows.iterator().next();
                         User user = new User(row.getUUID("uid"), row.getString("username"), row.getString("password"));
-                        return client
-                                .close()
-                                .compose(r -> Future.succeededFuture(new UserQueryModel(user.username())));
+                        return Future.succeededFuture(new UserQueryModel(user.username()));
                     } catch (NoSuchElementException e) {
                         return Future.failedFuture(new IllegalArgumentException("User not found"));
                     }

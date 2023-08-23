@@ -11,35 +11,25 @@ import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class PostgresProductsStore implements ProductsStore {
 
     Vertx vertx = Vertx.vertx();
-    private final PgConnectOptions connectOptions;
-    private final PoolOptions poolOptions;
+    private final PgPool pgPool;
 
-    public PostgresProductsStore(int port, String host, String db, String user, String password, int poolSize) {
-        this.connectOptions = new PgConnectOptions()
-                .setPort(port)
-                .setHost(host)
-                .setDatabase(db)
-                .setUser(user)
-                .setPassword(password);
-        this.poolOptions = new PoolOptions()
-                .setMaxSize(poolSize);
+    public PostgresProductsStore(PgPool pgPool) {
+        this.pgPool = pgPool;
     }
 
     @Override
     public Future<Product> insert(Product product) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("INSERT INTO product (pid, name, image, description, price, quantity, brand, category) " +
-                                "VALUES ($1, $2, $3, $4, $5, $6, $7, $8);")
+                        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8);")
                 .execute(Tuple.of(product.pid(), product.name(), product.image(), product.description(), product.price(),
                         product.quantity(), product.brand(), product.category()))
-                .compose(res -> client
+                .compose(res -> pgPool
                         .preparedQuery("SELECT * FROM product WHERE pid = $1")
                         .execute(Tuple.of(product.pid()))
                         .compose(records -> {
@@ -50,8 +40,7 @@ public class PostgresProductsStore implements ProductsStore {
                                         row.getString("image"), row.getString("description"),
                                         row.getDouble("price"), row.getInteger("quantity"),
                                         row.getString("brand"), Category.valueOf(row.getString("category")));
-                                return client.close()
-                                        .compose(r -> Future.succeededFuture(newProduct));
+                                return Future.succeededFuture(newProduct);
                             } catch (Exception e) {
                                 return Future.failedFuture(new IllegalArgumentException("error"));
                             }
@@ -60,8 +49,7 @@ public class PostgresProductsStore implements ProductsStore {
 
     @Override
     public Future<Product> findProduct(UUID pid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT * FROM product WHERE pid = $1;")
                 .execute(Tuple.of(pid))
                 .compose(records -> {
@@ -83,8 +71,7 @@ public class PostgresProductsStore implements ProductsStore {
     // TODO: 7/7/23 DELETE
     @Override
     public Future<Product> findProduct(String name) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT * FROM product WHERE name = $1;")
                 .execute(Tuple.of(name))
                 .compose(records -> {
@@ -105,8 +92,7 @@ public class PostgresProductsStore implements ProductsStore {
 
     @Override
     public Future<Void> deleteProduct(UUID pid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("DELETE FROM product WHERE pid = $1")
                 .execute(Tuple.of(pid))
                 .compose(records -> Future.succeededFuture());
@@ -114,16 +100,22 @@ public class PostgresProductsStore implements ProductsStore {
 
     @Override
     public Future<Void> updateProduct(Product product) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
-                .preparedQuery("UPDATE product SET name = $1, image = $2, description = $3, price = $4, quantity = $5, brand = $6, category = $7  WHERE pid = $8")
-                .execute(Tuple.of(product.name(), product.image(), product.description(), product.price(), product.quantity(), product.brand(), product.category(), product.pid()))
+        return pgPool
+                .preparedQuery("UPDATE product " +
+                        "SET name = $1, image = $2, " +
+                        "description = $3, price = $4, " +
+                        "quantity = $5, brand = $6, category = $7  " +
+                        "WHERE pid = $8")
+                .execute(Tuple.of(
+                        product.name(), product.image(), product.description(),
+                        product.price(), product.quantity(),
+                        product.brand(), product.category(),
+                        product.pid()))
                 .compose(records -> Future.succeededFuture());
     }
 
     @Override
     public Future<Void> updateProducts(ArrayList<CartItem> items) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
 //        return client
 //                .preparedQuery("UPDATE product SET quantity = $2 WHERE pid = $1")
 //                .execute(Tuple.of())
@@ -135,21 +127,23 @@ public class PostgresProductsStore implements ProductsStore {
 
     @Override
     public Future<Void> updateProducts(UUID uid) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
 //                .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE uid = $1);")
                 .preparedQuery("SELECT pid FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE uid = $1;")
                 .execute(Tuple.of(uid))
-                .onSuccess(records -> records.forEach(row -> client
-                        .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity FROM cartitem JOIN cart ON cartitem.cid = cart.cid WHERE pid = $1 AND uid = $2) WHERE pid = $1")
+                .onSuccess(records -> records.forEach(row -> pgPool
+                        .preparedQuery("UPDATE product SET quantity = quantity - (SELECT quantity " +
+                                "FROM cartitem JOIN cart ON cartitem.cid = cart.cid " +
+                                "WHERE pid = $1 AND uid = $2) " +
+                                "WHERE pid = $1")
                         .execute(Tuple.of(row.getUUID("pid"), uid))
                         .compose(recs -> Future.succeededFuture())))
                 .compose(res -> Future.succeededFuture());
     }
 
     public Future<Void> updateNext(ArrayList<CartItem> items, int position) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return inStock(items.get(position).pid(), items.get(position).quantity()).compose(result -> client
+        return inStock(items.get(position).pid(), items.get(position).quantity())
+                .compose(result -> pgPool
                 .preparedQuery("UPDATE product SET quantity = quantity - $1 WHERE pid = $2")
                 .execute(Tuple.of(items.get(position).quantity(), items.get(position).pid()))
                 .compose(records2 -> {
@@ -160,8 +154,7 @@ public class PostgresProductsStore implements ProductsStore {
     }
 
     public Future<Void> inStock(UUID pid, int quantity) {
-        SqlClient client = PgPool.client(vertx, connectOptions, poolOptions);
-        return client
+        return pgPool
                 .preparedQuery("SELECT quantity FROM product WHERE pid = $1")
                 .execute(Tuple.of(pid))
                 .compose(records -> {
