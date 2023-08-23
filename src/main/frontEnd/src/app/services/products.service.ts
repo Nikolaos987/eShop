@@ -51,7 +51,7 @@ export class ProductsService {
   }
 
   public fetchFilteredProducts(filter: string): Observable<Product[]> {
-    filter = filter.trim();
+    filter = filter.trim().toLowerCase();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
     if (!filter) {
@@ -60,5 +60,7 @@ export class ProductsService {
     return this.http.get<Product[]>('/api/product/search/' + filter, options);
     //                  <[Product]>
   }
+
+  // TODO: handle errors
 
 }
