@@ -44,8 +44,9 @@ export class HomeComponent implements OnInit{
     this.productList = this.productsService.fetchFilteredProducts(text)
   }
 
-  public showDetails(pid: string): void {
-    this.productsService.fetchProduct(pid);
-  }
+  // TODO: unused
+  // public showDetails(pid: string): void {
+  //   this.productsService.fetchProduct(pid);
+  // }
 
 }

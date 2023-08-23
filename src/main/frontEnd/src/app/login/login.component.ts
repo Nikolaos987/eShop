@@ -4,6 +4,7 @@ import {UsersService} from "../services/users.service";
 import {tap} from "rxjs";
 import {Router} from "@angular/router";
 import {Credentials} from "../interfaces/credentials";
+import {error} from "@angular/compiler-cli/src/transformers/util";
 
 // import { User } from "../user";
 
@@ -39,19 +40,51 @@ export class LoginComponent {
         username: this.profileForm.value.username,
         password: this.profileForm.value.password
       }
+
       this.usersService.fetchUser(this.loginCredentials)
-        .subscribe(result => {
-          console.log(result);
-          this.usersService.user = {
-            uid: result.uid,
-            username: result.username,
-            isLoggedIn: true
-          }
-          this.router.navigateByUrl('/home');
-        }, (error) => {
-          console.log(error);
-          this.errorMessage = error;
-        });
+        .subscribe(
+          result => {
+            console.log("next: " + result);
+            this.usersService.user = {
+              uid: result.uid,
+              username: result.username,
+              isLoggedIn: true
+            }
+            this.router.navigateByUrl('/home');
+          },
+          err => {
+            console.error(err);
+            this.errorMessage = err;
+          },
+          () => console.log("complete")
+        )
+
+      // this.usersService.fetchUser(this.loginCredentials)
+      //   .subscribe({
+      //     next(result) {
+      //       console.log("next: " + result);
+      //     },
+      //     error(message) {
+      //       console.log("error: " + message);
+      //     },
+      //     complete() {
+      //       console.log("complete");
+      //     }
+      //   });
+
+      // this.usersService.fetchUser(this.loginCredentials)
+      //   .subscribe(result => {
+      //     console.log(result);
+      //     this.usersService.user = {
+      //       uid: result.uid,
+      //       username: result.username,
+      //       isLoggedIn: true
+      //     }
+      //     this.router.navigateByUrl('/home');
+      //   },(error) => {
+      //     console.log(error);
+      //     this.errorMessage = error;
+      //   });
     }
   }
 }

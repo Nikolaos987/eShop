@@ -51,15 +51,28 @@ export class RegisterComponent implements OnInit {
         password: this.registerForm.value.password
       }
       this.usersService.postUser(this.registerCredentials)
-        .subscribe(response => {
-            console.log(response);
+        .subscribe(
+          x => {
+            console.log(x);
             this.successMessage = 'User registered!';
             this.errorMessage = '';
           },
-          (error) => {
+          err => {
             this.successMessage = '';
-            this.errorMessage = error;
-          });
+            this.errorMessage = err;
+          },
+          () => console.log("complete")
+        )
+
+        // .subscribe(response => {
+        //     console.log(response);
+        //     this.successMessage = 'User registered!';
+        //     this.errorMessage = '';
+        //   },
+        //   (error) => {
+        //     this.successMessage = '';
+        //     this.errorMessage = error;
+        //   });
     }
     // } else window.alert('passwords do not match');
     // } else window.alert('empty inputs');

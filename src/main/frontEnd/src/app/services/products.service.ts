@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpClientModule, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpClientModule, HttpErrorResponse, HttpParams} from "@angular/common/http";
 
 import {map, Observable, throwError} from "rxjs";
 import {catchError, retry} from "rxjs";
@@ -19,10 +19,14 @@ export class ProductsService {
   public fetchProducts(): Observable<Product[]> {
     return this.http
       .get<[Product]>('/api/products', {responseType: "json"})
+      .pipe(
+        catchError(this.handleError))
   }
 
   public fetchProduct(pid: string | null | undefined): Observable<Product> {
-    return this.http.get<Product>('/api/product/' + pid);
+    return this.http.get<Product>('/api/product/' + pid, {responseType: "json"})
+      .pipe(
+        catchError(this.handleError));
   }
 
   public postProduct(product: Product): Observable<Product> {
@@ -48,6 +52,8 @@ export class ProductsService {
           "category": product.category
         },
         {responseType: "json"})
+      .pipe(
+        catchError(this.handleError))
   }
 
   public fetchFilteredProducts(filter: string): Observable<Product[]> {
@@ -57,10 +63,26 @@ export class ProductsService {
     if (!filter) {
       return this.fetchProducts();
     }
-    return this.http.get<Product[]>('/api/product/search/' + filter, options);
+    return this.http.get<Product[]>
+    ('/api/product/search/' + filter, {responseType: "json"}) // , options
+      .pipe(
+        catchError(this.handleError));
     //                  <[Product]>
   }
 
-  // TODO: handle errors
+  private handleError(error: HttpErrorResponse) {
+    if (error.status === 0) {
+      // a client side or network error occured. Handle it accordingly.
+      console.error('An error occured: ', error.error);
+    } else {
+      // the backend returned an unsuccessful response code.
+      // the response body may contain clues as to what went wrong.
+      console.error(`Backend returned code ${error.status}, body was: `, error);
+    }
+    // return an observable with a user-facing error message.
+    // this.errorMessage = error.error;
+    return throwError(() => new Error(error.error));
+  }
+
 
 }

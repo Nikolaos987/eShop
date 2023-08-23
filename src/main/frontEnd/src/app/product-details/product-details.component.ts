@@ -47,16 +47,36 @@ export class ProductDetailsComponent implements OnInit {
     // const pid = String(this.route.snapshot.paramMap.get('pid'));
 
     this.productsService.fetchProduct(this.product.pid)
-      .subscribe(response => {
-        this.product = response
-        console.log("input product: " + this.product.name);
-      })
+      .subscribe(
+        x => {
+          this.product = x;
+          console.log("input product: " + this.product.name);
+        },
+        err => {
+          console.error(err);
+        },
+        () => console.log("complete")
+      )
+
+      // .subscribe(response => {
+      //   this.product = response
+      //   console.log("input product: " + this.product.name);
+      // })
   }
 
   addToCart() {
     if (this._usersService.user?.isLoggedIn) {
       this.cartService.addToCart(this._usersService.user?.uid, this.product.pid, this.addToCartForm.value.quantity)
-        .subscribe((response) => window.alert(this.product.name + ' has been added to the cart'));
+        .subscribe(
+          x => {
+            console.log("next: " + x)
+            window.alert(this.product.name + ' has been added to your cart')
+          },
+          err => console.error(err),
+          () => console.log("complete")
+        )
+
+        // .subscribe((response) => window.alert(this.product.name + ' has been added to the cart'));
     } else
       window.alert('you are not logged in!');
   }
