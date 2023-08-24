@@ -20,6 +20,14 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
+    public Future<Integer> productsCount() {
+        return pgPool
+                .query("SELECT COUNT(pid) FROM product")
+                .execute()
+                .compose(records -> Future.succeededFuture(records.iterator().next().getInteger(0)));
+    }
+
+    @Override
     public Future<ProductsQueryModel.ProductQueryModel> findProductById(UUID pid) {
         return pgPool
                 .preparedQuery("SELECT * FROM product WHERE pid = $1;")

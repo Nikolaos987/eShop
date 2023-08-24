@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public interface ProductQueryModelStore {
+    Future<Integer> productsCount();
     Future<ProductsQueryModel.ProductQueryModel> findProductById(UUID pid);
     Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex);
     Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProducts(int from, int range);

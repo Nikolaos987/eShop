@@ -94,6 +94,13 @@ public class Api extends AbstractVerticle {
 
         /* PRODUCT ENTITY */
 
+        router.get("/product/count").handler(ctx -> this.productQueryModelStore.productsCount()
+                .onSuccess(v -> {
+                    JsonObject json = new JsonObject().put("rows", v);
+                    ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(json));
+                })
+                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+
         router.get("/image/:pid").handler(ctx -> this.productQueryModelStore.findImageById(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
@@ -108,6 +115,7 @@ public class Api extends AbstractVerticle {
 
         // TODO: 7/7/23 findProducts
         router.get("/products/:from/:to").handler(ctx -> {
+            // ctx.queryParams()
             this.productQueryModelStore.findProducts(Integer.parseInt(ctx.pathParam("from")),
                             Integer.parseInt(ctx.pathParam("to")))
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
