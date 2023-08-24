@@ -49,25 +49,69 @@ input[type="text"]:focus {
   cursor: pointer;
 }
 
-input[type="button"] {
+.search-bar input[type="button"] {
   width: 50px;
   height: 37px;
   margin: 0 5px;
   transform: translate(-4em, -2px);
   background: none;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  border-bottom-left-radius: 2px;
-  border-top-left-radius: 2px;
+  border-radius: 100px;
+  /*border-top-right-radius: 8px;*/
+  /*border-bottom-right-radius: 8px;*/
+  /*border-bottom-left-radius: 2px;*/
+  /*border-top-left-radius: 2px;*/
   border: none;
   color: red;
   font-size: 16px;
   font-weight: bolder;
 }
-input[type="button"]:hover {
+.search-bar input[type="button"]:hover {
   cursor: pointer;
-  border: 1px red solid;
   background: #f8f8f8;
+}
+
+.paging-container {
+  margin-bottom: 15px;
+  border: red 2px solid;
+  display: flex;
+  bottom: 0;
+  align-items: center;
+  justify-content: right;
+}
+
+.total-products-text {
+  width: auto;
+  height: auto;
+  font-size: 20px;
+  padding: 8px;
+  text-align: center;
+  border: green 1px solid;
+  margin: auto 100px;
+}
+
+.page-buttons {
+}
+.page-buttons input[type="button"] {
+  font-size: 20px;
+  color: #345cfd;
+  background-color: white;
+  box-shadow: none;
+  width: 50px;
+  height: 50px;
+  gap: 10px;
+}
+.page-buttons input[type="button"]:hover {
+  background-color: #f0f0f0;
+}
+.page-buttons input[type="button"]:focus {
+  color: white;
+  background-color: #345cfd;
+}
+
+.prev-next-buttons {
+  width: 100px;
+  height: 50px;
+  font-size: 18px;
 }
 
 @media (min-width: 500px) and (max-width: 768px) {

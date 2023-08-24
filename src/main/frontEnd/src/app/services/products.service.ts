@@ -1,26 +1,36 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpClientModule, HttpErrorResponse, HttpParams} from "@angular/common/http";
 
-import {map, Observable, throwError} from "rxjs";
+import {map, Observable, of, throwError} from "rxjs";
 import {catchError, retry} from "rxjs";
 import {Product} from "../interfaces/product";
 import {getXHRResponse} from "rxjs/internal/ajax/getXHRResponse";
 import {AbstractControl, FormControl, FormGroup, ɵFormGroupValue, ɵTypedOrUntyped} from "@angular/forms";
+import {Paging} from "../interfaces/paging";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductsService {
-  products: Product[] = [];
 
   constructor(private http: HttpClient) {
   }
 
-  public fetchProducts(): Observable<Product[]> {
+  public fetchTotalProducts(): Observable<{ rows: number }> {
     return this.http
-      .get<[Product]>('/api/products', {responseType: "json"})
+      .get<{ rows: number }>("/api/product/count", {responseType: "json"})
       .pipe(
         catchError(this.handleError))
+  }
+
+  public fetchProducts( page: number | null | undefined, range: number | null | undefined ): Observable<Product[]> {
+    // this.page = (from * range) - 1;
+    if (typeof page === "number" && typeof range === "number") {
+      return this.http
+        .get<[Product]>('/api/products/' + ((page - 1) * range) + '/' + range, {responseType: "json"})
+        .pipe(
+          catchError(this.handleError))
+    } else return new Observable<Product[]>();
   }
 
   public fetchProduct(pid: string | null | undefined): Observable<Product> {
@@ -61,7 +71,7 @@ export class ProductsService {
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
     if (!filter) {
-      return this.fetchProducts();
+      return this.fetchProducts(1, 5);
     }
     return this.http.get<Product[]>
     ('/api/product/search/' + filter, {responseType: "json"}) // , options

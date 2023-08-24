@@ -10,6 +10,7 @@
   align-self: stretch;
   min-height: 50vh;
   gap: 3vh 3vw;
+  padding: 0 30px;
 }
 
 .listing p span {
