@@ -4,6 +4,15 @@
   <app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
 
   <div class="paging-container">
+    <div class="toBeShown">
+      <label for="itemsShown">Choose number of items to be shown: </label>
+      <select name="itemsShown" id="itemsShown">
+        <option [value]="5" (click)="changeRange(5)">5</option>
+        <option [value]="10" (click)="changeRange(10)">10</option>
+        <option [value]="15" (click)="changeRange(15)">15</option>
+        <option [value]="50" (click)="changeRange(50)">50</option>
+      </select>
+    </div>
     <input class="prev-next-buttons" type="button" value="Previous" (click)="prevPage()">
     <div class="page-buttons" *ngFor="let num of pages">
 <!--        <input type="button" id="pageNum" [value]="num" [ngClass]="{'focused' : num==1, 'unfocused' : num!=1}" (click)="getProducts(num)">-->

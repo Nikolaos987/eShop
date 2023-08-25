@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ProductsService} from "../services/products.service";
 import {HttpParams} from "@angular/common/http";
-import {map, Observable, tap} from "rxjs";
+import {ignoreElements, map, Observable, tap} from "rxjs";
 import {UsersService} from "../services/users.service";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {Product} from "../interfaces/product";
@@ -16,7 +16,7 @@ import {Paging} from "../interfaces/paging";
   providers: [ProductsService]
 })
 export class HomeComponent implements OnInit {
-  focus: boolean = false;
+  // focus: boolean = false;
 
   products: Product[] = [];
   totalProducts: number | null | undefined;
@@ -68,6 +68,25 @@ export class HomeComponent implements OnInit {
     //     this.productList = response;
     //     response.forEach(p => console.log("products: " + p))
     //   });
+  }
+
+  changeRange(r: number) {
+    for (let i = 1; i <= this.totalPages; i++) {
+      this.pages?.pop();
+    }
+    this.range = r;
+    if (typeof this.totalProducts === "number") {
+      this.totalPages = Math.ceil(this.totalProducts / Number(this.range))
+      for (let i = 1; i <= this.totalPages; i++) {
+        this.pages?.push(i);
+      }
+    }
+
+    // if the total pages become less after the range is changed, move to the last possible page
+    if (this.pages && this.page > this.pages.length) {
+      this.page = this.pages.length;
+    }
+    this.getProducts(this.page)
   }
 
   prevPage() {

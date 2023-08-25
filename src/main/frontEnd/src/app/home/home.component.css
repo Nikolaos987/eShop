@@ -121,6 +121,12 @@ input[type="text"]:focus {
   font-size: 18px;
 }
 
+.toBeShown {
+  padding: 5px;
+  border: 1px green solid;
+  margin: 0 100px;
+}
+
 @media (min-width: 500px) and (max-width: 768px) {
   .results {
     grid-template-columns: repeat(2, 1fr);
