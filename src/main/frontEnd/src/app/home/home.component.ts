@@ -17,7 +17,7 @@ import {Paging} from "../interfaces/paging";
 })
 export class HomeComponent implements OnInit {
   // focus: boolean = false;
-  filterText: string = ''
+  filterText: string = '';
 
   products: Product[] = [];
   totalProducts: number | null | undefined;
@@ -61,8 +61,12 @@ export class HomeComponent implements OnInit {
   public getProducts(page: number) {
     this.page = page;
     console.log("page: " + this.page)
-    this.productList = this.productsService.fetchProducts(page, this.range)
-    this.productList.forEach(p => console.log(p))
+    if (this.filterText == '') {
+      this.productList = this.productsService.fetchProducts(page, this.range)
+      this.productList.forEach(p => console.log(p))
+    } else {
+      this.getFilteredProducts(this.filterText);
+    }
   }
 
   changeRange(r: number) {
@@ -81,7 +85,11 @@ export class HomeComponent implements OnInit {
     if (this.pages && this.page > this.pages.length) {
       this.page = this.pages.length;
     }
-    this.getProducts(this.page)
+    console.log("filter text: " + this.filterText);
+    if (this.filterText == '')
+      this.getProducts(this.page)
+    else
+      this.getFilteredProducts(this.filterText);
   }
 
   prevPage() {
@@ -95,6 +103,7 @@ export class HomeComponent implements OnInit {
   }
 
   public getFilteredProducts(text: string) {
+    this.filterText = text;
     if (this.totalPages)
       for (let i = 1; i <= this.totalPages; i++) {
         this.pages?.pop();
