@@ -6,7 +6,9 @@
   <div class="paging-container">
     <input class="prev-next-buttons" type="button" value="Previous" (click)="prevPage()">
     <div class="page-buttons" *ngFor="let num of pages">
-        <input type="button" id="pageNum" [value]="num" (click)="getProducts(num)">
+<!--        <input type="button" id="pageNum" [value]="num" [ngClass]="{'focused' : num==1, 'unfocused' : num!=1}" (click)="getProducts(num)">-->
+      <input type="button" id="pageNum" [value]="num" [class.focused]="page==num" (click)="getProducts(num)">
+
         <!--[ngStyle]="{'background-color': num == '1' ? '#345cfd' : 'white', 'color': num == '1' ? 'white' : '#345cfd'}"-->
 
 <!--          <label for="pageNum">{{num}}</label>-->

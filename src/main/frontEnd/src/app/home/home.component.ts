@@ -16,11 +16,12 @@ import {Paging} from "../interfaces/paging";
   providers: [ProductsService]
 })
 export class HomeComponent implements OnInit {
+  focus: boolean = false;
 
   products: Product[] = [];
   totalProducts: number | null | undefined;
   totalPages: any | null | undefined;
-  pages: any[] | null | undefined = [];
+  pages: number[] | null | undefined = [];
 
   from: number = 0;
   page: number = 1;
