@@ -2,6 +2,7 @@ package com.itsaur.internship;
 
 import com.itsaur.internship.cartEntity.CartService;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
@@ -114,10 +115,12 @@ public class Api extends AbstractVerticle {
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         // TODO: 7/7/23 findProducts
-        router.get("/products/:from/:to").handler(ctx -> {
-            // ctx.queryParams()
-            this.productQueryModelStore.findProducts(Integer.parseInt(ctx.pathParam("from")),
-                            Integer.parseInt(ctx.pathParam("to")))
+        router.get("/products").handler(ctx -> {
+            MultiMap params = ctx.queryParams();
+            int from = Integer.parseInt(params.get("from"));
+            int range = Integer.parseInt(params.get("range"));
+
+            this.productQueryModelStore.findProducts(from, range)
                     .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
