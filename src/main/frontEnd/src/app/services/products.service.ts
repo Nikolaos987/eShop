@@ -24,10 +24,13 @@ export class ProductsService {
   }
 
   public fetchProducts( page: number | null | undefined, range: number | null | undefined ): Observable<Product[]> {
-    // this.page = (from * range) - 1;
+    // ((page - 1) * range)
     if (typeof page === "number" && typeof range === "number") {
       return this.http
-        .get<[Product]>('/api/products/' + ((page - 1) * range) + '/' + range, {responseType: "json"})
+        .get<[Product]>('/api/products/', {params: {
+          from: ((page - 1) * range),
+          range: range
+          }, responseType: "json"})
         .pipe(
           catchError(this.handleError))
     } else return new Observable<Product[]>();
