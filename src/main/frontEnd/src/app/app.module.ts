@@ -24,6 +24,7 @@ import {ManagementComponent} from './management/management.component';
 // import {PaginatorComponent} from './paginator/paginator.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import {MatPaginatorModule} from "@angular/material/paginator";
+import { PagingComponent } from './paging/paging.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
     ProductComponent,
     QuantityNumberComponent,
     ManagementComponent,
+    PagingComponent,
     // PaginatorComponent,
   ],
   imports: [

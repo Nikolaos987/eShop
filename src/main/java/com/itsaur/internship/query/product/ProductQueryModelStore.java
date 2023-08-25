@@ -8,8 +8,9 @@ import java.util.UUID;
 
 public interface ProductQueryModelStore {
     Future<Integer> productsCount();
+    Future<Integer> filteredProductsCount(String regex);
     Future<ProductsQueryModel.ProductQueryModel> findProductById(UUID pid);
-    Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex);
+    Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex, int from, int range);
     Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProducts(int from, int range);
     Future<Buffer> findImageById(UUID pid);
 }

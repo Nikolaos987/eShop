@@ -28,6 +28,15 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
+    public Future<Integer> filteredProductsCount(String regex) {
+        regex = "%" + regex + "%".toLowerCase();
+        return pgPool
+                .preparedQuery("SELECT COUNT(pid) FROM product WHERE LOWER(name) LIKE $1")
+                .execute(Tuple.of(regex))
+                .compose(records -> Future.succeededFuture(records.iterator().next().getInteger(0)));
+    }
+
+    @Override
     public Future<ProductsQueryModel.ProductQueryModel> findProductById(UUID pid) {
         return pgPool
                 .preparedQuery("SELECT * FROM product WHERE pid = $1;")
@@ -43,11 +52,11 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
-    public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex) {
+    public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex, int from, int range) {
         regex = "%" + regex + "%".toLowerCase();
         return pgPool
-                .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1;")
-                .execute(Tuple.of(regex))
+                .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1 LIMIT $3 OFFSET $2;")
+                .execute(Tuple.of(regex, from, range))
                 .compose(rows -> {
                     ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
                     rows.forEach(row -> {

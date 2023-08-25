@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ProductsService} from "../services/products.service";
 import {HttpParams} from "@angular/common/http";
-import {ignoreElements, map, Observable, tap} from "rxjs";
+import {ignoreElements, map, Observable, range, tap} from "rxjs";
 import {UsersService} from "../services/users.service";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {Product} from "../interfaces/product";
@@ -17,10 +17,11 @@ import {Paging} from "../interfaces/paging";
 })
 export class HomeComponent implements OnInit {
   // focus: boolean = false;
+  filterText: string = ''
 
   products: Product[] = [];
   totalProducts: number | null | undefined;
-  totalPages: any | null | undefined;
+  totalPages: number | null | undefined;
   pages: number[] | null | undefined = [];
 
   from: number = 0;
@@ -41,8 +42,8 @@ export class HomeComponent implements OnInit {
     this.cdr.detectChanges();
     console.log('UID from home component: ' + this._usersService.user?.isLoggedIn);
     this.productsService.fetchTotalProducts()
-      .subscribe(
-        result => {
+      .subscribe({
+        next: (result) => {
           console.log("next: " + result.rows);
           this.totalProducts = result.rows;
           this.totalPages = Math.ceil(result.rows / Number(this.range))
@@ -50,30 +51,25 @@ export class HomeComponent implements OnInit {
             this.pages?.push(i);
           }
         },
-        error => {
-          console.error(error);
-        },
-        () => console.log("complete")
-      )
+        error: (error: Error) => {
+          console.error(error)
+        }
+      });
     this.getProducts(1)
   }
 
   public getProducts(page: number) {
     this.page = page;
     console.log("page: " + this.page)
-      this.productList = this.productsService.fetchProducts(page, this.range)
-      this.productList.forEach(p => console.log(p))
-    // this.productsService.fetchProducts()
-    //   .subscribe(response => {
-    //     this.productList = response;
-    //     response.forEach(p => console.log("products: " + p))
-    //   });
+    this.productList = this.productsService.fetchProducts(page, this.range)
+    this.productList.forEach(p => console.log(p))
   }
 
   changeRange(r: number) {
-    for (let i = 1; i <= this.totalPages; i++) {
-      this.pages?.pop();
-    }
+    if (this.totalPages)
+      for (let i = 1; i <= this.totalPages; i++) {
+        this.pages?.pop(); // remove the old pages
+      }
     this.range = r;
     if (typeof this.totalProducts === "number") {
       this.totalPages = Math.ceil(this.totalProducts / Number(this.range))
@@ -81,7 +77,6 @@ export class HomeComponent implements OnInit {
         this.pages?.push(i);
       }
     }
-
     // if the total pages become less after the range is changed, move to the last possible page
     if (this.pages && this.page > this.pages.length) {
       this.page = this.pages.length;
@@ -95,17 +90,33 @@ export class HomeComponent implements OnInit {
   }
 
   nextPage() {
-    if (this.page < this.totalPages)
-    this.getProducts(this.page + 1)
+    if (this.totalPages && this.page < this.totalPages)
+      this.getProducts(this.page + 1)
   }
 
   public getFilteredProducts(text: string) {
-    this.productList = this.productsService.fetchFilteredProducts(text)
-  }
+    if (this.totalPages)
+      for (let i = 1; i <= this.totalPages; i++) {
+        this.pages?.pop();
+      }
+    this.productsService.fetchTotalSearchedProducts(text)
+      .subscribe(
+        result => {
+          console.log("total filtered products: " + result.rows);
+          this.totalProducts = result.rows;
+          this.totalPages = Math.ceil(result.rows / Number(this.range))
+          for (let i = 1; i <= this.totalPages; i++) {
+            this.pages?.push(i);
+          }
+        },
+        error => {
+          console.error(error);
+        }
+      )
+    console.log("in filter, page: " + this.page +
+      "\nin filter, range: " + this.range)
 
-  // TODO: unused
-  // public showDetails(pid: string): void {
-  //   this.productsService.fetchProduct(pid);
-  // }
+    this.productList = this.productsService.fetchFilteredProducts(text, this.page, this.range)
+  }
 
 }

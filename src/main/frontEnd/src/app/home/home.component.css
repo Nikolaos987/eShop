@@ -71,10 +71,8 @@ input[type="text"]:focus {
 }
 
 .paging-container {
-  margin-bottom: 15px;
-  border: red 2px solid;
+  margin: 30px;
   display: flex;
-  bottom: 0;
   align-items: center;
   justify-content: right;
 }
@@ -85,7 +83,6 @@ input[type="text"]:focus {
   font-size: 20px;
   padding: 8px;
   text-align: center;
-  border: green 1px solid;
   margin: auto 100px;
 }
 
@@ -123,7 +120,6 @@ input[type="text"]:focus {
 
 .toBeShown {
   padding: 5px;
-  border: 1px green solid;
   margin: 0 100px;
 }
 

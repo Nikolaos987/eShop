@@ -69,18 +69,39 @@ export class ProductsService {
         catchError(this.handleError))
   }
 
-  public fetchFilteredProducts(filter: string): Observable<Product[]> {
+  public fetchFilteredProducts(filter: string, page: number | null | undefined, range: number | null | undefined): Observable<Product[]> {
     filter = filter.trim().toLowerCase();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
     if (!filter) {
-      return this.fetchProducts(1, 5);
+      return this.fetchProducts(page, range);
     }
-    return this.http.get<Product[]>
-    ('/api/product/search/' + filter, {responseType: "json"}) // , options
-      .pipe(
-        catchError(this.handleError));
+    if (page && range) {
+      return this.http
+        .get<Product[]>('/api/products/search', {
+          params: {
+            regex: filter,
+            from: ((page - 1) * range),
+            range: range
+          }, responseType: "json"
+        }) // , options
+        .pipe(
+          catchError(this.handleError));
+    } else return new Observable<Product[]>();
     //                  <[Product]>
+  }
+
+  public fetchTotalSearchedProducts(filter: string): Observable<{ rows: number }> {
+    filter = filter.trim().toLowerCase();
+    const options = filter ?
+      {params: new HttpParams().set('name', filter)} : {};
+    return this.http
+      .get<{ rows: number }>("/api/product/search/count", {
+        params: {
+          regex: filter
+        }, responseType: "json"})
+      .pipe(
+        catchError(this.handleError))
   }
 
   private handleError(error: HttpErrorResponse) {

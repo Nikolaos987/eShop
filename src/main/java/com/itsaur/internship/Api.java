@@ -17,6 +17,7 @@ import com.itsaur.internship.query.product.ProductQueryModelStore;
 import com.itsaur.internship.query.user.UserQueryModelStore;
 import com.itsaur.internship.userEntity.UserService;
 
+import java.util.SimpleTimeZone;
 import java.util.UUID;
 
 public class Api extends AbstractVerticle {
@@ -110,9 +111,28 @@ public class Api extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/product/search/:regex").handler(ctx -> this.productQueryModelStore.findProductsByName(ctx.pathParam("regex"))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
-                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
+        router.get("/products/search").handler(ctx -> {
+            MultiMap params = ctx.queryParams();
+            String regex = params.get("regex");
+            int from = Integer.parseInt(params.get("from"));
+            int range = Integer.parseInt(params.get("range"));
+
+            this.productQueryModelStore.findProductsByName(regex, from, range)
+                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
+        router.get("/product/search/count").handler(ctx -> {
+            MultiMap params = ctx.queryParams();
+            String regex = params.get("regex");
+
+            this.productQueryModelStore.filteredProductsCount(regex)
+                    .onSuccess(v -> {
+                        JsonObject json = new JsonObject().put("rows", v);
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(json));
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
 
         // TODO: 7/7/23 findProducts
         router.get("/products").handler(ctx -> {
