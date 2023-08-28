@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, computed, OnInit} from '@angular/core';
 import {ProductsService} from "../services/products.service";
 import {HttpParams} from "@angular/common/http";
 import {ignoreElements, map, Observable, range, tap} from "rxjs";
@@ -30,8 +30,9 @@ export class HomeComponent implements OnInit {
 
   uid: string = 'sth';
   // image: string | undefined;
-  productList: Observable<Product[]> | undefined;
+  productList: Product[] | undefined;
   helpText = "Search any product...";
+
 
   constructor(private productsService: ProductsService,
               private _usersService: UsersService,
@@ -44,7 +45,6 @@ export class HomeComponent implements OnInit {
     this.productsService.fetchTotalProducts()
       .subscribe({
         next: (result) => {
-          console.log("next: " + result.rows);
           this.totalProducts = result.rows;
           this.totalPages = Math.ceil(result.rows / Number(this.range))
           for (let i = 1; i <= this.totalPages; i++) {
@@ -55,27 +55,34 @@ export class HomeComponent implements OnInit {
           console.error(error)
         }
       });
-    this.getProducts(1)
+    this.getProducts(this.page)
   }
 
   public getProducts(page: number) {
     this.page = page;
-    console.log("page: " + this.page)
+    console.log("from getProducts(): page = " + this.page)
     if (this.filterText == '') {
-      this.productList = this.productsService.fetchProducts(page, this.range)
-      this.productList.forEach(p => console.log(p))
+      this.productsService.fetchProducts(page, this.range)
+        .subscribe({
+          next: value => {
+            this.productList = value;
+          },
+          error: err => console.error(err)
+        })
+      // this.productList.forEach(p => console.log(p))
     } else {
-      this.getFilteredProducts(this.filterText);
+      // this.getFilteredProducts(this.filterText);
+      this.filteredProducts(this.filterText, this.page, this.range)
     }
   }
 
   changeRange(r: number) {
     if (this.totalPages)
       for (let i = 1; i <= this.totalPages; i++) {
-        this.pages?.pop(); // remove the old pages
+        this.pages?.pop(); // removing the old pages
       }
     this.range = r;
-    if (typeof this.totalProducts === "number") {
+    if (typeof this.totalProducts == "number") {
       this.totalPages = Math.ceil(this.totalProducts / Number(this.range))
       for (let i = 1; i <= this.totalPages; i++) {
         this.pages?.push(i);
@@ -85,7 +92,6 @@ export class HomeComponent implements OnInit {
     if (this.pages && this.page > this.pages.length) {
       this.page = this.pages.length;
     }
-    console.log("filter text: " + this.filterText);
     if (this.filterText == '')
       this.getProducts(this.page)
     else
@@ -93,13 +99,17 @@ export class HomeComponent implements OnInit {
   }
 
   prevPage() {
-    if (this.page > 1)
-      this.getProducts(this.page - 1)
+    if (this.page > 1) {
+      this.page = this.page - 1;
+      this.getProducts(this.page);
+    }
   }
 
   nextPage() {
-    if (this.totalPages && this.page < this.totalPages)
-      this.getProducts(this.page + 1)
+    if (this.totalPages && this.page < this.totalPages) {
+      this.page = this.page + 1;
+      this.getProducts(this.page);
+    }
   }
 
   public getFilteredProducts(text: string) {
@@ -109,23 +119,35 @@ export class HomeComponent implements OnInit {
         this.pages?.pop();
       }
     this.productsService.fetchTotalSearchedProducts(text)
-      .subscribe(
-        result => {
-          console.log("total filtered products: " + result.rows);
+      .subscribe({
+        next: (result) => {
           this.totalProducts = result.rows;
           this.totalPages = Math.ceil(result.rows / Number(this.range))
           for (let i = 1; i <= this.totalPages; i++) {
             this.pages?.push(i);
           }
         },
-        error => {
+        error: (error: Error) => {
           console.error(error);
+        },
+        complete: () => {
+          // if (this.pages && this.page > this.pages.length)
+          this.page = 1;
+          this.filteredProducts(text, this.page, this.range)
         }
-      )
-    console.log("in filter, page: " + this.page +
-      "\nin filter, range: " + this.range)
+      })
+  }
 
-    this.productList = this.productsService.fetchFilteredProducts(text, this.page, this.range)
+  public filteredProducts(text: string, page: number, range: number) {
+    this.productsService.fetchFilteredProducts(text, this.page, this.range)
+      .subscribe({
+        next: value => {
+          this.productList = value;
+        },
+        error: (error: Error) => {
+          console.error(error)
+        }
+      })
   }
 
 }

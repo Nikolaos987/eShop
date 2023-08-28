@@ -73,9 +73,9 @@ export class ProductsService {
     filter = filter.trim().toLowerCase();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
-    if (!filter) {
-      return this.fetchProducts(page, range);
-    }
+    // if (!filter) {
+    //   return this.fetchProducts(page, range);
+    // }
     if (page && range) {
       return this.http
         .get<Product[]>('/api/products/search', {

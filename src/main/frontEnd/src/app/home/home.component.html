@@ -1,5 +1,5 @@
 <div class="main">
-  <app-search-bar [help]="helpText"  (result)="getFilteredProducts($event)"></app-search-bar>
+  <app-search-bar [help]="helpText" (result)="getFilteredProducts($event)"></app-search-bar>
   <div class="total-products-text">products found: {{totalProducts}}</div>
   <app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
 
