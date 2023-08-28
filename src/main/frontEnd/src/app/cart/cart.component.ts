@@ -1,7 +1,7 @@
 import {Component, OnChanges, OnInit} from '@angular/core';
 import {CartService} from "../services/cart.service";
 import {ProductsService} from "../services/products.service";
-import {map, Observable, tap} from "rxjs";
+import {debounce, debounceTime, map, Observable, tap, timer} from "rxjs";
 
 import {Item} from "../interfaces/item";
 import {UsersService} from "../services/users.service";
@@ -44,7 +44,10 @@ export class CartComponent implements OnInit {
     // stock = api call PRODUCT BY ID (ID = this.product.pid
     this._cartService
       .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
-      .subscribe(result => console.log(result))
+      .pipe(debounceTime(1000))
+      .subscribe({
+        next: result => this.items = this._cartService.getCart((this._usersService.user?.uid))
+      })
   }
 
   remove(product: Product) {

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpClientModule, HttpErrorResponse, HttpParams} from "@angular/common/http";
 
-import {map, Observable, tap, throwError} from "rxjs";
+import {debounce, debounceTime, map, Observable, tap, throwError, timer} from "rxjs";
 import {catchError, retry} from "rxjs";
 import {UsersService} from "./users.service";
 import {Item} from "../interfaces/item";
@@ -27,6 +27,7 @@ export class CartService {
       {},
       {responseType: "json"})
       .pipe(
+        // debounceTime(10000),
         catchError(this.handleError));
   }
 
