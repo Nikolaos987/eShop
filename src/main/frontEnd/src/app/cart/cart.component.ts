@@ -1,7 +1,7 @@
 import {Component, OnChanges, OnInit} from '@angular/core';
 import {CartService} from "../services/cart.service";
 import {ProductsService} from "../services/products.service";
-import {debounce, debounceTime, map, Observable, tap, timer} from "rxjs";
+import {debounce, fromEvent, debounceTime, map, Observable, tap, timer} from "rxjs";
 
 import {Item} from "../interfaces/item";
 import {UsersService} from "../services/users.service";
@@ -35,19 +35,21 @@ export class CartComponent implements OnInit {
 
   // TODO: wait for a few seconds before sending the request
   decrease(event: {p: Product, q: number}) {
+       this._cartService
+         .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
+         .subscribe(result => console.log(result))
+  }
+
+  increase(event: {p: Product, q: number}) {
     this._cartService
       .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
       .subscribe(result => console.log(result))
   }
 
-  increase(event: {p: Product, q: number}) {
-    // stock = api call PRODUCT BY ID (ID = this.product.pid
+  changeQuantity(event: {p: Product, q: number}) {
     this._cartService
       .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
-      .pipe(debounceTime(1000))
-      .subscribe({
-        next: result => this.items = this._cartService.getCart((this._usersService.user?.uid))
-      })
+      .subscribe(result => console.log(result))
   }
 
   remove(product: Product) {
