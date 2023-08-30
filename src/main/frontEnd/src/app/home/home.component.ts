@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cdr.detectChanges();
-    console.log('UID from home component: ' + this._usersService.user?.isLoggedIn);
+    console.log('UID from home component: ' + this._usersService.user?.uid);
     this.productsService.fetchTotalProducts()
       .subscribe({
         next: (result) => {
