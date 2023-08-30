@@ -24,8 +24,7 @@ export class ProductComponent implements OnInit {
   @Input() quant: number | undefined;
 
   @Output() removeItem = new EventEmitter<Product>();
-  @Output() incrementItem = new EventEmitter<{p: Product, q: number}>();
-  @Output() decrementItem = new EventEmitter<{p: Product, q: number}>();
+  @Output() updateItem = new EventEmitter<{p: Product, q: number}>();
 
   // TODO: remove constructor, unused declarations
   constructor(private _cartService: CartService, private usersService: UsersService) {
@@ -35,19 +34,19 @@ export class ProductComponent implements OnInit {
   }
 
   // TODO: wait for a few seconds before sending the request
-  decrease(quantity: number) {
-    this.decrementItem.emit({p: this.product, q: quantity})
+  updateQuantity(quantity: number) {
+    this.updateItem.emit({p: this.product, q: quantity}) // this at the end
     console.log("this.product.price: " + this.product.price + "\nthis.product.quantity: " + this.product.quantity + "\nquant: " + this.quant + "\nquantity: " + quantity)
-    console.log("decrease: " + "this.product.price = (" + this.product.price + "/(" + (quantity + 1) + ")) * " + quantity)
-    this.product.price = (this.product.price/(quantity+1)) * quantity;
+    console.log("update: " + "this.product.price = (" + this.product.price + "/(" + (quantity + 1) + ")) * " + quantity)
+    // this.product.price = (this.product.price/(quantity+1)) * quantity;
   }
 
-  increase(quantity: number) {
-    this.incrementItem.emit({p: this.product, q: quantity});
-    console.log("this.product.price: " + this.product.price + "\nthis.product.quantity: " + this.product.quantity + "\nquant: " + this.quant + "\nquantity: " + quantity)
-    console.log("increase: " + "this.product.price = (" + this.product.price + "/(" + (quantity - 1) + ")) * " + quantity)
-    this.product.price = (this.product.price/(quantity-1)) * quantity;
-  }
+  // increase(quantity: number) {
+  //   this.incrementItem.emit({p: this.product, q: quantity});
+  //   console.log("this.product.price: " + this.product.price + "\nthis.product.quantity: " + this.product.quantity + "\nquant: " + this.quant + "\nquantity: " + quantity)
+  //   console.log("increase: " + "this.product.price = (" + this.product.price + "/(" + (quantity - 1) + ")) * " + quantity)
+  //   // this.product.price = (this.product.price/(quantity-1)) * quantity;
+  // }
 
   remove() {
     this.removeItem.emit(this.product);

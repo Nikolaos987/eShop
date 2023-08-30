@@ -3,11 +3,10 @@
 
   <div *ngIf="items">
     <div class="list">
-      <section *ngFor="let item of items | async">
+      <section *ngFor="let item of items">
         <app-product [product]="item"
                      [quant]="item.quantity"
-                     (incrementItem)="increase($event)"
-                     (decrementItem)="decrease($event)"
+                     (updateItem)="update($event)"
                      (removeItem)="remove($event)"></app-product> <!--[quant]="item.quantity" (incrementItem)="increase($event)" (removeItem)="remove($event)"-->
         <!--  <form [formGroup]="quantForm">-->
         <!--    <div class="quantity">-->
@@ -26,6 +25,15 @@
     <div class="total-price">
       <button>Buy</button>
       <h3>Total Price: </h3>
+    </div>
+  </div>
+
+  <div *ngIf="!items" class="error-container">
+    <div class="error-text">
+      <h1>No Products Found in Your Cart</h1>
+    </div>
+    <div class="error-image">
+      <img src="/assets/empty_cart.png" alt="error">
     </div>
   </div>
 

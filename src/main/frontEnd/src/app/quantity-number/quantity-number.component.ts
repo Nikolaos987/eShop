@@ -15,10 +15,10 @@ export class QuantityNumberComponent implements OnInit, AfterViewInit {
     quantity: new FormControl(1)
   })
 
-  @Output() decreaseQuantity = new EventEmitter<number>();
-  @Output() increaseQuantity = new EventEmitter<number>();
+  @Output() changedQuantity = new EventEmitter<number>();
 
-  @ViewChild('nameRef') nameElementRef: ElementRef | undefined;
+  @ViewChild('downRef') downElementRef: ElementRef | undefined;
+  @ViewChild('upRef') upElementRef: ElementRef | undefined;
 
   ngOnInit(): void {
     if (this.currentQuantity != undefined && this.currentQuantity >= 0) {
@@ -27,9 +27,10 @@ export class QuantityNumberComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log(this.nameElementRef);
+    // console.log(this.nameElementRef);
 
-    const clicks = fromEvent(this.nameElementRef?.nativeElement, 'click');
+    // + button
+    const clicks = fromEvent(this.downElementRef?.nativeElement, 'click');
     const result = clicks.pipe(
       map(x => {
         if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value > 1) {
@@ -40,24 +41,40 @@ export class QuantityNumberComponent implements OnInit, AfterViewInit {
     result.subscribe({
       next: result => {
         if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value >= 1) {
-          this.decreaseQuantity.emit(this.formQuantity.controls['quantity'].value)
+          this.changedQuantity.emit(this.formQuantity.controls['quantity'].value)
+        }
+      }
+    })
+    // - button
+    const clicks2 = fromEvent(this.upElementRef?.nativeElement, 'click');
+    const result2 = clicks2.pipe(
+      map(x => {
+        if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value < 9) {
+          this.formQuantity.controls['quantity'].setValue(this.formQuantity.controls['quantity'].value + 1)
+        }
+      }),
+      debounceTime(1000));
+    result2.subscribe({
+      next: result => {
+        if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value <= 9) {
+          this.changedQuantity.emit(this.formQuantity.controls['quantity'].value)
         }
       }
     })
   }
 
-  stepDown() {
-    if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value > 1) {
-      this.formQuantity.controls['quantity'].setValue(this.formQuantity.controls['quantity'].value - 1);
-      this.decreaseQuantity.emit(this.formQuantity.controls['quantity'].value)
-    }
-  }
-
-  stepUp() {
-    if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value < 9) {
-      this.formQuantity.controls['quantity'].setValue(this.formQuantity.controls['quantity'].value + 1);
-      this.increaseQuantity.emit(this.formQuantity.controls['quantity'].value)
-    }
-  }
+  // stepDown() {
+  //   if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value > 1) {
+  //     this.formQuantity.controls['quantity'].setValue(this.formQuantity.controls['quantity'].value - 1);
+  //     this.decreaseQuantity.emit(this.formQuantity.controls['quantity'].value)
+  //   }
+  // }
+  //
+  // stepUp() {
+  //   if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value < 9) {
+  //     this.formQuantity.controls['quantity'].setValue(this.formQuantity.controls['quantity'].value + 1);
+  //     this.increaseQuantity.emit(this.formQuantity.controls['quantity'].value)
+  //   }
+  // }
 
 }

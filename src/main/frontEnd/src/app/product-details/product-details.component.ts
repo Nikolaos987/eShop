@@ -81,15 +81,17 @@ export class ProductDetailsComponent implements OnInit {
       window.alert('you are not logged in!');
   }
 
-  stepDown(quantity: number) {
-    // if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value > 1) {
-      this.addToCartForm.controls['quantity'].setValue(quantity);
-    // }
+  stepDown() {
+    if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value > 1) {
+      this.addToCartForm.controls['quantity'].setValue(
+        this.addToCartForm.controls['quantity'].value - 1);
+    }
   }
 
-  stepUp(quantity: number) {
-    // if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value < 9) {
-      this.addToCartForm.controls['quantity'].setValue(quantity);
-    // }
+  stepUp() {
+    if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value < 9) {
+      this.addToCartForm.controls['quantity'].setValue(
+        this.addToCartForm.controls['quantity'].value + 1);
+    }
   }
 }

@@ -16,7 +16,8 @@ import {Product} from "../interfaces/product";
 })
 export class CartComponent implements OnInit {
 
-  items: Observable<Item[]> | undefined;
+  items: Item[] | undefined;
+
   // cart: any;any
 
   constructor(private _cartService: CartService,
@@ -29,34 +30,50 @@ export class CartComponent implements OnInit {
   }
 
   fetchCart(): void {
-    this.items = this._cartService
-      .getCart(this._usersService.user?.uid);
+    this._cartService.getCart(this._usersService.user?.uid)
+      .subscribe({
+        next: response => this.items = response
+      });
   }
 
   // TODO: wait for a few seconds before sending the request
-  decrease(event: {p: Product, q: number}) {
-       this._cartService
-         .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
-         .subscribe(result => console.log(result))
-  }
-
-  increase(event: {p: Product, q: number}) {
+  update(event: { p: Product, q: number }) {
     this._cartService
       .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
-      .subscribe(result => console.log(result))
+      .subscribe({
+        next: result => {
+          console.log("updated: ")
+          this.fetchCart()
+        }
+      })
   }
 
-  changeQuantity(event: {p: Product, q: number}) {
-    this._cartService
-      .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
-      .subscribe(result => console.log(result))
-  }
+  // increase(event: { p: Product, q: number }) {
+  //   this._cartService
+  //     .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
+  //     .subscribe({
+  //       next: result => {
+  //         console.log("syn: ")
+  //         this.fetchCart()
+  //       }
+  //     })
+  // }
+
+  // changeQuantity(event: { p: Product, q: number }) {
+  //   this._cartService
+  //     .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
+  //     .subscribe(result => console.log(result))
+  // }
 
   remove(product: Product) {
-    this._cartService.addToCart(this._usersService.user?.uid, product.pid, 0)
-      .subscribe(response => {
-        this.items = this._cartService.getCart(this._usersService.user?.uid);
-        console.log(response);
+    this._cartService
+      .addToCart(this._usersService.user?.uid, product.pid, 0)
+      .subscribe({
+        next: result => {
+          console.log("diagrafi: " + result)
+          this.fetchCart()
+        }
       });
   }
+
 }
