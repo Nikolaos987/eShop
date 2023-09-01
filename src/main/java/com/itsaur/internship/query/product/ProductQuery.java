@@ -44,7 +44,7 @@ public class ProductQuery implements ProductQueryModelStore {
                 .compose(records -> {
                     Row row = records.iterator().next();
                     ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                            row.getUUID("pid"), row.getString("name"), row.getString("image"), row.getString("description"),
+                            row.getUUID("pid"), row.getString("name"), row.getString("description"),
                             row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"),
                             Category.valueOf(row.getString("category")));
                     return Future.succeededFuture(product);
@@ -63,7 +63,7 @@ public class ProductQuery implements ProductQueryModelStore {
                         ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
                                 row.getUUID("pid"),
                                 row.getString("name"),
-                                row.getString("image"),
+//                                row.getString("image"),
                                 row.getString("description"),
                                 row.getDouble("price"),
                                 row.getInteger("quantity"),
@@ -87,7 +87,7 @@ public class ProductQuery implements ProductQueryModelStore {
                         ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
                                 row.getUUID("pid"),
                                 row.getString("name"),
-                                row.getString("image"),
+//                                row.getString("image"),
                                 row.getString("description"),
                                 row.getDouble("price"),
                                 row.getInteger("quantity"),
@@ -102,19 +102,13 @@ public class ProductQuery implements ProductQueryModelStore {
 
     @Override
     public Future<Buffer> findImageById(UUID pid) {
-        return pgPool
-                .preparedQuery("SELECT image FROM product WHERE pid = $1;")
-                .execute(Tuple.of(pid))
-                .compose(records -> {
-                    Row row = records.iterator().next();
-                    return vertx.fileSystem().readFile(row.getString("image"))
+                    return vertx.fileSystem().readFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid)
                             .compose(file -> {
                                 Buffer buffer = Buffer.buffer(file.getBytes());
                                 return Future.succeededFuture(buffer);
                             });
 
 //                    return Future.succeededFuture(records.iterator().next().getString("image"));
-                });
     }
 
 

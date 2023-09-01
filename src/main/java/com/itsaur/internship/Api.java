@@ -1,6 +1,7 @@
 package com.itsaur.internship;
 
 import com.itsaur.internship.cartEntity.CartService;
+import com.itsaur.internship.productEntity.PostgresProductsStore;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
@@ -115,7 +116,7 @@ public class Api extends AbstractVerticle {
                 })
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/image/:pid").handler(ctx -> this.productQueryModelStore
+        router.get("/product/image/:pid").handler(ctx -> this.productQueryModelStore
                 .findImageById(UUID.fromString(ctx.pathParam("pid")))
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
@@ -172,10 +173,10 @@ public class Api extends AbstractVerticle {
         router.post("/product/insert").handler(ctx -> {
             try {
                 final JsonObject body = ctx.body().asJsonObject();
-                String path = "src/main/resources/assets/" + body.getString("imagepath");
+//                String path = "src/main/resources/assets/" + body.getString("imagepath");
                 this.productService.addProduct(
                                 body.getString("name"),
-                                path,
+//                                path,
                                 body.getString("description"),
                                 body.getDouble("price"),
                                 body.getInteger("quantity"),
@@ -220,36 +221,12 @@ public class Api extends AbstractVerticle {
 //            ctx.response().putHeader("Content-Type", "multipart/form-data");
             List<FileUpload> fileUploadSet = ctx.fileUploads();
             FileUpload fileUpload = fileUploadSet.get(0);
-
-//                Buffer uploadedFile = vertx.fileSystem().readFileBlocking(fileUpload.uploadedFileName());
-
             vertx.fileSystem().readFile(fileUpload.uploadedFileName())
-                    .onSuccess(buffer -> vertx.fileSystem()
-                            .open("assets/" + pid + ".jpeg", new OpenOptions())
-                            .onSuccess(file -> {
-                                System.out.println(buffer);
-                                file.write(buffer).onSuccess(v -> {
-                                    file.close();
-                                    ctx.end("ok");
-                                });
-                            })
-                            .onSuccess(v -> ctx.end("ok")));
-
-
-//                vertx.fileSystem()
-////                        .readFile(fileUpload.uploadedFileName())
-//                        .open(fileUpload.uploadedFileName(), new OpenOptions()) // "assets/" + ctx.pathParam("pid") + ".jpeg", buffer
-//                        .onSuccess(file -> {
-//                            Buffer buffer = Buffer.buffer();
-//                            file.read(buffer, 0, 1, 100);
-//                            vertx.fileSystem().writeFile("assets/" + ctx.pathParam("pid") + ".jpeg", buffer);
-//                        });
-
-//            vertx.fileSystem()
-//                    .createFile("assets/" + pid + ".jpeg")
-//                    .compose(v -> vertx.fileSystem().copy("assets/Apple_Watch_SE_2022.jpeg", "assets/" + pid + ".jpeg"))
-//                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("end"))
-//                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end("failed"));
+                    .compose(buffer -> this.productService.insertImage(pid, buffer))
+                    .onSuccess(v ->
+                            ctx.response().setStatusCode(200).setStatusMessage("OK").end("image added successfully"))
+                    .onFailure(v ->
+                            ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
 

@@ -3,6 +3,9 @@ package com.itsaur.internship.productEntity;
 import com.itsaur.internship.cartEntity.CartItem;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.AsyncFile;
+import io.vertx.core.file.OpenOptions;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.PoolOptions;
@@ -25,9 +28,9 @@ public class PostgresProductsStore implements ProductsStore {
     @Override
     public Future<Product> insert(Product product) {
         return pgPool
-                .preparedQuery("INSERT INTO product (pid, name, image, description, price, quantity, brand, category) " +
+                .preparedQuery("INSERT INTO product (pid, name, description, price, quantity, brand, category) " +
                         "VALUES ($1, $2, $3, $4, $5, $6, $7, $8);")
-                .execute(Tuple.of(product.pid(), product.name(), product.image(), product.description(), product.price(),
+                .execute(Tuple.of(product.pid(), product.name(), product.description(), product.price(),
                         product.quantity(), product.brand(), product.category()))
                 .compose(res -> pgPool
                         .preparedQuery("SELECT * FROM product WHERE pid = $1")
@@ -37,7 +40,7 @@ public class PostgresProductsStore implements ProductsStore {
                                 Row row = records.iterator().next();
                                 Product newProduct = new Product(
                                         row.getUUID("pid"), row.getString("name"),
-                                        row.getString("image"), row.getString("description"),
+                                        row.getString("description"),
                                         row.getDouble("price"), row.getInteger("quantity"),
                                         row.getString("brand"), Category.valueOf(row.getString("category")));
                                 return Future.succeededFuture(newProduct);
@@ -57,7 +60,6 @@ public class PostgresProductsStore implements ProductsStore {
                     Product product = new Product(
                             row.getUUID("pid"),
                             row.getString("name"),
-                            row.getString("image"),
                             row.getString("description"),
                             row.getDouble("price"),
                             row.getInteger("quantity"),
@@ -79,7 +81,6 @@ public class PostgresProductsStore implements ProductsStore {
                     Product product = new Product(
                             row.getUUID("pid"),
                             row.getString("name"),
-                            row.getString("image"),
                             row.getString("description"),
                             row.getDouble("price"),
                             row.getInteger("quantity"),
@@ -107,11 +108,21 @@ public class PostgresProductsStore implements ProductsStore {
                         "quantity = $5, brand = $6, category = $7  " +
                         "WHERE pid = $8")
                 .execute(Tuple.of(
-                        product.name(), product.image(), product.description(),
+                        product.name(), product.description(),
                         product.price(), product.quantity(),
                         product.brand(), product.category(),
                         product.pid()))
                 .compose(records -> Future.succeededFuture());
+    }
+
+    @Override
+    public Future<Void> insertImage(UUID pid, Buffer buffer) {
+        return vertx.fileSystem()
+                .createFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid)
+                .compose(v -> vertx.fileSystem()
+                        .open("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid, new OpenOptions())
+                        .compose(file -> file.write(buffer))
+                        .compose(result -> Future.succeededFuture()));
     }
 
     @Override
@@ -144,13 +155,13 @@ public class PostgresProductsStore implements ProductsStore {
     public Future<Void> updateNext(ArrayList<CartItem> items, int position) {
         return inStock(items.get(position).pid(), items.get(position).quantity())
                 .compose(result -> pgPool
-                .preparedQuery("UPDATE product SET quantity = quantity - $1 WHERE pid = $2")
-                .execute(Tuple.of(items.get(position).quantity(), items.get(position).pid()))
-                .compose(records2 -> {
-                    if (position + 1 < items.size())
-                        return updateNext(items, position + 1);
-                    return Future.succeededFuture();
-                }));
+                        .preparedQuery("UPDATE product SET quantity = quantity - $1 WHERE pid = $2")
+                        .execute(Tuple.of(items.get(position).quantity(), items.get(position).pid()))
+                        .compose(records2 -> {
+                            if (position + 1 < items.size())
+                                return updateNext(items, position + 1);
+                            return Future.succeededFuture();
+                        }));
     }
 
     public Future<Void> inStock(UUID pid, int quantity) {

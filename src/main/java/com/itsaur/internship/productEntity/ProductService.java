@@ -17,7 +17,7 @@ public class ProductService {
     }
 
 
-    public Future<Product> addProduct(String name, String imagePath, String description,
+    public Future<Product> addProduct(String name, String description,
                                    double price, int quantity, String brand, Category category) {
         return productsStore.findProduct(name)
                 .otherwiseEmpty()
@@ -25,7 +25,7 @@ public class ProductService {
                     if (product == null)
                         return productsStore.insert(
                                 new Product(UUID.randomUUID(),
-                                name, imagePath, description, price, quantity, brand, category))
+                                name, description, price, quantity, brand, category))
                                 .compose(newProduct -> Future.succeededFuture(newProduct));
                     return Future.failedFuture(new IllegalArgumentException("product with this name already exists!"));
                 });
@@ -47,7 +47,17 @@ public class ProductService {
                 .otherwiseEmpty()
                 .compose(product -> {
                     if (product != null)
-                        return productsStore.updateProduct(new Product(pid, name, image, description, price, quantity, brand, category));
+                        return productsStore.updateProduct(new Product(pid, name, description, price, quantity, brand, category));
+                    return Future.failedFuture(new IllegalArgumentException("product not found"));
+                });
+    }
+
+    public Future<Void> insertImage(UUID pid, Buffer buffer) {
+        return productsStore.findProduct(pid)
+                .otherwiseEmpty()
+                .compose(product -> {
+                    if (product != null)
+                        return productsStore.insertImage(pid, buffer);
                     return Future.failedFuture(new IllegalArgumentException("product not found"));
                 });
     }

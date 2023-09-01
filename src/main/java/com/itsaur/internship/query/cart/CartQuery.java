@@ -40,6 +40,7 @@ public class CartQuery implements CartQueryModelStore {
                             items.add(item);
                         });
                     }
+                    else return Future.succeededFuture(new ArrayList<>());
 //                    CartQueryModel cart = new CartQueryModel(items);
                     return Future.succeededFuture(items);
                 });
