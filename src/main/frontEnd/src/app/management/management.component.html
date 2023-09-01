@@ -13,12 +13,10 @@
       </div>
 
       <div class="txt_field">
-        <input name="imagepath" type="text" formControlName="imagepath">
-        <label>Image Path</label>
+        <label for="file">File </label>
+        <input id="file" name="file" type="file"
+               (change)="getFile($event)"/>
         <span></span>
-      </div>
-      <div class="danger" *ngIf="(createForm.controls.imagepath.dirty || form.submitted)
-                              && !createForm.controls.imagepath.valid">Image path must have at least 3 characters!
       </div>
 
       <div class="txt_field">
@@ -76,6 +74,16 @@
 <!--      </div>-->
 
     </form>
+
+<!--    <form (ngSubmit)="uploadImage()"> &lt;!&ndash; enctype="multipart/form-data" &ndash;&gt;-->
+<!--      <div class="txt_field">-->
+<!--        <label for="file">File </label>-->
+<!--        <input id="file" name="file" type="file"-->
+<!--               (change)="getFile($event)"/>-->
+<!--        <input type="submit" value="Upload">-->
+<!--        <span></span>-->
+<!--      </div>-->
+<!--    </form>-->
 
   </div>
 </div>
