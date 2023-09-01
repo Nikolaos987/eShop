@@ -13,6 +13,7 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
+import javax.swing.text.html.FormSubmitEvent;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -118,11 +119,11 @@ public class PostgresProductsStore implements ProductsStore {
     @Override
     public Future<Void> insertImage(UUID pid, Buffer buffer) {
         return vertx.fileSystem()
-                .createFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg")
-                .compose(v -> vertx.fileSystem()
-                        .open("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg", new OpenOptions())
-                        .compose(file -> file.write(buffer))
-                        .compose(result -> Future.succeededFuture()));
+                .writeFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg", buffer).onSuccess(v -> Future.succeededFuture());
+//                .compose(v -> vertx.fileSystem()
+//                        .open("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg", new OpenOptions())
+//                        .compose(file -> file.write(buffer))
+//                        .compose(result -> Future.succeededFuture()));
     }
 
     @Override
