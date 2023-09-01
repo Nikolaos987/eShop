@@ -17,7 +17,7 @@ export class ProductDetailsComponent implements OnInit {
   @Input() product: Product = {
     pid: String(this.route.snapshot.paramMap.get('pid')),
     name: undefined,
-    image: undefined,
+    // image: undefined,
     description: undefined,
     price: undefined,
     quantity: undefined,
