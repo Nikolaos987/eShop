@@ -23,14 +23,16 @@ export class ProductsService {
         catchError(this.handleError))
   }
 
-  public fetchProducts( page: number | null | undefined, range: number | null | undefined ): Observable<Product[]> {
+  public fetchProducts(page: number | null | undefined, range: number | null | undefined): Observable<Product[]> {
     // ((page - 1) * range)
     if (typeof page === "number" && typeof range === "number") {
       return this.http
-        .get<[Product]>('/api/products/', {params: {
-          from: ((page - 1) * range),
-          range: range
-          }, responseType: "json"})
+        .get<[Product]>('/api/products/', {
+          params: {
+            from: ((page - 1) * range),
+            range: range
+          }, responseType: "json"
+        })
         .pipe(
           catchError(this.handleError))
     } else return new Observable<Product[]>();
@@ -47,7 +49,7 @@ export class ProductsService {
       .post<{
         pid: string,
         name: string,
-        image: string,
+        // image: string,
         description: string,
         price: number,
         quantity: number,
@@ -57,7 +59,7 @@ export class ProductsService {
         '/api/product/insert',
         {
           "name": product.name,
-          "imagepath": product.image,
+          // "imagepath": product.image,
           "description": product.description,
           "price": Number(product.price),
           "quantity": Number(product.quantity),
@@ -65,6 +67,15 @@ export class ProductsService {
           "category": product.category
         },
         {responseType: "json"})
+      .pipe(
+        catchError(this.handleError))
+  }
+
+  public uploadImage(pid: string | null | undefined, formData: FormData): Observable<{ pid: string }> {
+    return this.http
+      .post<{ pid: string }>
+      ('/api/product/' + pid + '/image', formData,
+        {responseType: "json"}) //TODO: return a json from server
       .pipe(
         catchError(this.handleError))
   }
@@ -99,7 +110,8 @@ export class ProductsService {
       .get<{ rows: number }>("/api/product/search/count", {
         params: {
           regex: filter
-        }, responseType: "json"})
+        }, responseType: "json"
+      })
       .pipe(
         catchError(this.handleError))
   }
