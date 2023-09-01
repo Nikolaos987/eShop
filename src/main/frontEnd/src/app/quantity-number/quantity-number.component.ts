@@ -37,7 +37,7 @@ export class QuantityNumberComponent implements OnInit, AfterViewInit {
           this.formQuantity.controls['quantity'].setValue(this.formQuantity.controls['quantity'].value - 1)
         }
       }),
-      debounceTime(1000));
+      debounceTime(400));
     result.subscribe({
       next: result => {
         if (this.formQuantity.controls['quantity'].value != null && this.formQuantity.controls['quantity'].value >= 1) {
