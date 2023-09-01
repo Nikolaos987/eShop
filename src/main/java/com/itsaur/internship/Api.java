@@ -221,7 +221,7 @@ public class Api extends AbstractVerticle {
             UUID pid = UUID.fromString(ctx.pathParam("pid"));
 //            ctx.response().putHeader("Content-Type", "multipart/form-data");
             List<FileUpload> fileUploadSet = ctx.fileUploads();
-            FileUpload fileUpload = fileUploadSet.get(0);
+            FileUpload fileUpload = fileUploadSet.get(fileUploadSet.size()-1);
             vertx.fileSystem().readFile(fileUpload.uploadedFileName())
                     .compose(buffer -> this.productService.insertImage(pid, buffer))
                     .onSuccess(v -> {
