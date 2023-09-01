@@ -217,14 +217,19 @@ public class Api extends AbstractVerticle {
                 });
 
         router.post("/product/:pid/image").handler(ctx -> {
+            System.out.println("entered");
             UUID pid = UUID.fromString(ctx.pathParam("pid"));
 //            ctx.response().putHeader("Content-Type", "multipart/form-data");
             List<FileUpload> fileUploadSet = ctx.fileUploads();
             FileUpload fileUpload = fileUploadSet.get(0);
             vertx.fileSystem().readFile(fileUpload.uploadedFileName())
                     .compose(buffer -> this.productService.insertImage(pid, buffer))
-                    .onSuccess(v ->
-                            ctx.response().setStatusCode(200).setStatusMessage("OK").end("image added successfully"))
+                    .onSuccess(v -> {
+                        System.out.println(fileUpload.charSet());
+                        JsonObject json = new JsonObject();
+                        json.put("pid", pid);
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(json));
+                    })
                     .onFailure(v ->
                             ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });

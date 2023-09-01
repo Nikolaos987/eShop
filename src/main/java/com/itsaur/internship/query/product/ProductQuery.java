@@ -102,7 +102,7 @@ public class ProductQuery implements ProductQueryModelStore {
 
     @Override
     public Future<Buffer> findImageById(UUID pid) {
-                    return vertx.fileSystem().readFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid)
+                    return vertx.fileSystem().readFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg")
                             .compose(file -> {
                                 Buffer buffer = Buffer.buffer(file.getBytes());
                                 return Future.succeededFuture(buffer);

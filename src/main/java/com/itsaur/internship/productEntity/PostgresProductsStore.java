@@ -29,7 +29,7 @@ public class PostgresProductsStore implements ProductsStore {
     public Future<Product> insert(Product product) {
         return pgPool
                 .preparedQuery("INSERT INTO product (pid, name, description, price, quantity, brand, category) " +
-                        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8);")
+                        "VALUES ($1, $2, $3, $4, $5, $6, $7);")
                 .execute(Tuple.of(product.pid(), product.name(), product.description(), product.price(),
                         product.quantity(), product.brand(), product.category()))
                 .compose(res -> pgPool
@@ -103,10 +103,10 @@ public class PostgresProductsStore implements ProductsStore {
     public Future<Void> updateProduct(Product product) {
         return pgPool
                 .preparedQuery("UPDATE product " +
-                        "SET name = $1, image = $2, " +
-                        "description = $3, price = $4, " +
-                        "quantity = $5, brand = $6, category = $7  " +
-                        "WHERE pid = $8")
+                        "SET name = $1, " +
+                        "description = $2, price = $3, " +
+                        "quantity = $4, brand = $5, category = $6  " +
+                        "WHERE pid = $7")
                 .execute(Tuple.of(
                         product.name(), product.description(),
                         product.price(), product.quantity(),
@@ -118,9 +118,9 @@ public class PostgresProductsStore implements ProductsStore {
     @Override
     public Future<Void> insertImage(UUID pid, Buffer buffer) {
         return vertx.fileSystem()
-                .createFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid)
+                .createFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg")
                 .compose(v -> vertx.fileSystem()
-                        .open("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid, new OpenOptions())
+                        .open("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg", new OpenOptions())
                         .compose(file -> file.write(buffer))
                         .compose(result -> Future.succeededFuture()));
     }
