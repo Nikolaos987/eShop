@@ -3,7 +3,7 @@
   <div *ngIf="product" class="float-container">
 
     <div class="listing-photo">
-      <img [src]="'/api/image/'+product.pid" alt="could not load photo of {{product.name}}">
+      <img [src]="'/api/product/image/'+product.pid" alt="could not load photo of {{product.name}}">
     </div>
 
     <div class="listing-description">
@@ -16,22 +16,35 @@
           <h3>stock: {{product.quantity}}</h3>
           <h3>{{product.category}}</h3>
         </div>
+
+        <form (ngSubmit)="uploadImage()"> <!-- enctype="multipart/form-data" -->
+          <div class="txt_field">
+            <label for="file">File </label>
+            <input id="file" name="file" type="file"
+                   (change)="getFile($event)"/>
+            <input type="submit" value="Upload">
+            <span></span>
+          </div>
+        </form>
+
         <input type="submit" class="button-56" role="button" value="Add To Cart">
-<!--        <div class="quantity-div">-->
-<!--          <input type="button" (click)="stepDown()" value="-">-->
-<!--          <input class="quantity" type="number" min="1" [max]="product.quantity" id="quantity" formControlName="quantity" readonly>-->
-<!--          <input type="button" class="plus" (click)="stepUp()" value="+">-->
-<!--        </div>-->
+        <!--        <div class="quantity-div">-->
+        <!--          <input type="button" (click)="stepDown()" value="-">-->
+        <!--          <input class="quantity" type="number" min="1" [max]="product.quantity" id="quantity" formControlName="quantity" readonly>-->
+        <!--          <input type="button" class="plus" (click)="stepUp()" value="+">-->
+        <!--        </div>-->
         <div class="quantity-display">
-<!--          <app-quantity-number (decreaseQuantity)="stepDown($event)" (increaseQuantity)="stepUp($event)"></app-quantity-number>-->
+          <!--          <app-quantity-number (decreaseQuantity)="stepDown($event)" (increaseQuantity)="stepUp($event)"></app-quantity-number>-->
           <form [formGroup]="addToCartForm">
             <div class="quantity-label">quantity</div>
-            <div class="quantity-div" >
+            <div class="quantity-div">
               <input type="button" (click)="stepDown()" value="<">
-              <input class="quantity" type="number" min="1" [max]="9" id="quantity" formControlName="quantity" readonly> <!--product.quantity-->
+              <input class="quantity" type="number" min="1" [max]="9" id="quantity" formControlName="quantity" readonly>
+              <!--product.quantity-->
               <input type="button" (click)="stepUp()" class="plus" value=">">
             </div>
           </form>
+
         </div>
       </form>
     </div>

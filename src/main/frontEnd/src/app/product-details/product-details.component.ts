@@ -31,6 +31,8 @@ export class ProductDetailsComponent implements OnInit {
     quantity: new FormControl(1)
   })
 
+  formData: FormData = new FormData();
+
   constructor(
     private productsService: ProductsService,
     private cartService: CartService,
@@ -57,11 +59,6 @@ export class ProductDetailsComponent implements OnInit {
         },
         () => console.log("complete")
       )
-
-      // .subscribe(response => {
-      //   this.product = response
-      //   console.log("input product: " + this.product.name);
-      // })
   }
 
   addToCart() {
@@ -92,6 +89,21 @@ export class ProductDetailsComponent implements OnInit {
     if (this.addToCartForm.controls['quantity'].value != null && this.addToCartForm.controls['quantity'].value < 9) {
       this.addToCartForm.controls['quantity'].setValue(
         this.addToCartForm.controls['quantity'].value + 1);
+    }
+  }
+
+  uploadImage() {
+    this.productsService.uploadImage(this.product.pid, this.formData)
+      .subscribe({
+        // next: value => this.getProduct()  // για να φορτώνει αυτόματα την φωτογραφία
+      });
+  }
+
+  getFile(event: any) {
+    if (event.target.files.length > 0) {
+      const file: File = event.target.files[0];
+      this.formData.append('file', file);
+      console.log("form data: " + this.formData);
     }
   }
 }
