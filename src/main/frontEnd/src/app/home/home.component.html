@@ -28,14 +28,13 @@
 
 
 <!--  remove totalProducts -->
-  <app-paging [totalProducts]="totalProducts"
-              [range]="range"
-              [totalPages]="totalPages"
-              [pages]="pages"
-              [page]="page"
-              (rangeOutput)="changeRange($event)"
-              (pageOutput)="getProducts($event)">
-              <!--delete later (totalPages)-->
+  <app-paging
+    [range]="range"
+    [pages]="pages"
+    [page]="page"
+
+    (rangeOutput)="changeRange($event)"
+    (pageOutput)="getProducts($event)">
   </app-paging>
 
 

@@ -56,9 +56,9 @@ public class ProductService {
         return productsStore.findProduct(pid)
                 .otherwiseEmpty()
                 .compose(product -> {
-                    if (product != null)
+                    if (product != null && buffer.getBytes().length > 0)
                         return productsStore.insertImage(pid, buffer);
-                    return Future.failedFuture(new IllegalArgumentException("product not found"));
+                    return Future.failedFuture(new IllegalArgumentException("image could not be read"));
                 });
     }
 
