@@ -32,6 +32,9 @@ export class ProductDetailsComponent implements OnInit {
   })
 
   formData: FormData = new FormData();
+  errorMessage: string = '';
+  successMessage: string = '';
+
 
   constructor(
     private productsService: ProductsService,
@@ -96,6 +99,14 @@ export class ProductDetailsComponent implements OnInit {
     this.productsService.uploadImage(this.product.pid, this.formData)
       .subscribe({
         // next: value => this.getProduct()  // για να φορτώνει αυτόματα την φωτογραφία
+        next: value => {
+          this.errorMessage = "";
+          this.successMessage = "Image Uploaded!";
+        },
+        error: err => {
+          this.errorMessage = err;
+          this.successMessage = "";
+        }
       });
   }
 

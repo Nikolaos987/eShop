@@ -4,6 +4,20 @@
 
     <div class="listing-photo">
       <img [src]="'/api/product/image/'+product.pid" alt="could not load photo of {{product.name}}">
+      <form class="upload-file-container" (ngSubmit)="uploadImage()" #form="ngForm"> <!-- enctype="multipart/form-data" -->
+        <div>
+          <label for="file">Upload Image </label>
+          <input id="file" name="file" type="file"
+                 (change)="getFile($event)"/>
+          <input type="submit" value="Upload">
+          <div class="error-notif" *ngIf="errorMessage">
+            <p>{{errorMessage}}</p>
+          </div>
+          <div class="success-notif" *ngIf="successMessage">
+            <p>{{successMessage}}</p>
+          </div>
+        </div>
+      </form>
     </div>
 
     <div class="listing-description">
@@ -11,21 +25,15 @@
         <h2>{{product.name}} ({{product.brand}})</h2>
         <span></span>
         <p>{{product.description}}</p>
+        <span class="txt_field"></span>
+
         <div class="listing-info">
           <h3>price: {{product.price}}€</h3>
           <h3>stock: {{product.quantity}}</h3>
           <h3>{{product.category}}</h3>
         </div>
 
-        <form (ngSubmit)="uploadImage()"> <!-- enctype="multipart/form-data" -->
-          <div class="txt_field">
-            <label for="file">File </label>
-            <input id="file" name="file" type="file"
-                   (change)="getFile($event)"/>
-            <input type="submit" value="Upload">
-            <span></span>
-          </div>
-        </form>
+
 
         <input type="submit" class="button-56" role="button" value="Add To Cart">
         <!--        <div class="quantity-div">-->

@@ -4,6 +4,7 @@
 }
 
 h2 {
+  line-height: 80px;
   padding: 10px 40px;
   font-size: 70px;
   font-weight: 600;
@@ -11,6 +12,10 @@ h2 {
   color: transparent;
   background-clip: text;
   -webkit-background-clip: text;
+}
+
+h3 {
+  font-size: 24px;
 }
 
 .listing-photo {
@@ -24,9 +29,9 @@ h2 {
 }
 
 .listing-info {
-  font-size: 22px;
   position: relative;
-  background: white;
+  background: whitesmoke;
+  box-shadow: 0 0 10px #3d3d3d;
   margin: 20px 200px;
   border-radius: 20px;
   color: #0068ff;
@@ -49,6 +54,7 @@ h2 {
   margin-right: 100px;
 }
 .listing-description p {
+  line-height: 40px;
   font-size: 24px;
   padding: 10px 40px;
   border-radius: 10px;
@@ -205,11 +211,57 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .quantity-display {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
+  font-size: 18px;
+  text-align: center;
   position: relative;
+  color: #2937ff;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.upload-file-container {
+  box-shadow: 0 0 10px #3d3d3d;
+  background: #f0f0f0;
+  border-radius: 10px;
+  margin-top: 20px;
+  position: relative;
+  height: 100px;
+}
+.upload-file-container label {
+  position: absolute;
+  top: 12px;
+  left: 10px;
+  font-size: 16px;
+  color: green;
+}
+.upload-file-container input[type=file] {
+  position: absolute;
+  top: 10px;
+  left: 120px;
+  color: #606000;
+}
+.upload-file-container input[type=submit] {
+  color: white;
+  border-radius: 8px;
+  background: #67329b;
+  font-weight: bold;
+  padding: 5px;
+  position: absolute;
+  bottom: 20px;
+  left: 10px;
+}
+
+.error-notif {
+  color: red;
+  position: absolute;
+  bottom: 20px;
+  right: 50px;
+}
+.success-notif {
+  color: green;
+  position: absolute;
+  bottom: 20px;
+  right: 50px;
 }
 
 @media (min-width: 768px) {
