@@ -7,6 +7,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 import {Product} from "../interfaces/product";
 import {FormControl, FormGroup} from "@angular/forms";
 import {Paging} from "../interfaces/paging";
+import {PagingService} from "../services/paging.service";
 
 
 @Component({
@@ -26,7 +27,7 @@ export class HomeComponent implements OnInit {
 
   from: number = 0;
   page: number = 1;
-  range: number = 5;
+  range: number | undefined = this._pagingService.page?.range;
 
   uid: string = 'sth';
   // image: string | undefined;
@@ -36,7 +37,8 @@ export class HomeComponent implements OnInit {
 
   constructor(private productsService: ProductsService,
               private _usersService: UsersService,
-              private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef,
+              private _pagingService: PagingService) {
   }
 
   ngOnInit(): void {
@@ -56,6 +58,7 @@ export class HomeComponent implements OnInit {
         }
       });
     this.getProducts(this.page)
+    this.range = this._pagingService.page?.range;
   }
 
   public getProducts(page: number) {
@@ -72,6 +75,7 @@ export class HomeComponent implements OnInit {
       // this.productList.forEach(p => console.log(p))
     } else {
       // this.getFilteredProducts(this.filterText);
+      if (this.range)
       this.filteredProducts(this.filterText, this.page, this.range)
     }
   }
@@ -92,6 +96,7 @@ export class HomeComponent implements OnInit {
     if (this.pages && this.page > this.pages.length) {
       this.page = this.pages.length;
     }
+    this._pagingService.newRange(r);
     if (this.filterText == '')
       this.getProducts(this.page)
     else
@@ -133,6 +138,7 @@ export class HomeComponent implements OnInit {
         complete: () => {
           // if (this.pages && this.page > this.pages.length)
           this.page = 1;
+          if (this.range)
           this.filteredProducts(text, this.page, this.range)
         }
       })
