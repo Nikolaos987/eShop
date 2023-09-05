@@ -14,16 +14,18 @@ header {
 }
 
 .topnav {
-  position: fixed;
+  display: block;
+  position: sticky;
   width: 100%;
   top: 0;
   background-color: #333;
-  overflow: visible;
+  overflow: hidden;
   z-index: 1;
 }
 
 /* Style the links inside the navigation bar */
 .topnav a {
+  display: block;
   float: left;
   color: #f2f2f2;
   text-align: center;
@@ -32,7 +34,21 @@ header {
   font-size: 17px;
 }
 
-.right-nav{
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+/*.left-nav {*/
+/*  float: left;*/
+/*  background: #2691d9;*/
+/*}*/
+/*.left-nav a {*/
+/*  border-left: 1px #333 solid;*/
+/*}*/
+
+.right-nav {
   float: right;
   background: #2691d9;
 }

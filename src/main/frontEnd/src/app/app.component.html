@@ -1,18 +1,18 @@
 <!--<app-login></app-login>-->
 
-<div class="topnav">
+<div class="topnav" #topnav [class.sticky]="sticky">
   <nav>
-    <a routerLinkActive="active" routerLink="home">Home</a>
-    <a routerLinkActive="active" [routerLink]="['profile']">Profile</a>
-    <a routerLinkActive="active" [routerLink]="['cart']">Cart</a>
-    <a routerLinkActive="active" [routerLink]="['products']">Products</a>
+    <div class="left-nav">
+      <a routerLinkActive="active" routerLink="home">Home</a>
+      <a routerLinkActive="active" [routerLink]="['profile']">Profile</a>
+      <a routerLinkActive="active" [routerLink]="['cart']">Cart</a>
+      <a routerLinkActive="active" [routerLink]="['products']">Products</a>
+    </div>
     <div class="right-nav">
       <a routerLink="/login">Login</a>
       <a routerLink="/register">Register</a>
     </div>
-
   </nav>
-
 </div>
 
 <router-outlet></router-outlet>
