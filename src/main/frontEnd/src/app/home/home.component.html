@@ -1,48 +1,13 @@
 <div class="main">
-  <app-search-bar [help]="helpText" (result)="getFilteredProducts($event)"></app-search-bar>
-  <div class="total-products-text">{{totalProducts}} Products Found</div>
+  <app-search-bar [help]="helpText" [total]="totalProducts" (result)="getFilteredProducts($event)"></app-search-bar>
   <app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
 
-<!--  <div class="paging-container">-->
-<!--    <div class="toBeShown">-->
-<!--      <label for="itemsShown">Number Of Items To Be Shown </label>-->
-<!--      <select class="selector" name="itemsShown" id="itemsShown">-->
-<!--        <option [value]="5" (click)="changeRange(5)">5</option>-->
-<!--        <option [value]="10" (click)="changeRange(10)">10</option>-->
-<!--        <option [value]="15" (click)="changeRange(15)">15</option>-->
-<!--        <option [value]="50" (click)="changeRange(50)">50</option>-->
-<!--      </select>-->
-<!--    </div>-->
-<!--    <input class="prev-next-buttons" type="button" value="Previous" (click)="prevPage()">-->
-<!--    <div class="page-buttons" *ngFor="let num of pages">-->
-<!--      &lt;!&ndash;        <input type="button" id="pageNum" [value]="num" [ngClass]="{'focused' : num==1, 'unfocused' : num!=1}" (click)="getProducts(num)">&ndash;&gt;-->
-<!--      <input type="button" id="pageNum" [value]="num" [class.focused]="page==num" (click)="getProducts(num)">-->
-
-<!--      &lt;!&ndash;[ngStyle]="{'background-color': num == '1' ? '#345cfd' : 'white', 'color': num == '1' ? 'white' : '#345cfd'}"&ndash;&gt;-->
-
-<!--      &lt;!&ndash;          <label for="pageNum">{{num}}</label>&ndash;&gt;-->
-<!--    </div>-->
-<!--    <input class="prev-next-buttons" type="button" value="Next" (click)="nextPage()">-->
-<!--  </div>-->
-
-
-
-<!--  remove totalProducts -->
   <app-paging
     [range]="range"
     [pages]="pages"
     [page]="page"
-
     (rangeOutput)="changeRange($event)"
     (pageOutput)="getProducts($event)">
   </app-paging>
-
-
-
-<!--  <mat-paginator [length]=""-->
-<!--                 [pageSize]="10"-->
-<!--                 [pageSizeOptions]="[5, 10, 25, 100]"-->
-<!--                 aria-label="Select page">-->
-<!--  </mat-paginator>-->
 
 </div>

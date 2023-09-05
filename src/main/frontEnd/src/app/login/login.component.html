@@ -2,6 +2,7 @@
   <div class="center">
     <h1>Sign In</h1>
     <form [formGroup]="profileForm" (ngSubmit)="login()" #form="ngForm">
+
       <div class="txt_field">
         <input id="username" type="text" formControlName="username">
         <label>Username</label>
@@ -27,6 +28,7 @@
       <div class="danger" *ngIf="errorMessage">
         <p>{{errorMessage}}</p>
       </div>
+
     </form>
   </div>
 </div>

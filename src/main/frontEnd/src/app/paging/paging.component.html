@@ -1,0 +1,17 @@
+<div class="paging-container">
+  <div class="toBeShown">
+    <label for="itemsShown">Choose number of items to be shown: </label>
+    <select class="selector" name="itemsShown" id="itemsShown">
+      <option [value]="range" selected>{{range}}</option>
+      <option *ngIf="range!=5" [value]="5" (click)="getRange(5)">5</option>
+      <option *ngIf="range!=10" [value]="10" (click)="getRange(10)">10</option>
+      <option *ngIf="range!=15" [value]="15" (click)="getRange(15)">15</option>
+      <option *ngIf="range!=50" [value]="50" (click)="getRange(50)">50</option>
+    </select>
+  </div>
+  <input class="prev-next-buttons" type="button" value="Previous" (click)="prevPage()">
+  <div class="page-buttons" *ngFor="let num of pages">
+    <input type="button" id="pageNum" [value]="num" [class.focused]="page==num" (click)="getPage(num)">
+  </div>
+  <input class="prev-next-buttons" type="button" value="Next" (click)="nextPage()">
+</div>

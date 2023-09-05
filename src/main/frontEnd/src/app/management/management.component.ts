@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, ViewChild} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ProductsService} from "../services/products.service";
 import {Product} from "../interfaces/product";
@@ -11,7 +11,10 @@ import {FileUpdate} from "@angular/compiler-cli/src/ngtsc/program_driver";
   styleUrls: ['./management.component.css'],
   providers: [ProductsService]
 })
-export class ManagementComponent {
+export class ManagementComponent implements AfterViewInit {
+  @ViewChild('label') labelElement: ElementRef | undefined;
+  @ViewChild('input') inputElement: ElementRef | undefined;
+
   product: Product = {
     pid: undefined,
     name: undefined,
@@ -44,6 +47,15 @@ export class ManagementComponent {
   });
 
   formData: FormData = new FormData();
+
+  ngAfterViewInit() {
+
+  }
+
+  // @HostListener('click', event)
+  // handleClick() {
+  //   if ()
+  // }
 
   constructor(private _productsService: ProductsService) {
   }

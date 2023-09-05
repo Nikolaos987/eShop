@@ -10,6 +10,7 @@ import {ProductsService} from "../services/products.service";
   providers: []
 })
 export class SearchBarComponent implements OnInit {
+  @Input() total: number | null | undefined = 0;
   @Input() help = '';
   @Output() result = new EventEmitter<string>();
 

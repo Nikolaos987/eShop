@@ -1,28 +1,20 @@
 <div class="listing">
-
   <img [src]="'/api/product/image/'+product.pid" class="listing-photo" alt="">
-  <h2
-    class="listing-heading">{{product.name}}
-  </h2>
-  <p
-    class="listing-location">{{product.price}}<span></span>€ {{product.category}}
-  </p>
   <a [title]="product.name + ' details'" [routerLink]="['/details', product.pid]">
-    <p class="details-text">Details ></p>
+    <div>
+      <h2 class="listing-heading">{{product.name}}</h2>
+      <p class="listing-location">{{product.price}}<span></span>€ {{product.category}}
+      </p>
+      <p class="details-text">Details ></p>
+    </div>
   </a>
 
   <div *ngIf="quant !== undefined" class="quantity-display" class="remove-item" (click)="remove()">
     <input name="image" type="image" src="/assets/icons8-delete-60.png" alt="X" width="40px" height="40px">
   </div>
-  <div *ngIf="quant !== undefined" class="quantity-display">
-<!--    <div class="quantity">-->
-<!--      <input type="button" value="<" (click)="decrease()">-->
-<!--      {{quant}}-->
-<!--      <input type="button" value=">" (click)="increase()">-->
-<!--    </div>-->
 
+  <div *ngIf="quant !== undefined" class="quantity-display">
     <app-quantity-number [currentQuantity]="quant" (changedQuantity)="updateQuantity($event)"></app-quantity-number>
   </div>
-
 </div>
 

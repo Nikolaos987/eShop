@@ -5,8 +5,9 @@
 }
 
 body {
-  background: #eedfde;
-  font-family: 'Be Vietnam Pro', sans-serif;
+  /*background: #eedfde;*/
+  background: #FFFFF1;
+  /*font-family: 'Be Vietnam Pro', sans-serif;*/
 }
 :root {
   --primary-color: #605DC8;

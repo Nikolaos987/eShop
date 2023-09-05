@@ -282,9 +282,9 @@
 
 .all-container {
   width: 100%;
-  height: 100%;
+  /*height: 100%;*/
   background: #FFFFF1;
-  margin-top: 50px;
+  /*margin-top: 50px;*/
   display: grid;
   grid-template-columns: 2fr 3fr;
   grid-gap: 20px;
@@ -293,14 +293,15 @@
   .left-container {
     margin: 10px;
     padding-left: 50px;
-    padding-top: 150px;
+    padding-top: 50px;
     /*left: 200px;*/
     /*top: 130px;*/
   }
 
     .image img {
-      width: 600px;
-      height: 600px;
+      top: 20px;
+      width: 650px;
+      height: 650px;
     }
 
     .upload-file-container {
