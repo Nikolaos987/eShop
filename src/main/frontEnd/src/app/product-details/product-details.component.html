@@ -1,66 +1,127 @@
-<div class="main">
-  <app-back-nav></app-back-nav>
-  <div *ngIf="product" class="float-container">
+<!--<div class="main">-->
 
-    <div class="listing-photo">
+<!--  <app-back-nav></app-back-nav>-->
+<!--  <div *ngIf="product" class="float-container">-->
+
+<!--    <div class="">-->
+<!--      <img [src]="'/api/product/image/'+product.pid" alt="could not load photo of {{product.name}}">-->
+<!--      <form class="upload-file-container" (ngSubmit)="uploadImage()" #form="ngForm"> &lt;!&ndash; enctype="multipart/form-data" &ndash;&gt;-->
+<!--        <div>-->
+<!--          <label for="file">Upload Image </label>-->
+<!--          <input id="file" name="file" type="file"-->
+<!--                 (change)="getFile($event)"/>-->
+<!--          <input type="submit" value="Upload">-->
+<!--          <div class="error-notif" *ngIf="errorMessage">-->
+<!--            <p>{{errorMessage}}</p>-->
+<!--          </div>-->
+<!--          <div class="success-notif" *ngIf="successMessage">-->
+<!--            <p>{{successMessage}}</p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </form>-->
+<!--    </div>-->
+
+<!--    <div class="listing-description">-->
+<!--      <form [formGroup]="addToCartForm" (ngSubmit)="addToCart()">-->
+<!--        <h2>{{product.name}} ({{product.brand}})</h2>-->
+<!--        <span></span>-->
+<!--        <p>{{product.description}}</p>-->
+<!--        <span class="txt_field"></span>-->
+
+<!--        <div class="listing-info">-->
+<!--          <h3>price: {{product.price}}€</h3>-->
+<!--          <h3>stock: {{product.quantity}}</h3>-->
+<!--          <h3>{{product.category}}</h3>-->
+<!--        </div>-->
+
+<!--        <input type="submit" class="button-56" role="button" value="Add To Cart">-->
+<!--        &lt;!&ndash;        <div class="quantity-div">&ndash;&gt;-->
+<!--        &lt;!&ndash;          <input type="button" (click)="stepDown()" value="-">&ndash;&gt;-->
+<!--        &lt;!&ndash;          <input class="quantity" type="number" min="1" [max]="product.quantity" id="quantity" formControlName="quantity" readonly>&ndash;&gt;-->
+<!--        &lt;!&ndash;          <input type="button" class="plus" (click)="stepUp()" value="+">&ndash;&gt;-->
+<!--        &lt;!&ndash;        </div>&ndash;&gt;-->
+<!--        <div class="quantity-display">-->
+<!--          &lt;!&ndash;          <app-quantity-number (decreaseQuantity)="stepDown($event)" (increaseQuantity)="stepUp($event)"></app-quantity-number>&ndash;&gt;-->
+<!--          <form [formGroup]="addToCartForm">-->
+<!--            <div class="quantity-label">quantity</div>-->
+<!--            <div class="quantity-div">-->
+<!--              <input type="button" (click)="stepDown()" value="<">-->
+<!--              <input class="quantity" type="number" min="1" [max]="9" id="quantity" formControlName="quantity" readonly>-->
+<!--              &lt;!&ndash;product.quantity&ndash;&gt;-->
+<!--              <input type="button" (click)="stepUp()" class="plus" value=">">-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+<!--      </form>-->
+<!--    </div>-->
+
+<!--  </div>-->
+
+<!--  <div *ngIf="!product">-->
+<!--    <app-product-not-found></app-product-not-found>-->
+<!--  </div>-->
+<!--</div>-->
+
+
+<div class="all-container">
+  <div *ngIf="product" class="left-container">
+    <div class="image">
       <img [src]="'/api/product/image/'+product.pid" alt="could not load photo of {{product.name}}">
-      <form class="upload-file-container" (ngSubmit)="uploadImage()" #form="ngForm"> <!-- enctype="multipart/form-data" -->
-        <div>
-          <label for="file">Upload Image </label>
-          <input id="file" name="file" type="file"
-                 (change)="getFile($event)"/>
-          <input type="submit" value="Upload">
-          <div class="error-notif" *ngIf="errorMessage">
-            <p>{{errorMessage}}</p>
-          </div>
-          <div class="success-notif" *ngIf="successMessage">
-            <p>{{successMessage}}</p>
-          </div>
+    </div>
+    <div class="upload-file-container">
+      <form (ngSubmit)="uploadImage()" #form="ngForm"> <!-- enctype="multipart/form-data" -->
+        <div><label for="file">Upload Image </label></div>
+        <div><input id="file" name="file" type="file" (change)="getFile($event)"/></div>
+        <div><input type="submit" value="Upload"></div>
+
+        <div class="error-notif" *ngIf="errorMessage">
+          <p>{{errorMessage}}</p>
+        </div>
+
+        <div class="success-notif" *ngIf="successMessage">
+          <p>{{successMessage}}</p>
         </div>
       </form>
     </div>
-
-    <div class="listing-description">
-      <form [formGroup]="addToCartForm" (ngSubmit)="addToCart()">
-        <h2>{{product.name}} ({{product.brand}})</h2>
-        <span></span>
-        <p>{{product.description}}</p>
-        <span class="txt_field"></span>
-
-        <div class="listing-info">
-          <h3>price: {{product.price}}€</h3>
-          <h3>stock: {{product.quantity}}</h3>
-          <h3>{{product.category}}</h3>
-        </div>
-
-
-
-        <input type="submit" class="button-56" role="button" value="Add To Cart">
-        <!--        <div class="quantity-div">-->
-        <!--          <input type="button" (click)="stepDown()" value="-">-->
-        <!--          <input class="quantity" type="number" min="1" [max]="product.quantity" id="quantity" formControlName="quantity" readonly>-->
-        <!--          <input type="button" class="plus" (click)="stepUp()" value="+">-->
-        <!--        </div>-->
-        <div class="quantity-display">
-          <!--          <app-quantity-number (decreaseQuantity)="stepDown($event)" (increaseQuantity)="stepUp($event)"></app-quantity-number>-->
-          <form [formGroup]="addToCartForm">
-            <div class="quantity-label">quantity</div>
-            <div class="quantity-div">
-              <input type="button" (click)="stepDown()" value="<">
-              <input class="quantity" type="number" min="1" [max]="9" id="quantity" formControlName="quantity" readonly>
-              <!--product.quantity-->
-              <input type="button" (click)="stepUp()" class="plus" value=">">
-            </div>
-          </form>
-
-        </div>
-      </form>
-    </div>
-
   </div>
 
-  <div *ngIf="!product">
-    <app-product-not-found></app-product-not-found>
+  <div class="right-container">
+    <app-back-nav></app-back-nav>
+    <div class="top-details">
+      <h1>{{product.name}}</h1>
+      <h2>{{product.price}}€</h2>
+    </div>
+
+    <span class="line"></span>
+
+    <div class="med-details">
+      <div class="type">
+        <h3>Type: {{product.category}}</h3>
+      </div>
+      <form [formGroup]="addToCartForm" (ngSubmit)="addToCart()">
+        <div class="quantity-label">Quantity:</div>
+        <div class="quantity-div">
+          <input class="quantity-minus" type="button" (click)="stepDown()" value="-">
+          <input class="quantity" type="number" min="1" [max]="9" id="quantity" formControlName="quantity" readonly>
+          <input class="quantity-plus" type="button" (click)="stepUp()" value="+">
+        </div>
+        <div class="cart-wrapper">
+          <div class="add-to-cart-btn">
+            <input type="submit" value="ADD TO CART">
+          </div>
+          <div class="stock">
+            <h3>Stock: {{product.quantity}}</h3>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <span class="line"></span>
+
+    <div class="bottom-details">
+      <h2>DESCRIPTION</h2>
+      <p>{{product.description}}</p>
+    </div>
   </div>
 </div>
 

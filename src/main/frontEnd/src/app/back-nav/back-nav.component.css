@@ -1,7 +1,7 @@
 .listing-button {
-  text-align: right;
+  position: absolute;
   padding: 20px;
-  margin-right: 100px;
+  right: 50px;
 }
 
 .button-17 {
