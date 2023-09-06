@@ -1,6 +1,9 @@
-.main {
-  position: relative;
-  top: 50px;
+.cart-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  justify-items: center;
 }
 
 .columns {
@@ -8,9 +11,14 @@
   color: #3d3d3d;
 }
 
+.title {
+  margin-top: 50px;
+}
+
 h1 {
   text-align: center;
   font-size: 60px;
+  font-family: Comic Sans MS;
 }
 
 h3 {
@@ -47,15 +55,19 @@ h4 {
 }
 
 .list {
+  box-shadow: 0 0 50px #3d3d3d;
   overflow: scroll;
   display: flex;
   gap: 120px;
   border-radius: 30px;
   padding: 20px;
   position: relative;
-  width: auto;
-  margin: 10px 120px;
-  background: linear-gradient(90deg, #2980b9, #8e44ad), no-repeat;
+  width: 100%;
+  margin: 100px 200px;
+  border-top: 4px solid #3d3d3d;
+  border-bottom: 4px solid #3d3d3d;
+  background: #FFFFFA;
+  /*background: linear-gradient(90deg, #2980b9, #8e44ad), no-repeat;*/
 
 }
 .list h4 {
@@ -63,18 +75,23 @@ h4 {
 }
 
 .total-price {
+  position: relative;
+  margin-right: 20px;
+  margin-top: 50px;
+  float: right;
+  height: 100%;
   font-size: 30px;
   padding-top: 40px;
 }
 .total-price button {
-  margin: 0 40px;
+  margin-bottom: 20px;
   border-radius: 25px;
-  color: #3d3d3d;
   padding: 10px 6px;
   font-size: 26px;
   font-weight: bold;
-  background: #03f800;
-  width: 100px;
+  background: #0068ff;
+  color: white;
+  width: 300px;
   height: 60px;
 }
 .total-price button:hover {
@@ -117,7 +134,6 @@ h4 {
 
 
 .error-container {
-  display: flex;
   position: relative;
   align-items: center;
   justify-content: center;
@@ -127,6 +143,11 @@ h4 {
 
 .error-image img {
   border-radius: 50%;
+}
+
+.error-image img {
+  width: 52%;
+  margin-left: 460px;
 }
 
 .error-text {

@@ -3,15 +3,15 @@
 <div class="topnav" #topnav [class.sticky]="sticky">
   <nav>
     <div class="left-nav">
-      <a routerLinkActive="active" routerLink="home">Home</a>
-      <a routerLinkActive="active" [routerLink]="['profile']">Profile</a>
-      <a routerLinkActive="active" [routerLink]="['cart']">Cart</a>
-      <a routerLinkActive="active" [routerLink]="['products']">Products</a>
+      <a routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png" alt="Home"></a>
+      <a routerLinkActive="active" id="profile" [routerLink]="['profile']"><img src="assets/icons8-account-48.png" alt="Profile"></a>
+      <a routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png" alt="Cart" style="width: 48px"></a>
+      <a routerLinkActive="active" id="create products" [routerLink]="['products']"><img src="assets/icons8-plus-64.png" alt="Product" style="width: 48px"></a>
     </div>
-    <div class="right-nav">
-      <a routerLink="/login">Login</a>
-      <a routerLink="/register">Register</a>
-    </div>
+<!--    <div class="right-nav">-->
+<!--      <a routerLink="/login">Login</a>-->
+<!--      <a routerLink="/register">Register</a>-->
+<!--    </div>-->
   </nav>
 </div>
 

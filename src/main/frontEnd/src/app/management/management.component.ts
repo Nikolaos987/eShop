@@ -12,8 +12,25 @@ import {FileUpdate} from "@angular/compiler-cli/src/ngtsc/program_driver";
   providers: [ProductsService]
 })
 export class ManagementComponent implements AfterViewInit {
-  @ViewChild('label') labelElement: ElementRef | undefined;
-  @ViewChild('input') inputElement: ElementRef | undefined;
+  // @ViewChild('label') labelElement: ElementRef | undefined;
+  @ViewChild('input_name') inputNameElement: ElementRef | undefined;
+  @ViewChild('input_price') inputPriceElement: ElementRef | undefined;
+  // @ViewChild('sub_foot') sub_footElement: ElementRef | undefined;
+
+  isActiveName: boolean = false;
+  isActivePrice: boolean = false;
+  isInactiveName: boolean = false;
+  isInactivePrice: boolean = false;
+  isValidName: boolean = false;
+  isValidPrice: boolean = false;
+  invalidBorderName: boolean = false;
+  invalidBorderPrice: boolean = false;
+  validBorderName: boolean = false;
+  validBorderPrice: boolean = false;
+
+  errorMessage: string = '';
+  successMessage: string = '';
+  changePswdBtnClicked: boolean = false;
 
   product: Product = {
     pid: undefined,
@@ -49,13 +66,46 @@ export class ManagementComponent implements AfterViewInit {
   formData: FormData = new FormData();
 
   ngAfterViewInit() {
+    this.inputNameElement?.nativeElement.addEventListener('click', this.activate.bind(this));
+    this.inputNameElement?.nativeElement.addEventListener('focusout', this.deactivate.bind(this));
+    this.inputNameElement?.nativeElement.addEventListener('input', this.handleInput.bind(this));
 
+    this.inputPriceElement?.nativeElement.addEventListener('click', this.activate.bind(this));
+    this.inputPriceElement?.nativeElement.addEventListener('focusout', this.deactivate.bind(this));
+    this.inputPriceElement?.nativeElement.addEventListener('input', this.handleInput.bind(this));
   }
 
-  // @HostListener('click', event)
-  // handleClick() {
-  //   if ()
-  // }
+  // @HostListener('click')
+  activate(event: ManagementComponent) {
+    this.isInactiveName = false;
+    this.isActiveName = true;
+  }
+
+  deactivate(event: any) {
+    if (this.inputNameElement?.nativeElement.value === '') {
+      this.validBorderName = false;
+      this.invalidBorderName = true;
+      this.isActiveName = false;
+      this.isInactiveName = true;
+    }
+    this.isInactiveName = false;
+  }
+
+  handleInput(event: any) {
+    if (this.inputNameElement?.nativeElement.value === '') {
+      this.isActiveName = false;
+    } else {
+
+      if (!this.createForm.controls.name.valid) {
+        this.validBorderName = false;
+        this.invalidBorderName = true;
+      } else {
+        this.invalidBorderName = false;
+        this.validBorderName = true;
+      }
+      // this.isActive = true;
+    }
+  }
 
   constructor(private _productsService: ProductsService) {
   }
@@ -69,6 +119,7 @@ export class ManagementComponent implements AfterViewInit {
   }
 
   apply() {
+    this.changePswdBtnClicked = true;
     if (this.createForm.valid) {
       this.product = {
         pid: '',
@@ -81,11 +132,23 @@ export class ManagementComponent implements AfterViewInit {
         category: this.createForm.value.category
       }
       this._productsService.postProduct(this.product)
-        .subscribe(product => {
-          console.log(product.pid)
-          this._productsService.uploadImage(product.pid, this.formData)
-            .subscribe();
+        .subscribe({
+          next: product => {
+            this.errorMessage = "";
+            this.successMessage = "Product Created!";
+            console.log(product.pid);
+            if (this.formData)
+              this._productsService.uploadImage(product.pid, this.formData)
+                .subscribe();
+          },
+          error: err => {
+            this.successMessage = "";
+            this.errorMessage = "err";
+          }
         });
+    } else {
+      this.successMessage = "";
+      this.errorMessage = "Fill The Form!";
     }
   }
 
