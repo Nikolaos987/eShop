@@ -42,7 +42,7 @@
                   [class.valid-border]="validBorder"
                   #inputArea name="description" type="" formControlName="description" rows="5" cols="28"></textarea>
       </div>
-      <div class="sub_foot" *ngIf="(createForm.controls.description.dirty || form.submitted)
+      <div class="sub_foot" *ngIf="(createForm.controls.description.dirty)
                                           && !createForm.controls.description.valid">Description must have at least 10
         characters!
       </div>
