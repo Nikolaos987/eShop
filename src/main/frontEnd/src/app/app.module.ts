@@ -25,6 +25,8 @@ import {ManagementComponent} from './management/management.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import {MatPaginatorModule} from "@angular/material/paginator";
 import { PagingComponent } from './paging/paging.component';
+import { InputTextComponent } from './input-text/input-text.component';
+import { SubFootComponent } from './sub-foot/sub-foot.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,8 @@ import { PagingComponent } from './paging/paging.component';
     QuantityNumberComponent,
     ManagementComponent,
     PagingComponent,
+    InputTextComponent,
+    SubFootComponent,
     // PaginatorComponent,
   ],
   imports: [
