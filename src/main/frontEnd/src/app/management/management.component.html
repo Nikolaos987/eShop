@@ -4,58 +4,28 @@
     <form [formGroup]="createForm"
           (ngSubmit)="apply()" #form="ngForm">
 
-      <div class="name_field">
-        <label [class.isActive]="isActiveName"
-               [class.isInactive]="isInactiveName"
-               [class.isValid]="isValidName"
-        >Name</label>
-        <input [class.invalid-border]="invalidBorderName"
-               [class.valid-border]="validBorderName"
-               #input_name name="name" type="text" formControlName="name">
-        <!--        <span></span> -->
-      </div>
-      <div class="sub_foot" #sub_foot *ngIf="(createForm.controls.name.dirty || form.submitted)
-                              && !createForm.controls.name.valid">Username must have at least 3 characters!
-      </div>
+      <app-input-text [labelText]="'Name'"
+                      [control]="createForm.controls.name"
+                      [InvalidInputText]="'Username must have at least 3 characters!'"></app-input-text>
+
 
       <div class="price-brand-quant-div">
-        <div class="price_field">
-          <label [class.isActive]="isActivePrice"
-                 [class.isInactive]="isInactivePrice"
-                 [class.isValid]="isValidPrice"
-          >Price</label>
-          <input [class.invalid-border]="invalidBorderPrice"
-                 [class.valid-border]="validBorderPrice"
-                 #input_price name="price" type="text" formControlName="price">
-          <div class="sub_foot" *ngIf="(createForm.controls.price.dirty || form.submitted)
-                                    && !createForm.controls.price.valid">Price must be at least 1!
-          </div>
-        </div>
-
-        <div class="brand_field">
-          <label>Brand</label>
-          <input name="brand" type="text" formControlName="brand">
-          <div class="sub_foot" *ngIf="(createForm.controls.brand.dirty || form.submitted)
-                                    && !createForm.controls.brand.valid">Brand must have at least 3 characters!
-          </div>
-        </div>
-
-        <div class="quantity_field">
-          <label>Quantity</label>
-          <input name="quantity" type="text" formControlName="quantity">
-          <div class="sub_foot" *ngIf="(createForm.controls.quantity.dirty || form.submitted)
-                                      && !createForm.controls.quantity.valid">Quantity must have at least 1!
-          </div>
-        </div>
+        <app-input-text [isSpecialField]="true"
+                        [labelText]="'Price'"
+                        [control]="createForm.controls.price"
+                        [InvalidInputText]="'Price must be at least 1€!'"></app-input-text>
+        <app-input-text [isSpecialField]="true"
+                        [labelText]="'Brand'"
+                        [control]="createForm.controls.brand"
+                        [InvalidInputText]="'Brand must have at least 3 characters!'"></app-input-text>
+        <app-input-text [labelText]="'Quant'"
+                        [control]="createForm.controls.quantity"
+                        [InvalidInputText]="'Quantity must be at least 1!'"></app-input-text>
       </div>
 
-      <div class="category_field">
-        <label>Category</label>
-        <input name="category" type="text" formControlName="category">
-      </div>
-      <div class="sub_foot" *ngIf="(createForm.controls.category.dirty || form.submitted)
-                                    && !createForm.controls.category.valid">Category must have at least 3 characters!
-      </div>
+      <app-input-text [labelText]="'Category'"
+                      [control]="createForm.controls.category"
+                      [InvalidInputText]="'Category must have at least 3 characters!'"></app-input-text>
 
       <div class="image_field">
         <label for="file"> </label>
@@ -64,15 +34,89 @@
         <span></span>
       </div>
 
-
       <div class="description_field">
-        <label>Description</label>
-        <textarea name="description" type="" formControlName="description" rows="5" cols="28"></textarea>
+        <label [class.isActive]="isActive"
+               [class.isInactive]="isInactive"
+               [class.isValid]="isValid">Description</label>
+        <textarea [class.invalid-border]="invalidBorder"
+                  [class.valid-border]="validBorder"
+                  #inputArea name="description" type="" formControlName="description" rows="5" cols="28"></textarea>
       </div>
       <div class="sub_foot" *ngIf="(createForm.controls.description.dirty || form.submitted)
-                                    && !createForm.controls.description.valid">Description must have at least 10
+                                          && !createForm.controls.description.valid">Description must have at least 10
         characters!
       </div>
+
+
+      <!--      <div class="name_field">-->
+      <!--        <label [class.isActive]="isActiveName"-->
+      <!--               [class.isInactive]="isInactiveName"-->
+      <!--               [class.isValid]="isValidName"-->
+      <!--        >Name</label>-->
+      <!--        <input [class.invalid-border]="invalidBorderName"-->
+      <!--               [class.valid-border]="validBorderName"-->
+      <!--               #input_name name="name" type="text" formControlName="name">-->
+      <!--        &lt;!&ndash;        <span></span> &ndash;&gt;-->
+      <!--      </div>-->
+      <!--      <div class="sub_foot" #sub_foot *ngIf="(createForm.controls.name.dirty || form.submitted)-->
+      <!--                              && !createForm.controls.name.valid">Username must have at least 3 characters!-->
+      <!--      </div>-->
+
+      <!--      <div class="price-brand-quant-div">-->
+      <!--        <div class="price_field">-->
+      <!--          <label [class.isActive]="isActivePrice"-->
+      <!--                 [class.isInactive]="isInactivePrice"-->
+      <!--                 [class.isValid]="isValidPrice"-->
+      <!--          >Price</label>-->
+      <!--          <input [class.invalid-border]="invalidBorderPrice"-->
+      <!--                 [class.valid-border]="validBorderPrice"-->
+      <!--                 #input_price name="price" type="text" formControlName="price">-->
+      <!--          <div class="sub_foot" *ngIf="(createForm.controls.price.dirty || form.submitted)-->
+      <!--                                    && !createForm.controls.price.valid">Price must be at least 1!-->
+      <!--          </div>-->
+      <!--        </div>-->
+
+      <!--        <div class="brand_field">-->
+      <!--          <label>Brand</label>-->
+      <!--          <input name="brand" type="text" formControlName="brand">-->
+      <!--          <div class="sub_foot" *ngIf="(createForm.controls.brand.dirty || form.submitted)-->
+      <!--                                    && !createForm.controls.brand.valid">Brand must have at least 3 characters!-->
+      <!--          </div>-->
+      <!--        </div>-->
+
+      <!--        <div class="quantity_field">-->
+      <!--          <label>Quantity</label>-->
+      <!--          <input name="quantity" type="text" formControlName="quantity">-->
+      <!--          <div class="sub_foot" *ngIf="(createForm.controls.quantity.dirty || form.submitted)-->
+      <!--                                      && !createForm.controls.quantity.valid">Quantity must have at least 1!-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
+
+      <!--      <div class="category_field">-->
+      <!--        <label>Category</label>-->
+      <!--        <input name="category" type="text" formControlName="category">-->
+      <!--      </div>-->
+      <!--      <div class="sub_foot" *ngIf="(createForm.controls.category.dirty || form.submitted)-->
+      <!--                                    && !createForm.controls.category.valid">Category must have at least 3 characters!-->
+      <!--      </div>-->
+
+      <!--      <div class="image_field">-->
+      <!--        <label for="file"> </label>-->
+      <!--        <input id="file" name="file" type="file"-->
+      <!--               (change)="getFile($event)"/>-->
+      <!--        <span></span>-->
+      <!--      </div>-->
+
+
+      <!--      <div class="description_field">-->
+      <!--        <label>Description</label>-->
+      <!--        <textarea name="description" type="" formControlName="description" rows="5" cols="28"></textarea>-->
+      <!--      </div>-->
+      <!--      <div class="sub_foot" *ngIf="(createForm.controls.description.dirty || form.submitted)-->
+      <!--                                    && !createForm.controls.description.valid">Description must have at least 10-->
+      <!--        characters!-->
+      <!--      </div>-->
 
 
       <button class="submit" type="submit">Create</button>

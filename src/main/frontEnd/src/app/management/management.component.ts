@@ -12,21 +12,13 @@ import {FileUpdate} from "@angular/compiler-cli/src/ngtsc/program_driver";
   providers: [ProductsService]
 })
 export class ManagementComponent implements AfterViewInit {
-  // @ViewChild('label') labelElement: ElementRef | undefined;
-  @ViewChild('input_name') inputNameElement: ElementRef | undefined;
-  @ViewChild('input_price') inputPriceElement: ElementRef | undefined;
-  // @ViewChild('sub_foot') sub_footElement: ElementRef | undefined;
+  @ViewChild('inputArea') inputElement: ElementRef | undefined;
 
-  isActiveName: boolean = false;
-  isActivePrice: boolean = false;
-  isInactiveName: boolean = false;
-  isInactivePrice: boolean = false;
-  isValidName: boolean = false;
-  isValidPrice: boolean = false;
-  invalidBorderName: boolean = false;
-  invalidBorderPrice: boolean = false;
-  validBorderName: boolean = false;
-  validBorderPrice: boolean = false;
+  isActive: boolean = false;
+  isInactive: boolean = false;
+  isValid: boolean = false;
+  invalidBorder: boolean = false;
+  validBorder: boolean = false;
 
   errorMessage: string = '';
   successMessage: string = '';
@@ -66,44 +58,40 @@ export class ManagementComponent implements AfterViewInit {
   formData: FormData = new FormData();
 
   ngAfterViewInit() {
-    this.inputNameElement?.nativeElement.addEventListener('click', this.activate.bind(this));
-    this.inputNameElement?.nativeElement.addEventListener('focusout', this.deactivate.bind(this));
-    this.inputNameElement?.nativeElement.addEventListener('input', this.handleInput.bind(this));
-
-    this.inputPriceElement?.nativeElement.addEventListener('click', this.activate.bind(this));
-    this.inputPriceElement?.nativeElement.addEventListener('focusout', this.deactivate.bind(this));
-    this.inputPriceElement?.nativeElement.addEventListener('input', this.handleInput.bind(this));
+    this.inputElement?.nativeElement.addEventListener('focus', this.activate.bind(this));
+    this.inputElement?.nativeElement.addEventListener('focusout', this.deactivate.bind(this));
+    this.inputElement?.nativeElement.addEventListener('input', this.handleInput.bind(this));
   }
 
   // @HostListener('click')
   activate(event: ManagementComponent) {
-    this.isInactiveName = false;
-    this.isActiveName = true;
+    this.isInactive = false;
+    this.isActive = true;
   }
 
   deactivate(event: any) {
-    if (this.inputNameElement?.nativeElement.value === '') {
-      this.validBorderName = false;
-      this.invalidBorderName = true;
-      this.isActiveName = false;
-      this.isInactiveName = true;
+    if (this.inputElement?.nativeElement.value === '') {
+      this.validBorder = false;
+      this.invalidBorder = true;
+      this.isActive = false;
+      this.isInactive = true;
     }
-    this.isInactiveName = false;
+    this.isInactive = false;
   }
 
   handleInput(event: any) {
-    if (this.inputNameElement?.nativeElement.value === '') {
-      this.isActiveName = false;
+    if (this.inputElement?.nativeElement.value === '') {
+      this.isActive = false;
     } else {
 
-      if (!this.createForm.controls.name.valid) {
-        this.validBorderName = false;
-        this.invalidBorderName = true;
+      if (!this.createForm.controls.description.valid) {
+        this.validBorder = false;
+        this.invalidBorder = true;
       } else {
-        this.invalidBorderName = false;
-        this.validBorderName = true;
+        this.invalidBorder = false;
+        this.validBorder = true;
       }
-      // this.isActive = true;
+      this.isActive = true;
     }
   }
 

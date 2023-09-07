@@ -1,0 +1,24 @@
+.input_field {
+
+}
+
+.isActive {
+  color: blue;
+  font-size: 80%;
+  top: 5px;
+}
+
+.isInactive {
+  color: black;
+  font-size: 70%;
+  top: 5px;
+}
+
+.invalid-border {
+  border-bottom: 3px solid red;
+}
+
+.valid-border {
+  color: green;
+  font-weight: bold;
+}

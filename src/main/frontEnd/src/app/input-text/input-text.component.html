@@ -1,0 +1,12 @@
+<div [class.special_field]="isSpecialField" >
+  <label [class.isActive]="isActive"
+         [class.isInactive]="isInactive"
+         [class.isValid]="isValid"
+  >{{labelText}}</label>
+  <input [class.invalid-border]="invalidBorder"
+         [class.valid-border]="validBorder"
+         #input name="name" type="text" [formControl]="control">
+</div>
+<div class="sub_foot" *ngIf="control && (control.dirty)
+                              && !control.valid">{{InvalidInputText}}
+</div>
