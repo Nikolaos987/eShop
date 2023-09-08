@@ -1,55 +1,38 @@
-<!--<app-login></app-login>-->
+<nav class="navbar" #topnav [class.sticky]="sticky">
+  <a routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png" alt="Home">
+    <div class="nav-text">HOME</div>
+  </a>
 
-<div class="topnav" #topnav [class.sticky]="sticky">
-  <nav>
-    <div class="left-nav">
-      <a routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png" alt="Home">
-        <div class="nav-text">HOME</div>
-      </a>
-
-<!--      <a routerLinkActive="active" id="profile" [routerLink]="['profile']"><img-->
-<!--        src="assets/icons8-account-48.png"-->
-<!--        alt="Profile">-->
-<!--        <div class="nav-text">PROFILE</div>-->
-<!--      </a>-->
-
-      <div class="dropdown">
-        <a routerLinkActive="active" id="profile" [routerLink]="['profile']"><img
-          src="assets/icons8-account-48.png"
-          alt="Profile">
-          <div class="nav-text">PROFILE</div>
-        </a>
-        <div class="dropdown-content">
-          <a routerLink="/login">Login</a>
-          <a routerLink="/register">Register</a>
-        </div>
-      </div>
-
-<!--      <div cclass="dropdown">-->
-<!--        <button class="dropbtn">Dropdown-->
-<!--          <i class="fa fa-caret-down"></i>-->
-<!--        </button>-->
-<!--        <div class="dropdown-content">-->
-<!--          <a routerLink="/login">Login</a>-->
-<!--          <a routerLink="/register">Register</a>-->
-<!--        </div>-->
-<!--      </div>-->
-
-
-      <a routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png" alt="Cart">
-        <div class="nav-text">CART</div>
-      </a>
-
-      <a routerLinkActive="active" id="create products" [routerLink]="['products']"><img src="assets/icons8-plus-64.png"
-                                                                                         alt="Product">
-        <div class="nav-text">PRODUCT</div>
-      </a>
+  <div class="dropdown">
+    <a routerLinkActive="active" id="profile" [routerLink]="['profile']"><img
+      src="assets/icons8-account-48.png"
+      alt="Profile">
+      <div class="nav-text">PROFILE</div>
+    </a>
+    <div class="dropdown-content">
+      <a routerLink="/login">Login</a>
+      <a routerLink="/register">Register</a>
+      <a routerLink="/login"><div (click)="logout()">Logout</div></a>
     </div>
-    <!--        <div class="right-nav">-->
-    <!--                  <a routerLink="/login">Login</a>-->
-    <!--                  <a routerLink="/register">Register</a>-->
-    <!--        </div>-->
-  </nav>
-</div>
+  </div>
+
+  <a routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png" alt="Cart">
+    <div class="nav-text">CART</div>
+  </a>
+
+  <a routerLinkActive="active" id="create products" [routerLink]="['products']"><img src="assets/icons8-plus-64.png"
+                                                                                     alt="Product">
+    <div class="nav-text">PRODUCT</div>
+  </a>
+<!--  <div class="right-nav">-->
+<!--    <a routerLink="/login">Login</a>-->
+<!--    <a routerLink="/register">Register</a>-->
+<!--  </div>-->
+</nav>
+
+
+
+
+
 
 <router-outlet></router-outlet>

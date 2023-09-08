@@ -16,6 +16,16 @@ export class AppComponent implements AfterViewInit {
     this.menuPosition = this.menuElement?.nativeElement.offsetTop
   }
 
+  ngOnInit(): void {
+    console.log("THE USER ID IS: " + this.currentUser.uid);
+    console.log("THE USERNAME IS: " + this.currentUser.username);
+  }
+
+  logout() {
+    window.localStorage.removeItem('user');
+    console.log("cleared")
+  }
+
   @HostListener('window:scroll', ['event'])
   handleScroll() {
     const windowScroll = window.scrollY;
