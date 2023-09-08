@@ -38,7 +38,10 @@ public class PostgresUsersStore implements UsersStore {
                 .compose(rows -> {
                     try {
                         Row row = rows.iterator().next();
-                        User user = new User(row.getUUID("uid"), row.getString("username"), row.getString("password"));
+                        User user = new User(
+                                row.getUUID("uid"),
+                                row.getString("username"),
+                                row.getString("password"));
                         return Future.succeededFuture(user);
                     } catch (NoSuchElementException e) {
                         return Future.failedFuture(new IllegalArgumentException("User not found"));

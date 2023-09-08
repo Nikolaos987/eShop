@@ -71,7 +71,12 @@ public class Api extends AbstractVerticle {
         router.post("/user/login").handler(ctx -> {
             final JsonObject body = ctx.body().asJsonObject();
             this.userService.login(body.getString("username"), body.getString("password"))
-                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
+                    .onSuccess(v -> {
+                        JsonObject json = new JsonObject();
+                        json.put("uid", v.uid().toString());
+                        json.put("username", v.username());
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(json));
+                    })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request")
                             .end(v.getMessage()));
         });
