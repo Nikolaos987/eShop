@@ -13,7 +13,7 @@ header {
   padding: var(--content-padding);
 }
 
-.topnav {
+.navbar {
   display: block;
   position: sticky;
   width: 100%;
@@ -30,7 +30,7 @@ a img {
 }
 
 /* Style the links inside the navigation bar */
-.topnav a {
+.navbar a {
   display: block;
   float: left;
   /*color: #f2f2f2;*/
@@ -65,13 +65,13 @@ a img {
 }
 
 /* Change the color of links on hover */
-.topnav a:hover {
+.navbar a:hover {
   background-color: #ddd;
   color: black;
 }
 
 /* Add a color to the active link */
-.topnav a.active {
+.navbar a.active {
   background-color: #abb4be;
   color: white;
 }
@@ -116,3 +116,10 @@ a img {
 .dropdown:hover .dropdown-content {
   display: block;
 }
+
+
+
+
+
+
+

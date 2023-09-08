@@ -37,13 +37,13 @@ export class ProfileComponent implements OnInit {
   // uid: string = '';
 
   profileForm = new FormGroup({
-    currentPassword: new FormControl('',
-      [Validators.required, Validators.minLength(4)]),
-    password: new FormControl('',
-      [Validators.required, Validators.minLength(4)]),
-    passwordAgain: new FormControl('',
-      [Validators.required, Validators.minLength(4)]),
-  },
+      currentPassword: new FormControl('',
+        [Validators.required, Validators.minLength(4)]),
+      password: new FormControl('',
+        [Validators.required, Validators.minLength(4)]),
+      passwordAgain: new FormControl('',
+        [Validators.required, Validators.minLength(4)]),
+    },
     {
       updateOn: 'change',
       validators: [passwordMatchesValidator]
@@ -70,15 +70,15 @@ export class ProfileComponent implements OnInit {
       this._usersService.putUser(this.profile)
         .subscribe(
           result => {
-          this.successMessage = 'Password changed!';
-          this.errorMessage = '';
-          console.log('this is the result emitted: '+ result);
-          // this.router.navigateByUrl('/home')
-        },
+            this.successMessage = 'Password changed!';
+            this.errorMessage = '';
+            console.log('this is the result emitted: ' + result);
+            // this.router.navigateByUrl('/home')
+          },
           error => {
-          this.successMessage = '';
-          this.errorMessage = error;
-        },
+            this.successMessage = '';
+            this.errorMessage = error;
+          },
           () => console.log("complete")
         );
     } else {
