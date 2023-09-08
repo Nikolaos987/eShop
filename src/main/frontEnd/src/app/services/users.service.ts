@@ -12,7 +12,7 @@ import {Credentials} from "../interfaces/credentials";
   providedIn: 'root'
 })
 export class UsersService {
-  public user: User | undefined = {uid: '', username: '', isLoggedIn: false}; // TODO: clear these fields
+  // public user: User | undefined = {uid: '', username: '', isLoggedIn: false}; // TODO: clear these fields
 
   // public errorMessage: string = 'error';
 
@@ -47,7 +47,7 @@ export class UsersService {
 
   public putUser(data: Profile): Observable<{ uid: string }> {
     return this.http
-      .put<{ uid: string }>('/api/user/' + this.user?.uid + '/password',
+      .put<{ uid: string }>('/api/user/' + window.localStorage.getItem('uid') + '/password',
         {
           "currentPassword": data.currentPassword,
           "newPassword": data.password
@@ -61,10 +61,11 @@ export class UsersService {
 
   public deleteUser(): Observable<void> {
     return this.http
-      .delete('/api/user/' + this.user?.uid, {responseType: "text"})
+      .delete('/api/user/' + window.localStorage.getItem('uid'), {responseType: "text"})
       .pipe(
         map(() => {
-          this.user = undefined;
+          // this.user = undefined;
+          window.localStorage.clear();
         }),
         catchError(this.handleError));
   }

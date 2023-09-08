@@ -6,6 +6,7 @@ import {CartService} from "../services/cart.service";
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup} from "@angular/forms";
 import {Product} from "../interfaces/product";
+import {User} from "../interfaces/user";
 
 @Component({
   selector: 'app-product-details',
@@ -35,6 +36,7 @@ export class ProductDetailsComponent implements OnInit {
   errorMessage: string = '';
   successMessage: string = '';
 
+  currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
 
   constructor(
     private productsService: ProductsService,
@@ -42,7 +44,8 @@ export class ProductDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private _usersService: UsersService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.getProduct();
@@ -65,18 +68,19 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   addToCart() {
-    if (this._usersService.user?.isLoggedIn) {
-      this.cartService.addToCart(this._usersService.user?.uid, this.product.pid, this.addToCartForm.value.quantity)
-        .subscribe(
-          x => {
-            console.log("next: " + x)
-            window.alert(this.product.name + ' has been added to your cart')
-          },
-          err => console.error(err),
-          () => console.log("complete")
-        )
+    // if (this._usersService.user?.isLoggedIn) {
+      if (window.localStorage.getItem('user')) {
+        this.cartService.addToCart(this.currentUser.uid, this.product.pid, this.addToCartForm.value.quantity)
+          .subscribe(
+            x => {
+              console.log("next: " + x)
+              window.alert(this.product.name + ' has been added to your cart')
+            },
+            err => console.error(err),
+            () => console.log("complete")
+          )
 
-        // .subscribe((response) => window.alert(this.product.name + ' has been added to the cart'));
+      // .subscribe((response) => window.alert(this.product.name + ' has been added to the cart'));
     } else
       window.alert('you are not logged in!');
   }

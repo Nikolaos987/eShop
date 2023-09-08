@@ -42,22 +42,18 @@ export class LoginComponent {
       }
 
       this.usersService.fetchUser(this.loginCredentials)
-        .subscribe(
-          result => {
+        .subscribe( {
+          next: result => {
+            window.localStorage.setItem('user', JSON.stringify(result))
             console.log("next: " + result);
-            this.usersService.user = {
-              uid: result.uid,
-              username: result.username,
-              isLoggedIn: true
-            }
             this.router.navigateByUrl('/home');
           },
-          err => {
+          error: err => {
             console.error(err);
             this.errorMessage = err;
           },
-          () => console.log("complete")
-        )
+          complete: () => console.log("complete")
+        });
 
       // this.usersService.fetchUser(this.loginCredentials)
       //   .subscribe({

@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
   page: number = 1;
   range: number | undefined = this._pagingService.page?.range;
 
-  uid: string = 'sth';
+  // uid: string = 'sth';
   // image: string | undefined;
   productList: Product[] | undefined;
   helpText = "Search any product...";
@@ -43,7 +43,8 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cdr.detectChanges();
-    console.log('UID from home component: ' + this._usersService.user?.uid);
+    // const userData = window.localStorage.getItem('user')
+    // console.log('UID from home component: ' + JSON.parse(userData));
     this.productsService.fetchTotalProducts()
       .subscribe({
         next: (result) => {

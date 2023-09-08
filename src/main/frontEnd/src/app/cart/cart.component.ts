@@ -7,6 +7,7 @@ import {Item} from "../interfaces/item";
 import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup} from "@angular/forms";
 import {Product} from "../interfaces/product";
+import {User} from "../interfaces/user";
 
 @Component({
   selector: 'app-cart',
@@ -17,6 +18,7 @@ import {Product} from "../interfaces/product";
 export class CartComponent implements OnInit {
 
   items: Item[] | undefined;
+  currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
 
   // cart: any;any
 
@@ -30,7 +32,7 @@ export class CartComponent implements OnInit {
   }
 
   fetchCart(): void {
-    this._cartService.getCart(this._usersService.user?.uid)
+    this._cartService.getCart(this.currentUser.uid)
       .subscribe({
         next: response => this.items = response
       });
@@ -39,7 +41,7 @@ export class CartComponent implements OnInit {
   // TODO: wait for a few seconds before sending the request
   update(event: { p: Product, q: number }) {
     this._cartService
-      .addToCart(this._usersService.user?.uid, event.p.pid, event.q)
+      .addToCart(this.currentUser.uid, event.p.pid, event.q)
       .subscribe({
         next: result => {
           console.log("updated: ")
@@ -67,7 +69,7 @@ export class CartComponent implements OnInit {
 
   remove(product: Product) {
     this._cartService
-      .addToCart(this._usersService.user?.uid, product.pid, 0)
+      .addToCart(this.currentUser.uid, product.pid, 0)
       .subscribe({
         next: result => {
           console.log("diagrafi: " + result)

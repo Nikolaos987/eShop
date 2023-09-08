@@ -4,6 +4,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {passwordMatchesValidator} from "../passwordMatchesValidator";
 import {Profile} from "../interfaces/profile";
+import {User} from "../interfaces/user";
 
 @Component({
   selector: 'app-profile',
@@ -17,7 +18,13 @@ export class ProfileComponent implements OnInit {
   }
 
   message: string = '';
-  currentUsername: string | undefined = this._usersService.user?.username;
+  // currentUsername: string | undefined = this._usersService.user?.username;
+  // currentUID: string | undefined = this._usersService.user?.uid;
+  currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
+  // currentUID: JSON = JSON.parse(window.localStorage.getItem('user'));
+
+  // const userJson = localStorage.getItem('currentUser');
+  // this.currentUser = userJson !== null ? JSON.parse(userJson) : new User();
 
   errorMessage: string = '';
   successMessage: string = '';

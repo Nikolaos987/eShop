@@ -15,7 +15,7 @@ export class CartService {
   constructor(private http: HttpClient, private _usersService: UsersService) {
   }
 
-  getCart(uid: string | undefined): Observable<Item[]> {
+  getCart(uid: string | null): Observable<Item[]> {
     return this.http
       .get<Item[]>('/api/user/' + uid + '/cart', {responseType: "json"})
       .pipe(
@@ -27,7 +27,6 @@ export class CartService {
       {},
       {responseType: "json"})
       .pipe(
-        // debounceTime(10000),
         catchError(this.handleError));
   }
 
