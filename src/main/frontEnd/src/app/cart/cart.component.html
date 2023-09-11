@@ -1,6 +1,5 @@
-
-  <div class="title"><h1>My Cart</h1></div>
-  <div class="cart-wrapper">
+<div class="title"><h1>My Cart</h1></div>
+<div *ngIf="items" class="cart-wrapper">
   <div *ngIf="items" class="list">
     <section *ngFor="let item of items">
       <app-product [product]="item"

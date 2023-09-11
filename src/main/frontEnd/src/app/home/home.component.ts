@@ -1,13 +1,9 @@
 import {ChangeDetectorRef, Component, computed, OnInit} from '@angular/core';
 import {ProductsService} from "../services/products.service";
-import {HttpParams} from "@angular/common/http";
-import {ignoreElements, map, Observable, range, tap} from "rxjs";
 import {UsersService} from "../services/users.service";
-import {MatPaginatorModule} from "@angular/material/paginator";
 import {Product} from "../interfaces/product";
-import {FormControl, FormGroup} from "@angular/forms";
-import {Paging} from "../interfaces/paging";
 import {PagingService} from "../services/paging.service";
+import {User} from "../interfaces/user";
 
 
 @Component({
@@ -17,7 +13,6 @@ import {PagingService} from "../services/paging.service";
   providers: [ProductsService]
 })
 export class HomeComponent implements OnInit {
-  // focus: boolean = false;
   filterText: string = '';
 
   products: Product[] = [];
@@ -29,8 +24,6 @@ export class HomeComponent implements OnInit {
   page: number = 1;
   range: number | undefined = this._pagingService.page?.range;
 
-  // uid: string = 'sth';
-  // image: string | undefined;
   productList: Product[] | undefined;
   helpText = "Search any product...";
 
@@ -43,8 +36,8 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cdr.detectChanges();
-    // const userData = window.localStorage.getItem('user')
-    // console.log('UID from home component: ' + JSON.parse(userData));
+    const userData: User = JSON.parse(window.localStorage.getItem('user') || '{}')
+    console.log('UID from home component: ' + userData.uid);
     this.productsService.fetchTotalProducts()
       .subscribe({
         next: (result) => {
@@ -73,9 +66,7 @@ export class HomeComponent implements OnInit {
           },
           error: err => console.error(err)
         })
-      // this.productList.forEach(p => console.log(p))
     } else {
-      // this.getFilteredProducts(this.filterText);
       if (this.range)
       this.filteredProducts(this.filterText, this.page, this.range)
     }
@@ -137,7 +128,6 @@ export class HomeComponent implements OnInit {
           console.error(error);
         },
         complete: () => {
-          // if (this.pages && this.page > this.pages.length)
           this.page = 1;
           if (this.range)
           this.filteredProducts(text, this.page, this.range)
