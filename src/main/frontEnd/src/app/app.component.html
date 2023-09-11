@@ -1,13 +1,13 @@
 <nav class="navbar" #topnav [class.sticky]="sticky">
   <a class="links" routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png" alt="Home">
-    HOME
+    <span>HOME</span>
   </a>
 
   <div class="dropdown-menu">
     <a class="links drop-link" routerLinkActive="active" id="profile" [routerLink]="['profile']"><img
       src="assets/icons8-account-48.png"
       alt="Profile">
-      PROFILE
+      <span>PROFILE</span>
     </a>
     <div class="menu-content">
       <a class="links-hidden" routerLink="/login">Login<img src="/assets/icons8-login-50.png" alt=""></a>
@@ -17,13 +17,18 @@
   </div>
 
   <a class="links" routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png" alt="Cart">
-    CART
+    <span>CART</span>
   </a>
 
   <a class="links" routerLinkActive="active" id="create products" [routerLink]="['products']"><img src="assets/icons8-plus-64.png"
                                                                                      alt="Product">
-    PRODUCT
+    <span>CREATE</span>
   </a>
+
+  <h1 class="logo">tech<span>Shop.gr</span></h1>
+
+
+
 <!--  <div class="right-nav">-->
 <!--    <a routerLink="/login">Login</a>-->
 <!--    <a routerLink="/register">Register</a>-->

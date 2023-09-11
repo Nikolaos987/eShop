@@ -18,6 +18,7 @@ a img {
 }
 
 .navbar {
+  /*padding-left: 135px;*/
   display: inline-block;
   position: sticky;
   width: 100%;
@@ -30,9 +31,9 @@ a img {
   min-width: 130px;
   float: left;
   color: #d3acac;
-  padding: 14px 16px;
+  padding: 14px 36px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 18px;
   transition: all .2s ease-in-out;
 }
 
@@ -46,6 +47,7 @@ a img {
 .navbar a:hover {
   background-color: #ddd;
   color: black;
+  border-radius: 12px;
 }
 
 /* Add a color to the active link */
@@ -58,7 +60,7 @@ a img {
 .dropdown-menu {
   float: left;
   position: relative;
-  font-size: 16px;
+  font-size: 18px;
   border: none;
   outline: none;
   color: black;
@@ -77,6 +79,7 @@ a img {
 }
 
 .menu-content a {
+  font-size: 22px;
   min-width: 160px;
   position: relative;
   float: left;
@@ -86,12 +89,31 @@ a img {
   text-align: left;
 }
 .menu-content a img {
-  width: 22px;
+  width: 27px;
   float: right;
 }
 
 .dropdown-menu:hover .menu-content {
   display: block;
+}
+
+
+.logo {
+  color: #4d4d9f;
+  font-weight: bold;
+  float: right;
+  font-size: 50px;
+  padding-top: 20px;
+  margin-right: 50px;
+  font-family: Comic Sans MS, Comic Sans, cursive;
+}
+.logo span {
+  color: #000000;
+}
+
+a span {
+  position: absolute;
+  padding: 15px;
 }
 
 
