@@ -17,24 +17,17 @@ export class ProfileComponent implements OnInit {
     password: undefined
   }
 
-  message: string = '';
-  // currentUsername: string | undefined = this._usersService.user?.username;
-  // currentUID: string | undefined = this._usersService.user?.uid;
-  currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
-  // currentUID: JSON = JSON.parse(window.localStorage.getItem('user'));
+  isActiveProfile: boolean = true;
+  isActivePassword: boolean = false;
+  isActiveDelete: boolean = false;
 
-  // const userJson = localStorage.getItem('currentUser');
-  // this.currentUser = userJson !== null ? JSON.parse(userJson) : new User();
+  message: string = '';
+  currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
 
   errorMessage: string = '';
   successMessage: string = '';
   delBtnClicked: boolean = false;
   changePswdBtnClicked: boolean = false;
-
-  // currentPassword: string = '';
-  // password: string = '';
-  // passwordAgain: string = '';
-  // uid: string = '';
 
   profileForm = new FormGroup({
       currentPassword: new FormControl('',
@@ -97,4 +90,21 @@ export class ProfileComponent implements OnInit {
       });
   }
 
+  showProfile() {
+    this.isActiveProfile = true;
+    this.isActivePassword = false;
+    this.isActiveDelete = false;
+  }
+
+  showChangePassword() {
+    this.isActiveProfile = false;
+    this.isActivePassword = true;
+    this.isActiveDelete = false;
+  }
+
+  showDeleteAccount() {
+    this.isActiveProfile = false;
+    this.isActivePassword = false;
+    this.isActiveDelete = true;
+  }
 }

@@ -1,14 +1,24 @@
 <div class="b">
 
-  <div class="container">
-    <h1>{{currentUser.username}}</h1>
-    <h2>User Id: {{currentUser.uid}}</h2>
+  <div class="tabs">
+    <div class="tab" (click)="showProfile()">My Profile</div>
+    <div class="tab" (click)="showChangePassword()">Change Password</div>
+    <div class="tab" (click)="showDeleteAccount()">Delete Account</div>
+  </div>
 
+  <div id="profile" class="container" [class.active-profile]="isActiveProfile">
+    <h1>My Profile</h1>
+      <div id="username">{{currentUser.username}}</div>
+      <div id="uid">ID: {{currentUser.uid}}</div>
+  </div>
+
+  <div id="password" class="container" [class.active-password]="isActivePassword" >
+    <h1>Change Password:</h1>
     <div class="edit-form">
-
-      <form [formGroup]="profileForm" (ngSubmit)="changePassword()" #form="ngForm">
+      <form [formGroup]="profileForm" (ngSubmit)="changePassword()" #form="ngForm" autocomplete="off">
         <div>
-          <input name="currentPassword" type="password" placeholder="current password" formControlName="currentPassword">
+          <input name="currentPassword" type="password" placeholder="current password"
+                 formControlName="currentPassword">
         </div>
         <div class="danger" *ngIf="(profileForm.controls.currentPassword.dirty || form.submitted)
                               && !profileForm.controls.currentPassword.valid">Password must have at least 4 characters!
@@ -22,7 +32,8 @@
         </div>
 
         <div>
-          <input name="newPasswordAgain" type="password" placeholder="Re-enter new password" formControlName="passwordAgain">
+          <input name="newPasswordAgain" type="password" placeholder="Re-enter new password"
+                 formControlName="passwordAgain">
         </div>
         <div class="danger" *ngIf="(profileForm.controls.passwordAgain.dirty || form.submitted)
                               && profileForm.hasError('passwordMatch')">Passwords do not match!
@@ -30,12 +41,10 @@
 
         <div class="buttons">
           <input class="submit" type="submit" value="Apply" [disabled]="!form.valid">
-          <input class="cancel-button" type="button" value="Cancel" routerLink="/home"> <!-- TODO: go to previous page -->
+          <input class="cancel-button" type="button" value="Cancel" routerLink="/home">
+          <!-- TODO: go to previous page -->
         </div>
       </form>
-      <div>
-        <input class="delete-btn" type="button" value="Delete Account" (click)="deleteUser()">
-      </div>
 
       <div class="error-label" *ngIf="errorMessage != '' && successMessage == '' && changePswdBtnClicked">
         <p>{{errorMessage}}</p>
@@ -43,9 +52,14 @@
       <div class="success-label" *ngIf="errorMessage == '' && successMessage != '' && changePswdBtnClicked">
         <p>{{successMessage}}</p>
       </div>
-
     </div>
+  </div>
 
+  <div id="delete" class="container" [class.active-delete]="isActiveDelete">
+    <h1>Delete Account</h1>
+    <div>
+      <input class="delete-btn" type="button" value="Delete Account" (click)="deleteUser()">
+    </div>
   </div>
 
 </div>

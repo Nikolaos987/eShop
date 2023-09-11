@@ -4,15 +4,48 @@
   height: 100vh;
 }
 
-.container h1 {
+.tabs {
+  justify-content: left;
+  align-self: stretch;
+
+  border-right: #3b3434 2px solid;
+  display: inline-flex;
+  flex-direction: column;
+  background-color: white;
+  height: 100vh;
+  margin-top: -6px;
+}
+
+.tab {
+  position: relative;
+  cursor: pointer;
+  padding: 60px 30px;
+  font-size: 22px;
+  font-weight: bold;
+  border-bottom: 1px black solid;
+  outline: none;
+  text-decoration: none;
+  background-color: inherit;
+}
+.tab:hover {
+  background-color: #cccccc;
+}
+.tab:active {
+
+}
+
+
+
+h1 {
   text-align: center;
   font-weight: bold;
   font-size: 32px;
-  color: #fff;
+  color: #000000;
   margin: 40px 0;
 }
 
 .container {
+  display: none;
   position: absolute;
   box-shadow: 0 0 40px black;
   width: 40em;
@@ -22,13 +55,26 @@
   transform: translate(-50%, -50%);
   border-radius: 30px;
   /*background: rgb(240, 240, 240);*/
-  background: #6bbfc4;
+  background: #b2d5d7;
   overflow: hidden;
+}
+
+.active-profile {
+  display: inline-block;
+}
+
+.active-password {
+  display: inline-block;
+}
+
+.active-delete {
+  display: inline-block;
 }
 
 .edit-form {
   position: absolute;
   left: 10%;
+  top: 100px;
 }
 .edit-form input {
   border-radius: 20px;
@@ -107,4 +153,17 @@
   text-align: left;
   font-size: 24px;
   color: indianred;
+}
+
+#profile {
+  padding-left: 30px;
+}
+#username {
+  text-align: left;
+  font-size: 28px;
+  font-weight: bold;
+}
+#uid {
+  margin-top: 20px;
+  font-size: 21px;
 }
