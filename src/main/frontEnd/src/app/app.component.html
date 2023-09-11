@@ -1,28 +1,28 @@
 <nav class="navbar" #topnav [class.sticky]="sticky">
-  <a routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png" alt="Home">
-    <div class="nav-text">HOME</div>
+  <a class="links" routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png" alt="Home">
+    HOME
   </a>
 
-  <div class="dropdown">
-    <a routerLinkActive="active" id="profile" [routerLink]="['profile']"><img
+  <div class="dropdown-menu">
+    <a class="links drop-link" routerLinkActive="active" id="profile" [routerLink]="['profile']"><img
       src="assets/icons8-account-48.png"
       alt="Profile">
-      <div class="nav-text">PROFILE</div>
+      PROFILE
     </a>
-    <div class="dropdown-content">
-      <a routerLink="/login">Login</a>
-      <a routerLink="/register">Register</a>
-      <a routerLink="/login"><div (click)="logout()">Logout</div></a>
+    <div class="menu-content">
+      <a class="links-hidden" routerLink="/login">Login<img src="/assets/icons8-login-50.png" alt=""></a>
+      <a class="links-hidden" routerLink="/register">Register<img src="/assets/icons8-register-48.png" alt=""></a>
+      <a class="links-hidden" routerLink="/login"><div class="logout" (click)="logout()">Logout<img src="/assets/icons8-logout-50.png" alt=""></div></a>
     </div>
   </div>
 
-  <a routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png" alt="Cart">
-    <div class="nav-text">CART</div>
+  <a class="links" routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png" alt="Cart">
+    CART
   </a>
 
-  <a routerLinkActive="active" id="create products" [routerLink]="['products']"><img src="assets/icons8-plus-64.png"
+  <a class="links" routerLinkActive="active" id="create products" [routerLink]="['products']"><img src="assets/icons8-plus-64.png"
                                                                                      alt="Product">
-    <div class="nav-text">PRODUCT</div>
+    PRODUCT
   </a>
 <!--  <div class="right-nav">-->
 <!--    <a routerLink="/login">Login</a>-->
@@ -34,5 +34,71 @@
 
 
 
+
+
+<!--<nav class="navbar">-->
+<!--  <a class="links" routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png" alt="Home">-->
+<!--    <div class="nav-text">HOME</div>-->
+<!--  </a>-->
+
+<!--  <div class="dropdown-menu">-->
+<!--    <a routerLinkActive="active" id="profile" [routerLink]="['profile']"><img-->
+<!--      src="assets/icons8-account-48.png"-->
+<!--      alt="Profile">-->
+<!--      <div class="nav-text">PROFILE</div>-->
+<!--    </a>-->
+<!--    <div class="menu-content">-->
+<!--      <a class="links-hidden" routerLink="/login">Login<img style="width: 20px" src="/assets/icons8-login-50.png" alt=""></a>-->
+<!--      <a class="links-hidden" routerLink="/register">Register<img style="width: 20px" src="/assets/icons8-register-48.png" alt=""></a>-->
+<!--      <a class="links-hidden" routerLink="/login"><div (click)="logout()">Logout<img style="width: 20px" src="/assets/icons8-logout-50.png" alt=""></div></a>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  <a class="links" routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png" alt="Cart">-->
+<!--    <div class="nav-text">CART</div>-->
+<!--  </a>-->
+<!--  <a class="links" routerLinkActive="active" id="create products" [routerLink]="['products']"><img src="assets/icons8-plus-64.png"-->
+<!--                                                                                     alt="Product">-->
+<!--    <div class="nav-text">PRODUCT</div>-->
+<!--  </a>-->
+<!--</nav>-->
+
+
+
+
+
+
+<!--<div class="menu-bar">-->
+<!--  <ul>-->
+<!--    <li><a class="links" routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png" alt="Home">-->
+<!--      HOME-->
+<!--    </a></li>-->
+<!--    <li>-->
+<!--      <a class="links drop-link" routerLinkActive="active" id="profile" [routerLink]="['profile']"><img-->
+<!--        src="assets/icons8-account-48.png"-->
+<!--        alt="Profile">-->
+<!--        <span>PROFILE</span>-->
+<!--      </a>-->
+
+<!--      <div class="dropdown-menu">-->
+<!--        <ul>-->
+<!--          <li><a class="links-hidden" routerLink="/login">Login<img src="/assets/icons8-login-50.png" alt=""></a></li>-->
+<!--          <li><a class="links-hidden" routerLink="/register">Register<img src="/assets/icons8-register-48.png" alt=""></a></li>-->
+<!--          <li><a class="links-hidden" routerLink="/login"><div (click)="logout()">Logout<img style="width: 20px" src="/assets/icons8-logout-50.png" alt=""></div></a></li>-->
+<!--        </ul>-->
+<!--      </div>-->
+<!--    </li>-->
+<!--    <li><a class="links" routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png" alt="Cart">-->
+<!--      CART-->
+<!--    </a></li>-->
+<!--    <li><a class="links" routerLinkActive="active" id="create products" [routerLink]="['products']"><img src="assets/icons8-plus-64.png"-->
+<!--                                                                                                         alt="Product">-->
+<!--      PRODUCT-->
+<!--    </a></li>-->
+<!--  </ul>-->
+
+
+<!--  <h1 class="logo">e<span>Shop.</span></h1>-->
+<!--</div>-->
 
 <router-outlet></router-outlet>
