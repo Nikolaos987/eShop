@@ -66,6 +66,18 @@ public class UserService {
 //                });
     }
 
+    public Future<UUID> fetch(UUID uid) {
+        return userStore.findUserById(uid)
+                .otherwiseEmpty()
+                .compose(user -> {
+                    if (user == null) {
+                        return Future.failedFuture(new IllegalArgumentException("User with uid: " + uid.toString() + " does not exist"));
+                    } else {
+                        return Future.succeededFuture(user.uid());
+                    }
+                });
+    }
+
     public Future<Void> deleteCartItems(UUID uid) {
         return this.cartsStore.findCart(uid)
                 .otherwiseEmpty()

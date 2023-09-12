@@ -11,6 +11,8 @@ public interface UsersStore {
 
     Future<User> findUser(String username);
 
+    Future<User> findUserById(UUID uid);
+
     Future<User> findUser(UUID uid);
 
     Future<Void> deleteUser(UUID uid);

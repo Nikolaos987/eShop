@@ -50,6 +50,25 @@ public class PostgresUsersStore implements UsersStore {
     }
 
     @Override
+    public Future<User> findUserById(UUID uid) {
+        return pgPool
+                .preparedQuery("SELECT * FROM users WHERE uid = $1")
+                .execute(Tuple.of(uid))
+                .compose(rows -> {
+                    try {
+                        Row row = rows.iterator().next();
+                        User user = new User(
+                                row.getUUID("uid"),
+                                row.getString("username"),
+                                row.getString("password"));
+                        return Future.succeededFuture(user);
+                    } catch (NoSuchElementException e) {
+                        return Future.failedFuture(new IllegalArgumentException("User not found"));
+                    }
+                });
+    }
+
+    @Override
     public Future<User> findUser(UUID userId) {
         return pgPool
                 .preparedQuery("SELECT * FROM users WHERE uid = $1")

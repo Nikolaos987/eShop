@@ -54,18 +54,6 @@ public class Api extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
 
-//        router.route().handler(CorsHandler.create("http://localhost:8084"));
-
-//        router.route().handler(io.vertx.ext.web.handler.CorsHandler.create()
-//                .allowedMethod(io.vertx.core.http.HttpMethod.GET)
-//                .allowedMethod(io.vertx.core.http.HttpMethod.POST)
-//                .allowedMethod(io.vertx.core.http.HttpMethod.OPTIONS)
-//                .allowedHeader("Access-Control-Request-Method")
-//                .allowedHeader("Access-Control-Allow-Credentials")
-//                .allowedHeader("Access-Control-Allow-Origin")
-//                .allowedHeader("Access-Control-Allow-Headers")
-//                .allowedHeader("Content-Type"));
-
         /* USER ENTITY */
 
         router.post("/user/login").handler(ctx -> {
@@ -92,8 +80,19 @@ public class Api extends AbstractVerticle {
                             .end(v.getMessage()));
         });
 
-        router.delete("/user/:uid").handler(ctx -> this.userService.delete(UUID.fromString(ctx.pathParam("uid")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user deleted"))
+        router.delete("/user/:uid").handler(ctx -> {
+            String uid = ctx.pathParam("uid");
+            System.out.println(uid);
+            this.userService.delete(UUID.fromString(ctx.pathParam("uid")))
+                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("user deleted"))
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
+        router.get("/user/:uid").handler(ctx -> this.userService.fetch(UUID.fromString(ctx.pathParam("uid")))
+                .onSuccess(v -> {
+                    JsonObject json = new JsonObject().put("uid", v);
+                    ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(json));
+                })
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
         router.put("/user/:uid/password").handler(ctx -> {
