@@ -1,35 +1,21 @@
 /* Add a black background color to the top navigation bar */
 
-:host {
-  --content-padding: 10px;
-}
-header {
-  display: block;
-  height: 60px;
-  padding: var(--content-padding);
-  box-shadow: 0px 5px 25px var(--shadow-color);
-}
-.content {
-  padding: var(--content-padding);
-}
-
 a img {
   width: 40px;
 }
 
 .navbar {
-  /*padding-left: 135px;*/
-  display: inline-block;
-  position: sticky;
-  width: 100%;
+  /*position: sticky;*/
+  /*top: 0;*/
+  position: relative;
   background-color: #d3acac;
-  /*border-bottom: #333 1px solid;*/
+  border-bottom: #333 1px solid;
   z-index: 1;
 }
 
 .navbar a {
-  min-width: 130px;
-  float: left;
+  min-width: 110px;
+  display: inline-block;
   color: #d3acac;
   padding: 14px 36px;
   text-decoration: none;
@@ -38,7 +24,7 @@ a img {
 }
 
 .sticky {
-  position: fixed;
+  position: sticky;
   top: 0;
   width: 100%;
 }
@@ -51,55 +37,60 @@ a img {
 }
 
 /* Add a color to the active link */
-.navbar a.active {
+.navbar a.active { /*TODO: this*/
   font-weight: bold;
   background-color: #a85f5f;
   color: white;
 }
 
 .dropdown-menu {
-  float: left;
-  position: relative;
-  font-size: 18px;
-  border: none;
-  outline: none;
-  color: black;
+  /*float: left;*/
+  display: inline-block;
+  /*position: relative;*/
+  /*font-size: 18px;*/
+  /*border: none;*/
+  /*outline: none;*/
+  /*color: black;*/
   /*padding: 14px 16px;*/
-  margin: 0;
+  /*margin: 0;*/
 }
 
 .menu-content {
+  /*outline: red 3px solid;*/
   display: none;
   position: absolute;
+  /*left: 10.6%;*/
+  /*margin-left: -30px;*/
   background-color: #d3acac;
   top: 100%;
   padding: 10px;
-  box-shadow: 10px 10px 50px 0px black;
+  box-shadow: 0 0 4px black;
   z-index: 1;
 }
 
 .menu-content a {
-  font-size: 22px;
+  display: block;
+  font-size: 19px;
   min-width: 160px;
   position: relative;
-  float: left;
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   text-align: left;
 }
 .menu-content a img {
-  width: 27px;
+  width: 24px;
   float: right;
 }
 
 .dropdown-menu:hover .menu-content {
   display: block;
+  font-weight: normal;
 }
 
 
 .logo {
-  color: #4d4d9f;
+  color: #000;
   font-weight: bold;
   float: right;
   font-size: 50px;
@@ -108,9 +99,10 @@ a img {
   font-family: Comic Sans MS, Comic Sans, cursive;
 }
 .logo span {
-  color: #000000;
+  color: #4d4d9f;
 }
 
+/* for the link texts ( HOME, PROFILE, CART, CREATE ) */
 a span {
   position: absolute;
   padding: 15px;
@@ -122,86 +114,107 @@ a span {
 
 
 
+/*!* Add a black background color to the top navigation bar *!*/
+/*.navbar {*/
+/*  display: inline-block;*/
+/*  position: sticky;*/
+/*  width: 100%;*/
+/*  top: 0;*/
+/*  !*background-color: #333;*!*/
+/*  background-color: #e7e7e7;*/
+/*  border-bottom: #333 1px solid;*/
+/*  !*overflow: hidden;*!*/
+/*  z-index: 1;*/
 
-
-
-
-
+/*  !*!*padding-left: 135px;*!*!*/
+/*  !*display: inline-block;*!*/
+/*  !*position: sticky;*!*/
+/*  !*width: 100%;*!*/
+/*  !*background-color: #d3acac;*!*/
+/*  !*!*border-bottom: #333 1px solid;*!*!*/
+/*  !*z-index: 1;*!*/
+/*}*/
 
 /*a img {*/
 /*  width: 40px;*/
 /*}*/
 
-/*.menu-bar {*/
-/*  background-color: #d3acac;*/
-/*  height: 80px;*/
-/*  !*width: 100%;*!*/
-/*  display: flex;*/
-/*  align-items: center;*/
-/*  justify-content: space-between;*/
-/*  padding: 0 5%;*/
-/*}*/
-
-/*.logo {*/
-/*  color: white;*/
-/*  font-size: 30px;*/
-/*}*/
-
-/*.logo span {*/
-/*  color: blue;*/
-/*}*/
-
-/*.menu-bar ul {*/
-/*  list-style: none;*/
-/*  display: flex;*/
-/*}*/
-
-/*.menu-bar ul li {*/
-/*  padding: 10px 30px;*/
-/*  position: relative;*/
-/*}*/
-
-/*.menu-bar ul li a {*/
-/*  color: #d3acac;*/
+/*!* Style the links inside the navigation bar *!*/
+/*.navbar a {*/
+/*  display: block;*/
+/*  float: left;*/
+/*  !*color: #f2f2f2;*!*/
+/*  color: #e7e7e7;*/
+/*  text-align: center;*/
+/*  padding: 14px 16px;*/
 /*  text-decoration: none;*/
-/*  font-size: 20px;*/
+/*  font-size: 14px;*/
 /*  transition: all .2s ease-in-out;*/
 /*}*/
 
-/*.menu-bar ul li a:hover {*/
-/*  color: #efefef;*/
-/*  background-color: #ddd;*/
+/*.sticky {*/
+/*  position: fixed;*/
+/*  top: 0;*/
+/*  width: 100%;*/
 /*}*/
 
-/*.dropdown-menu {*/
-/*  box-shadow: 10px 6px 40px 00px black;*/
-/*  border-radius: 7px;*/
+/*!* Change the color of links on hover *!*/
+/*.navbar a:hover {*/
+/*  background-color: #ddd;*/
+/*  color: black;*/
+/*}*/
+
+/*!* Add a color to the active link *!*/
+/*.navbar a.active {*/
+/*  background-color: #abb4be;*/
+/*  color: white;*/
+/*}*/
+
+/*.dropdown {*/
+/*  float: left;*/
+/*  position: relative;*/
+/*  font-size: 16px;*/
+/*  border: none;*/
+/*  outline: none;*/
+/*  color: black;*/
+/*  !*padding: 14px 16px;*!*/
+/*  background-color: inherit;*/
+/*  font-family: inherit;*/
+/*  margin: 0;*/
+/*  z-index: -10;*/
+/*}*/
+
+/*.dropdown-content {*/
+/*  !*margin-top: 100px;*!*/
+/*  !*display: none;*!*/
+/*  !*position: relative;*!*/
+/*  !*background-color: #f9f9f9;*!*/
+/*  !*min-width: 160px;*!*/
+/*  !*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);*!*/
+/*  !*z-index: 1;*!*/
+
 /*  display: none;*/
+/*  position: absolute; !*TODO: AFTO*!*/
+/*  background-color: #d3acac;*/
+/*  top: 100%;*/
+/*  padding: 10px;*/
+/*  box-shadow: 0 0 4px black;*/
 /*  z-index: 1;*/
 /*}*/
 
-/*.menu-bar ul li:hover .dropdown-menu {*/
+/*.dropdown-content a {*/
+/*  float: none;*/
+/*  color: black;*/
+/*  padding: 12px 16px;*/
+/*  text-decoration: none;*/
 /*  display: block;*/
-/*  position: absolute;*/
-/*  left: 0;*/
-/*  top: 100%;*/
-/*  background-color: #d3acac;*/
+/*  text-align: left;*/
 /*}*/
 
-/*.menu-bar ul li:hover .dropdown-menu ul {*/
+/*.dropdown-content a:hover {*/
+/*  background-color: #ddd;*/
+/*}*/
+
+/*.dropdown:hover .dropdown-content {*/
 /*  display: block;*/
-/*  margin: 10px;*/
 /*}*/
-
-/*.menu-bar ul li:hover .dropdown-menu ul li {*/
-/*  width: 160px;*/
-/*  padding: 10px;*/
-/*}*/
-
-/*.fas {*/
-/*  float: right;*/
-/*  margin-left: 10px;*/
-/*  padding: 3px;*/
-/*}*/
-
-
