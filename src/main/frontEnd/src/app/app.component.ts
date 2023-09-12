@@ -2,6 +2,8 @@ import {AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild} f
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import {User} from "./interfaces/user";
+import {UsersService} from "./services/users.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -20,8 +22,21 @@ export class AppComponent implements AfterViewInit, OnInit {
   }
 
   ngOnInit(): void {
-    console.log("THE USER ID IS: " + this.currentUser.uid);
-    console.log("THE USERNAME IS: " + this.currentUser.username);
+    if (this.currentUser.uid) {
+      this._usersServise.fetchUserById()
+        .subscribe({
+          next: value => console.log("exists: " + value.uid),
+          error: err => {
+            window.localStorage.removeItem("user");
+            this.router.navigateByUrl('/login')
+          }
+        })
+      console.log("THE USER ID IS: " + this.currentUser.uid);
+      console.log("THE USERNAME IS: " + this.currentUser.username);
+    }
+  }
+
+  constructor(private _usersServise: UsersService, private router: Router) {
   }
 
   logout() {

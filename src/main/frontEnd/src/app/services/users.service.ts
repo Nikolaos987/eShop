@@ -14,15 +14,25 @@ import {Credentials} from "../interfaces/credentials";
 export class UsersService {
   // public user: User | undefined = {uid: '', username: '', isLoggedIn: false}; // TODO: clear these fields
 
-  // public errorMessage: string = 'error';
-
   constructor(private http: HttpClient) {
   }
 
   public fetchUser(data: Credentials): Observable<{ uid: string, username: string, password: string }> {
     return this.http
       .post <{ uid: string, username: string, password: string }>
-      ('/api/user/login', {"username": data.username, "password": data.password}, {responseType: "json"}) // TODO: don't return the "password: string from server"
+      ('/api/user/login', {
+        "username": data.username,
+        "password": data.password
+      }, {responseType: "json"}) // TODO: don't return the "password: string from server"
+      .pipe(
+        catchError(this.handleError));
+  }
+
+  public fetchUserById(): Observable<{ uid: string }> {
+    const currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
+    return this.http
+      .get<{uid: string}>
+      ('api/user/' + currentUser.uid, {responseType: "json"})
       .pipe(
         catchError(this.handleError));
   }
@@ -46,8 +56,9 @@ export class UsersService {
   }
 
   public putUser(data: Profile): Observable<{ uid: string }> {
+    const currentUser = JSON.parse(window.localStorage.getItem('user') || '{}');  //TODO: const currentUser: User = ...
     return this.http
-      .put<{ uid: string }>('/api/user/' + window.localStorage.getItem('uid') + '/password',
+      .put<{ uid: string }>('/api/user/' + currentUser.uid + '/password',
         {
           "currentPassword": data.currentPassword,
           "newPassword": data.password
@@ -60,8 +71,9 @@ export class UsersService {
   }
 
   public deleteUser(): Observable<void> {
+    const currentUser = JSON.parse(window.localStorage.getItem('user') || '{}');
     return this.http
-      .delete('/api/user/' + window.localStorage.getItem('uid'), {responseType: "text"})
+      .delete('/api/user/' + currentUser.uid, {responseType: "text"})
       .pipe(
         map(() => {
           // this.user = undefined;
