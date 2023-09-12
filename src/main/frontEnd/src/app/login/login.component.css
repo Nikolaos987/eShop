@@ -10,7 +10,7 @@
   background: #eecccf;
   padding: 20px;
   border-radius: 10px;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .center h1 {

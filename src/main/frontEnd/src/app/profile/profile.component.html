@@ -60,6 +60,12 @@
     <div>
       <input class="delete-btn" type="button" value="Delete Account" (click)="deleteUser()">
     </div>
+    <div class="error-label" *ngIf="errorMessage != '' && successMessage == '' && changePswdBtnClicked">
+      <p>{{errorMessage}}</p>
+    </div>
+    <div class="success-label" *ngIf="errorMessage == '' && successMessage != '' && changePswdBtnClicked">
+      <p>{{successMessage}}</p>
+    </div>
   </div>
 
 </div>

@@ -47,7 +47,7 @@ h1 {
 .container {
   display: none;
   position: absolute;
-  box-shadow: 0 0 40px black;
+  box-shadow: 0 0 7px black;
   width: 40em;
   height: 80%;
   top: 47%;
@@ -58,6 +58,9 @@ h1 {
   background: #b2d5d7;
   overflow: hidden;
 }
+/*.container div:active {*/
+/*  background-color: black;*/
+/*}*/
 
 .active-profile {
   display: inline-block;
@@ -155,7 +158,7 @@ h1 {
   color: indianred;
 }
 
-#profile {
+#profile div {
   padding-left: 30px;
 }
 #username {

@@ -61,19 +61,19 @@ export class ProfileComponent implements OnInit {
         password: this.profileForm.value.password
       }
       this._usersService.putUser(this.profile)
-        .subscribe(
-          result => {
+        .subscribe({
+          next: result => {
             this.successMessage = 'Password changed!';
             this.errorMessage = '';
             console.log('this is the result emitted: ' + result);
             // this.router.navigateByUrl('/home')
           },
-          error => {
+          error: error => {
             this.successMessage = '';
             this.errorMessage = error;
           },
-          () => console.log("complete")
-        );
+          complete: () => console.log("complete")
+        });
     } else {
       this.successMessage = '';
       this.errorMessage = 'passwords do not match';
@@ -82,11 +82,12 @@ export class ProfileComponent implements OnInit {
 
   deleteUser() {
     this._usersService.deleteUser()
-      .subscribe((result) => {
-        this.router.navigateByUrl('/home');
-      }, (error) => {
-        console.log(error);
-        this.errorMessage = error;
+      .subscribe({
+        next: result => this.router.navigateByUrl('/home'),
+        error: error => {
+          console.log(error);
+          this.errorMessage = error;
+        }
       });
   }
 

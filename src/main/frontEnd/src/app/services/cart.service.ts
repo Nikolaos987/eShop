@@ -22,7 +22,9 @@ export class CartService {
         catchError(this.handleError));
   }
 
-  addToCart(uid: string | null | undefined, pid: string | null | undefined, quantity: number | null | undefined): Observable<{ itemid: string }> {
+  addToCart(uid: string | null | undefined,
+            pid: string | null | undefined,
+            quantity: number | null | undefined): Observable<{ itemid: string }> {
     return this.http.put<{ itemid: string }>('/api/user/' + uid + '/product/' + pid + '/' + quantity,
       {},
       {responseType: "json"})
