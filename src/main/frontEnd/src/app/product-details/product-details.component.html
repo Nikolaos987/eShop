@@ -63,8 +63,8 @@
 <!--</div>-->
 
 
-<div class="all-container">
-  <div *ngIf="product" class="left-container">
+<div *ngIf="productExists == true" class="all-container">
+  <div class="left-container">
     <div class="image">
       <img [src]="'/api/product/image/'+product.pid" alt="could not load photo of {{product.name}}">
     </div>
@@ -125,3 +125,6 @@
   </div>
 </div>
 
+<div *ngIf="productExists == false">
+  <app-product-not-found></app-product-not-found>
+</div>

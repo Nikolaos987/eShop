@@ -26,6 +26,8 @@ export class ProductDetailsComponent implements OnInit {
     category: undefined,
   };
 
+  productExists: boolean = false;
+
   // quantity: number = 1;
 
   addToCartForm = new FormGroup({
@@ -53,18 +55,17 @@ export class ProductDetailsComponent implements OnInit {
 
   getProduct(): void {
     // const pid = String(this.route.snapshot.paramMap.get('pid'));
-
     this.productsService.fetchProduct(this.product.pid)
-      .subscribe(
-        x => {
-          this.product = x;
-          console.log("input product: " + this.product.name);
+      .subscribe({
+        next: product => {
+          this.productExists = true;
+          this.product = product
         },
-        err => {
+        error: err => {
+          this.productExists = false;
           console.error(err);
-        },
-        () => console.log("complete")
-      )
+        }
+      })
   }
 
   addToCart() {
