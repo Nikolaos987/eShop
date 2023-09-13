@@ -9,6 +9,7 @@ import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class CartQuery implements CartQueryModelStore {
@@ -30,7 +31,7 @@ public class CartQuery implements CartQueryModelStore {
                 .execute(Tuple.of(uid))
                 .compose(records -> {
                     ArrayList<CartQueryModel.CartItemQueryModel> items = new ArrayList<>();
-                    if (records.iterator().next().getUUID("itemid") != null) {
+                    try {
                         records.forEach(row -> {
                             CartQueryModel.CartItemQueryModel item = new CartQueryModel.CartItemQueryModel(
                                     row.getUUID("pid"),
@@ -39,8 +40,14 @@ public class CartQuery implements CartQueryModelStore {
                                     row.getInteger("quantity"));
                             items.add(item);
                         });
+                    } catch (NoSuchElementException e) {
+                        return Future.succeededFuture(new ArrayList<>());
+//                        return Future.failedFuture(new IllegalArgumentException("Cart not found"));
                     }
-                    else return Future.succeededFuture(new ArrayList<>());
+//                    if (records.iterator().next().getUUID("itemid") != null) {
+
+//                    }
+//                    else return Future.succeededFuture(new ArrayList<>());
 //                    CartQueryModel cart = new CartQueryModel(items);
                     return Future.succeededFuture(items);
                 });

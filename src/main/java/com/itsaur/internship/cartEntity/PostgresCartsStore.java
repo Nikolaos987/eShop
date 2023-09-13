@@ -131,8 +131,13 @@ public class PostgresCartsStore implements CartsStore {
                                                         "WHERE uid = $1")
                                                 .execute(Tuple.of(cart.uid()))
                                                 .compose(records -> {
-                                                    System.out.println("item: "+ records.iterator().next().getUUID("itemid"));
-                                                    return Future.succeededFuture(records.iterator().next().getUUID("itemid"));
+                                                    try {
+                                                        System.out.println("item: "+ records.iterator().next().getUUID("itemid"));
+                                                        return Future.succeededFuture(records.iterator().next().getUUID("itemid"));
+                                                    } catch (Exception e) {
+                                                        return Future.succeededFuture();
+                                                    }
+
                                                 }))));
     }
 

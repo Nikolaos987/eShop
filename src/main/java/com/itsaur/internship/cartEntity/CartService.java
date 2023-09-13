@@ -30,7 +30,7 @@ public class CartService {
                                 .compose(cart -> {
                                     ArrayList<CartItem> items = cart.items();
                                     if (items.stream().anyMatch(cartItem -> cartItem.pid().equals(pid))) {  // if the product already exists in your cart
-                                        CartItem cartItem = cart.items().get(items.indexOf(new CartItem(    // find the item in the cart
+                                        CartItem cartItem = cart.items().get(items.indexOf(new CartItem(    // find the item in the cart -->
                                                 items.stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId(), // the item id of the item with the given pid
                                                 items.stream().filter(item -> item.pid().equals(pid)).findAny().get().pid(),    // the pid of the item with the given pid
                                                 items.stream().filter(item -> item.pid().equals(pid)).findAny().get().quantity())));    // the quantity of the item with the given pid
