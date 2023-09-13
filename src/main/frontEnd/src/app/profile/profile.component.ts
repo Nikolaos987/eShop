@@ -17,6 +17,9 @@ export class ProfileComponent implements OnInit {
     password: undefined
   }
 
+  isActive1: boolean = false;
+  isActive2: boolean = false;
+  isActive3: boolean = false;
   isActiveProfile: boolean = true;
   isActivePassword: boolean = false;
   isActiveDelete: boolean = false;
@@ -26,6 +29,8 @@ export class ProfileComponent implements OnInit {
 
   errorMessage: string = '';
   successMessage: string = '';
+  errorDeleteMessage: string = '';
+  successDeleteMessage: string = '';
   delBtnClicked: boolean = false;
   changePswdBtnClicked: boolean = false;
 
@@ -83,27 +88,44 @@ export class ProfileComponent implements OnInit {
   deleteUser() {
     this._usersService.deleteUser()
       .subscribe({
-        next: result => this.router.navigateByUrl('/home'),
+        next: result => {
+          this.successDeleteMessage = "Account Deleted";
+          this.errorDeleteMessage = "";
+          this.router.navigateByUrl('/home')
+        },
         error: error => {
           console.log(error);
-          this.errorMessage = error;
+          this.errorDeleteMessage = "";
+          this.errorDeleteMessage = error;
         }
       });
   }
 
   showProfile() {
+    this.isActive1 = true;
+    this.isActive2 = false;
+    this.isActive3 = false;
+
     this.isActiveProfile = true;
     this.isActivePassword = false;
     this.isActiveDelete = false;
   }
 
   showChangePassword() {
+    this.isActive1 = false;
+    this.isActive2 = true;
+    this.isActive3 = false;
+
     this.isActiveProfile = false;
     this.isActivePassword = true;
     this.isActiveDelete = false;
   }
 
   showDeleteAccount() {
+    this.isActive1 = false;
+    this.isActive2 = false;
+    this.isActive3 = true;
+
     this.isActiveProfile = false;
     this.isActivePassword = false;
     this.isActiveDelete = true;

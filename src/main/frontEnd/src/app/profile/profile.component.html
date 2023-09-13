@@ -1,9 +1,9 @@
 <div class="b">
 
   <div class="tabs">
-    <div class="tab" (click)="showProfile()">My Profile</div>
-    <div class="tab" (click)="showChangePassword()">Change Password</div>
-    <div class="tab" (click)="showDeleteAccount()">Delete Account</div>
+    <div class="tab" [class.active]="isActive1" (click)="showProfile()">My Profile</div>
+    <div class="tab" [class.active]="isActive2" (click)="showChangePassword()">Change Password</div>
+    <div class="tab" [class.active]="isActive3" (click)="showDeleteAccount()">Delete Account</div>
   </div>
 
   <div id="profile" class="container" [class.active-profile]="isActiveProfile">
@@ -56,15 +56,15 @@
   </div>
 
   <div id="delete" class="container" [class.active-delete]="isActiveDelete">
-    <h1>Delete Account</h1>
+    <h1>Are you sure you want to delete this account?</h1>
     <div>
-      <input class="delete-btn" type="button" value="Delete Account" (click)="deleteUser()">
+      <input class="delete-btn" type="button" value="CONFIRM" (click)="deleteUser()">
     </div>
     <div class="error-label" *ngIf="errorMessage != '' && successMessage == '' && changePswdBtnClicked">
-      <p>{{errorMessage}}</p>
+      <p>{{errorDeleteMessage}}</p>
     </div>
     <div class="success-label" *ngIf="errorMessage == '' && successMessage != '' && changePswdBtnClicked">
-      <p>{{successMessage}}</p>
+      <p>{{successDeleteMessage}}</p>
     </div>
   </div>
 
