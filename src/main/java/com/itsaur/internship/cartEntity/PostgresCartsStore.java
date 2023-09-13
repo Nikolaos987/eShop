@@ -112,8 +112,7 @@ public class PostgresCartsStore implements CartsStore {
                                 .preparedQuery("DELETE FROM cart WHERE uid = $1")
                                 .execute(Tuple.of(uid))
                                 .compose(v2 -> Future.succeededFuture());
-                    }
-                    else
+                    } else
                         return Future.failedFuture(new IllegalArgumentException("you don't have any items in your cart"));
                 });
     }
@@ -123,22 +122,22 @@ public class PostgresCartsStore implements CartsStore {
         return pgPool
                 .preparedQuery("SELECT cid FROM cart WHERE uid = $1")
                 .execute(Tuple.of(cart.uid()))
-                        .compose(r1 -> deleteNext(cart, 0)
-                                .compose(r2 -> updateNext(cart, 0)
-                                        .compose(r3 -> pgPool
-                                                .preparedQuery("SELECT itemid " +
-                                                        "FROM cartitem JOIN cart c2 ON cartitem.cid = c2.cid " +
-                                                        "WHERE uid = $1")
-                                                .execute(Tuple.of(cart.uid()))
-                                                .compose(records -> {
-                                                    try {
-                                                        System.out.println("item: "+ records.iterator().next().getUUID("itemid"));
-                                                        return Future.succeededFuture(records.iterator().next().getUUID("itemid"));
-                                                    } catch (Exception e) {
-                                                        return Future.succeededFuture();
-                                                    }
+                .compose(r1 -> deleteNext(cart, 0)
+                        .compose(r2 -> updateNext(cart, 0)
+                                .compose(r3 -> pgPool
+                                        .preparedQuery("SELECT itemid " +
+                                                "FROM cartitem JOIN cart c2 ON cartitem.cid = c2.cid " +
+                                                "WHERE uid = $1")
+                                        .execute(Tuple.of(cart.uid()))
+                                        .compose(records -> {
+                                            try {
+                                                System.out.println("item: " + records.iterator().next().getUUID("itemid"));
+                                                return Future.succeededFuture(records.iterator().next().getUUID("itemid"));
+                                            } catch (Exception e) {
+                                                return Future.succeededFuture(r1.iterator().next().getUUID("cid"));
+                                            }
 
-                                                }))));
+                                        }))));
     }
 
     public Future<Void> deleteNext(Cart cart, int position) {
@@ -147,11 +146,11 @@ public class PostgresCartsStore implements CartsStore {
                 .preparedQuery("DELETE FROM cartitem WHERE pid = $1 AND cid = $2")
                 .execute(Tuple.of(cartItem.pid(), cart.cid()))
                 .compose(r -> {
-                            if (position+1 < cart.items().size())
-                                return deleteNext(cart, position+1);
-                            else
-                                return Future.succeededFuture();
-                        });
+                    if (position + 1 < cart.items().size())
+                        return deleteNext(cart, position + 1);
+                    else
+                        return Future.succeededFuture();
+                });
     }
 
     public Future<Void> updateNext(Cart cart, int position) {
@@ -169,40 +168,38 @@ public class PostgresCartsStore implements CartsStore {
                                     .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
                                     .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), stock))
                                     .compose(r -> {
-                                                if (position+1 < cart.items().size())
-                                                    return updateNext(cart, position+1);
-                                                else
-                                                    return Future.succeededFuture();
-                                            });
+                                        if (position + 1 < cart.items().size())
+                                            return updateNext(cart, position + 1);
+                                        else
+                                            return Future.succeededFuture();
+                                    });
                         else {
                             if (position + 1 < cart.items().size())
                                 return updateNext(cart, position + 1);
                             else
                                 return Future.succeededFuture();
                         }
-                    }
-
-                    else if (cartItem.quantity() > 0)
+                    } else if (cartItem.quantity() > 0)
                         return pgPool
                                 .preparedQuery("INSERT INTO cartitem VALUES ($1, $2, $3, $4);")
                                 .execute(Tuple.of(cartItem.itemId(), cart.cid(), cartItem.pid(), cartItem.quantity()))
                                 .compose(r -> {
-                                            if (position+1 < cart.items().size())
-                                                return updateNext(cart, position+1);
-                                            else
-                                                return Future.succeededFuture();
-                                        });
+                                    if (position + 1 < cart.items().size())
+                                        return updateNext(cart, position + 1);
+                                    else
+                                        return Future.succeededFuture();
+                                });
 
                     else
                         return pgPool
-                            .preparedQuery("DELETE FROM cartitem WHERE itemid = $1;")
-                            .execute(Tuple.of(cartItem.itemId()))
-                            .compose(r -> {
-                                        if (position+1 < cart.items().size())
-                                            return updateNext(cart, position+1);
-                                        else
-                                            return Future.succeededFuture();
-                                    });
+                                .preparedQuery("DELETE FROM cartitem WHERE itemid = $1;")
+                                .execute(Tuple.of(cartItem.itemId()))
+                                .compose(r -> {
+                                    if (position + 1 < cart.items().size())
+                                        return updateNext(cart, position + 1);
+                                    else
+                                        return Future.succeededFuture();
+                                });
                 });
     }
 

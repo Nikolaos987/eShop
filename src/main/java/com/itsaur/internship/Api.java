@@ -125,11 +125,17 @@ public class Api extends AbstractVerticle {
                 .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(v))
                 .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage())));
 
-        router.get("/product/:pid").handler(ctx -> this.productQueryModelStore
-                .findProductById(UUID.fromString(ctx.pathParam("pid")))
-                .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
-                .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request")
-                        .end(v.getMessage())));
+        router.get("/product/:pid").handler(ctx -> {
+            try {
+                this.productQueryModelStore
+                        .findProductById(UUID.fromString(ctx.pathParam("pid")))
+                        .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end(Json.encode(v)))
+                        .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+            } catch (IllegalArgumentException e) {
+                ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(e.getMessage());
+            }
+
+        });
 
         router.get("/products/search").handler(ctx -> {
             MultiMap params = ctx.queryParams();
@@ -168,19 +174,11 @@ public class Api extends AbstractVerticle {
                             .end(v.getMessage()));
         });
 
-//        router.get("/image/:pid")
-//                .handler(ctx -> {
-//                    ctx.response().sendFile("../resources/assets/")
-//                    ctx.response().sendFile(Paths.get("images", ctx.pathParam("uuidimage")));
-//                });
-
         router.post("/product/insert").handler(ctx -> {
             try {
                 final JsonObject body = ctx.body().asJsonObject();
-//                String path = "src/main/resources/assets/" + body.getString("imagepath");
                 this.productService.addProduct(
                                 body.getString("name"),
-//                                path,
                                 body.getString("description"),
                                 body.getDouble("price"),
                                 body.getInteger("quantity"),
@@ -225,7 +223,7 @@ public class Api extends AbstractVerticle {
             UUID pid = UUID.fromString(ctx.pathParam("pid"));
 //            ctx.response().putHeader("Content-Type", "multipart/form-data");
             List<FileUpload> fileUploadSet = ctx.fileUploads();
-            FileUpload fileUpload = fileUploadSet.get(fileUploadSet.size()-1);
+            FileUpload fileUpload = fileUploadSet.get(fileUploadSet.size() - 1);
             vertx.fileSystem().readFile(fileUpload.uploadedFileName())
                     .compose(buffer -> this.productService.insertImage(pid, buffer))
                     .onSuccess(v -> {
