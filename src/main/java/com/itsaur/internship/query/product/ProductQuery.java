@@ -9,6 +9,7 @@ import io.vertx.sqlclient.*;
 import com.itsaur.internship.productEntity.Category;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class ProductQuery implements ProductQueryModelStore {
@@ -42,12 +43,17 @@ public class ProductQuery implements ProductQueryModelStore {
                 .preparedQuery("SELECT * FROM product WHERE pid = $1;")
                 .execute(Tuple.of(pid))
                 .compose(records -> {
-                    Row row = records.iterator().next();
-                    ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                            row.getUUID("pid"), row.getString("name"), row.getString("description"),
-                            row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"),
-                            Category.valueOf(row.getString("category")));
-                    return Future.succeededFuture(product);
+                    try {
+                        Row row = records.iterator().next();
+                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+                                row.getUUID("pid"), row.getString("name"), row.getString("description"),
+                                row.getDouble("price"), row.getInteger("quantity"), row.getString("brand"),
+                                Category.valueOf(row.getString("category")));
+                        return Future.succeededFuture(product);
+                    } catch (NoSuchElementException e) {
+                        return Future.failedFuture("Product not found");
+                    }
+
                 });
     }
 
