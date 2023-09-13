@@ -7,11 +7,20 @@ a img {
 .navbar {
   /*position: sticky;*/
   /*top: 0;*/
-  display: flex;
+  display: inline-block;
+  overflow-block: scroll;
+  width: 100%;
   position: relative;
   background-color: #d3acac;
   border-bottom: #333 1px solid;
+  max-height: 72px;
   z-index: 1;
+}
+.flex-box {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-flow: nowrap;
+  overflow: scroll;
 }
 
 .navbar a {
