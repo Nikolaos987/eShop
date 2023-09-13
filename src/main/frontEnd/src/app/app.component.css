@@ -7,6 +7,7 @@ a img {
 .navbar {
   /*position: sticky;*/
   /*top: 0;*/
+  display: flex;
   position: relative;
   background-color: #d3acac;
   border-bottom: #333 1px solid;
@@ -30,7 +31,8 @@ a img {
 }
 
 /* Change the color of links on hover */
-.navbar a:hover {
+.navbar a:not(.links-hidden):hover,
+.flexible:hover {
   background-color: #ddd;
   color: black;
   border-radius: 12px;
@@ -56,11 +58,8 @@ a img {
 }
 
 .menu-content {
-  /*outline: red 3px solid;*/
   display: none;
   position: absolute;
-  /*left: 10.6%;*/
-  /*margin-left: -30px;*/
   background-color: #d3acac;
   top: 100%;
   padding: 10px;
@@ -69,6 +68,7 @@ a img {
 }
 
 .menu-content a {
+  flex: 1;
   display: block;
   font-size: 19px;
   min-width: 160px;
@@ -78,21 +78,32 @@ a img {
   text-decoration: none;
   text-align: left;
 }
-.menu-content a img {
+.flexible img {
   width: 24px;
-  float: right;
+  padding-right: 16px;
+  align-self: center;
+  align-content: center;
+  /*float: right;*/
 }
 
 .dropdown-menu:hover .menu-content {
   display: block;
+  /*display: flex;*/
+  /*flex-direction: column;*/
   font-weight: normal;
 }
 
+.flexible {
+  display: flex;
+  flex-direction: row;
+}
+.flexible a {
+  flex: 1;
+}
 
 .logo {
   color: #000;
   font-weight: bold;
-  float: right;
   font-size: 50px;
   padding-top: 20px;
   margin-right: 50px;
@@ -108,113 +119,10 @@ a span {
   padding: 15px;
 }
 
+.left {
+  flex-grow: 1; /* TODO: HOW? */
+}
 
-
-
-
-
-
-/*!* Add a black background color to the top navigation bar *!*/
-/*.navbar {*/
-/*  display: inline-block;*/
-/*  position: sticky;*/
-/*  width: 100%;*/
-/*  top: 0;*/
-/*  !*background-color: #333;*!*/
-/*  background-color: #e7e7e7;*/
-/*  border-bottom: #333 1px solid;*/
-/*  !*overflow: hidden;*!*/
-/*  z-index: 1;*/
-
-/*  !*!*padding-left: 135px;*!*!*/
-/*  !*display: inline-block;*!*/
-/*  !*position: sticky;*!*/
-/*  !*width: 100%;*!*/
-/*  !*background-color: #d3acac;*!*/
-/*  !*!*border-bottom: #333 1px solid;*!*!*/
-/*  !*z-index: 1;*!*/
-/*}*/
-
-/*a img {*/
-/*  width: 40px;*/
-/*}*/
-
-/*!* Style the links inside the navigation bar *!*/
-/*.navbar a {*/
-/*  display: block;*/
-/*  float: left;*/
-/*  !*color: #f2f2f2;*!*/
-/*  color: #e7e7e7;*/
-/*  text-align: center;*/
-/*  padding: 14px 16px;*/
-/*  text-decoration: none;*/
-/*  font-size: 14px;*/
-/*  transition: all .2s ease-in-out;*/
-/*}*/
-
-/*.sticky {*/
-/*  position: fixed;*/
-/*  top: 0;*/
-/*  width: 100%;*/
-/*}*/
-
-/*!* Change the color of links on hover *!*/
-/*.navbar a:hover {*/
-/*  background-color: #ddd;*/
-/*  color: black;*/
-/*}*/
-
-/*!* Add a color to the active link *!*/
-/*.navbar a.active {*/
-/*  background-color: #abb4be;*/
-/*  color: white;*/
-/*}*/
-
-/*.dropdown {*/
-/*  float: left;*/
-/*  position: relative;*/
-/*  font-size: 16px;*/
-/*  border: none;*/
-/*  outline: none;*/
-/*  color: black;*/
-/*  !*padding: 14px 16px;*!*/
-/*  background-color: inherit;*/
-/*  font-family: inherit;*/
-/*  margin: 0;*/
-/*  z-index: -10;*/
-/*}*/
-
-/*.dropdown-content {*/
-/*  !*margin-top: 100px;*!*/
-/*  !*display: none;*!*/
-/*  !*position: relative;*!*/
-/*  !*background-color: #f9f9f9;*!*/
-/*  !*min-width: 160px;*!*/
-/*  !*box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);*!*/
-/*  !*z-index: 1;*!*/
-
-/*  display: none;*/
-/*  position: absolute; !*TODO: AFTO*!*/
-/*  background-color: #d3acac;*/
-/*  top: 100%;*/
-/*  padding: 10px;*/
-/*  box-shadow: 0 0 4px black;*/
-/*  z-index: 1;*/
-/*}*/
-
-/*.dropdown-content a {*/
-/*  float: none;*/
-/*  color: black;*/
-/*  padding: 12px 16px;*/
-/*  text-decoration: none;*/
-/*  display: block;*/
-/*  text-align: left;*/
-/*}*/
-
-/*.dropdown-content a:hover {*/
-/*  background-color: #ddd;*/
-/*}*/
-
-/*.dropdown:hover .dropdown-content {*/
-/*  display: block;*/
-/*}*/
+.right {
+  /*flex-grow: 1;*/
+}
