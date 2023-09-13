@@ -1,5 +1,5 @@
 <div class="title"><h1>My Cart</h1></div>
-<div *ngIf="items" class="cart-wrapper">
+<div *ngIf="items && items.length > 0" class="cart-wrapper">
   <div *ngIf="items" class="list">
     <section *ngFor="let item of items">
       <app-product [product]="item"
@@ -16,7 +16,7 @@
   </div>
 </div>
 
-<div *ngIf="!items" class="error-container">
+<div *ngIf="!(items && items.length > 0)" class="error-container">
   <div class="error-text">
     <h1>No Products Found in Your Cart</h1>
   </div>
