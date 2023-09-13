@@ -1,4 +1,4 @@
-<div class="b">
+<div class="window">
 
   <div class="tabs">
     <div class="tab" [class.active]="isActive1" (click)="showProfile()">My Profile</div>
@@ -6,66 +6,69 @@
     <div class="tab" [class.active]="isActive3" (click)="showDeleteAccount()">Delete Account</div>
   </div>
 
-  <div id="profile" class="container" [class.active-profile]="isActiveProfile">
-    <h1>My Profile</h1>
+  <div class="main-window">
+    <div id="profile" class="container" [class.active-profile]="isActiveProfile">
+      <h1>My Profile</h1>
       <div id="username">{{currentUser.username}}</div>
       <div id="uid">ID: {{currentUser.uid}}</div>
-  </div>
+    </div>
 
-  <div id="password" class="container" [class.active-password]="isActivePassword" >
-    <h1>Change Password:</h1>
-    <div class="edit-form">
-      <form [formGroup]="profileForm" (ngSubmit)="changePassword()" #form="ngForm" autocomplete="off">
-        <div>
-          <input name="currentPassword" type="password" placeholder="current password"
-                 formControlName="currentPassword">
-        </div>
-        <div class="danger" *ngIf="(profileForm.controls.currentPassword.dirty || form.submitted)
+    <div id="password" class="container" [class.active-password]="isActivePassword" >
+      <h1>Change Password:</h1>
+      <div class="edit-form">
+        <form [formGroup]="profileForm" (ngSubmit)="changePassword()" #form="ngForm" autocomplete="off">
+          <div>
+            <input name="currentPassword" type="password" placeholder="current password"
+                   formControlName="currentPassword">
+          </div>
+          <div class="danger" *ngIf="(profileForm.controls.currentPassword.dirty || form.submitted)
                               && !profileForm.controls.currentPassword.valid">Password must have at least 4 characters!
-        </div>
+          </div>
 
-        <div>
-          <input name="newPassword" type="password" placeholder="New password" formControlName="password">
-        </div>
-        <div class="danger" *ngIf="(profileForm.controls.password.dirty || form.submitted)
+          <div>
+            <input name="newPassword" type="password" placeholder="New password" formControlName="password">
+          </div>
+          <div class="danger" *ngIf="(profileForm.controls.password.dirty || form.submitted)
                               && !profileForm.controls.password.valid">Password must have at least 4 characters!
-        </div>
+          </div>
 
-        <div>
-          <input name="newPasswordAgain" type="password" placeholder="Re-enter new password"
-                 formControlName="passwordAgain">
-        </div>
-        <div class="danger" *ngIf="(profileForm.controls.passwordAgain.dirty || form.submitted)
+          <div>
+            <input name="newPasswordAgain" type="password" placeholder="Re-enter new password"
+                   formControlName="passwordAgain">
+          </div>
+          <div class="danger" *ngIf="(profileForm.controls.passwordAgain.dirty || form.submitted)
                               && profileForm.hasError('passwordMatch')">Passwords do not match!
-        </div>
+          </div>
 
-        <div class="buttons">
-          <input class="submit" type="submit" value="Apply" [disabled]="!form.valid">
-          <input class="cancel-button" type="button" value="Cancel" routerLink="/home">
-          <!-- TODO: go to previous page -->
-        </div>
-      </form>
+          <div class="buttons">
+            <input class="submit" type="submit" value="Apply" [disabled]="!form.valid">
+            <input class="cancel-button" type="button" value="Cancel" routerLink="/home">
+            <!-- TODO: go to previous page -->
+          </div>
+        </form>
 
+        <div class="error-label" *ngIf="errorMessage != '' && successMessage == '' && changePswdBtnClicked">
+          <p>{{errorMessage}}</p>
+        </div>
+        <div class="success-label" *ngIf="errorMessage == '' && successMessage != '' && changePswdBtnClicked">
+          <p>{{successMessage}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="delete" class="container" [class.active-delete]="isActiveDelete">
+      <h1>Are you sure you want to delete this account?</h1>
+      <div>
+        <input class="delete-btn" type="button" value="CONFIRM" (click)="deleteUser()">
+      </div>
       <div class="error-label" *ngIf="errorMessage != '' && successMessage == '' && changePswdBtnClicked">
-        <p>{{errorMessage}}</p>
+        <p>{{errorDeleteMessage}}</p>
       </div>
       <div class="success-label" *ngIf="errorMessage == '' && successMessage != '' && changePswdBtnClicked">
-        <p>{{successMessage}}</p>
+        <p>{{successDeleteMessage}}</p>
       </div>
     </div>
   </div>
 
-  <div id="delete" class="container" [class.active-delete]="isActiveDelete">
-    <h1>Are you sure you want to delete this account?</h1>
-    <div>
-      <input class="delete-btn" type="button" value="CONFIRM" (click)="deleteUser()">
-    </div>
-    <div class="error-label" *ngIf="errorMessage != '' && successMessage == '' && changePswdBtnClicked">
-      <p>{{errorDeleteMessage}}</p>
-    </div>
-    <div class="success-label" *ngIf="errorMessage == '' && successMessage != '' && changePswdBtnClicked">
-      <p>{{successDeleteMessage}}</p>
-    </div>
-  </div>
 
 </div>

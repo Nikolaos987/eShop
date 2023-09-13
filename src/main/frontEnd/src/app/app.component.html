@@ -1,56 +1,53 @@
 <nav class="navbar" #topnav [class.sticky]="sticky">
-  <div class="flex-box">
-    <div class="left">
-      <a class="links" routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png"
-                                                                                  alt="Home">
-        <span>HOME</span>
+  <div class="left">
+    <a class="links" routerLinkActive="active" id="home" routerLink="home"><img src="assets/icons8-home-48.png"
+                                                                                alt="Home">
+      <span>HOME</span>
+    </a>
+
+    <div class="dropdown-menu">
+      <a routerLinkActive="active" id="profile" [routerLink]="['profile']"><img
+        src="assets/icons8-account-48.png"
+        alt="Profile">
+        <span>PROFILE</span>
       </a>
+      <div class="menu-content">
+        <div class="flexible"><a class="links-hidden" routerLink="/login">Login</a>
+          <img src="/assets/icons8-login-50.png" alt="">
+        </div>
 
-      <div class="dropdown-menu">
-        <a routerLinkActive="active" id="profile" [routerLink]="['profile']"><img
-          src="assets/icons8-account-48.png"
-          alt="Profile">
-          <span>PROFILE</span>
+        <div class="flexible"><a class="links-hidden" routerLink="/register">Register</a>
+          <img src="/assets/icons8-register-48.png" alt="">
+        </div>
+
+        <div class="flexible"><a class="links-hidden" routerLink="/login">
+          <div class="logout" (click)="logout()">Logout</div>
         </a>
-        <div class="menu-content">
-          <div class="flexible"><a class="links-hidden" routerLink="/login">Login</a>
-            <img src="/assets/icons8-login-50.png" alt="">
-          </div>
-
-          <div class="flexible"><a class="links-hidden" routerLink="/register">Register</a>
-            <img src="/assets/icons8-register-48.png" alt="">
-          </div>
-
-          <div class="flexible"><a class="links-hidden" routerLink="/login">
-            <div class="logout" (click)="logout()">Logout</div>
-          </a>
-            <img src="/assets/icons8-logout-50.png" alt="">
-          </div>
+          <img src="/assets/icons8-logout-50.png" alt="">
         </div>
       </div>
-
-      <a class="links" routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png"
-                                                                                        alt="Cart">
-        <span>CART</span>
-      </a>
-
-      <a class="links" routerLinkActive="active" id="create products" [routerLink]="['products']"><img
-        src="assets/icons8-plus-64.png"
-        alt="Product">
-        <span>CREATE</span>
-      </a>
     </div>
 
+    <a class="links" routerLinkActive="active" id="cart" [routerLink]="['cart']"><img src="assets/icons8-cart-64.png"
+                                                                                      alt="Cart">
+      <span>CART</span>
+    </a>
 
-    <div class="right">
-      <h1 class="logo">tech<span>Shop.gr</span></h1>
-    </div>
-    <!--  <div class="right-nav">-->
-    <!--    <a routerLink="/login">Login</a>-->
-    <!--    <a routerLink="/register">Register</a>-->
-    <!--  </div>-->
+    <a class="links" routerLinkActive="active" id="create-products" [routerLink]="['products']"><img
+      src="assets/icons8-plus-64.png"
+      alt="Product">
+      <span>CREATE</span>
+    </a>
   </div>
 
+
+  <div class="right">
+    <a routerLink="home" class="logo">tech<span class="logo-span">Shop.gr</span></a>
+  </div>
+  <!--  <div class="right-nav">-->
+  <!--    <a routerLink="/login">Login</a>-->
+  <!--    <a routerLink="/register">Register</a>-->
+  <!--  </div>-->
 </nav>
 
 <router-outlet></router-outlet>

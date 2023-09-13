@@ -1,12 +1,16 @@
-.b {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+.window {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  /*position: relative;*/
+  /*width: 100vw;*/
+  /*height: 100vh;*/
 }
 
 .tabs {
-  justify-content: left;
-  align-self: stretch;
+  flex: 1;
+  /*justify-content: left;*/
+  /*align-self: stretch;*/
 
   border-right: #3b3434 2px solid;
   display: inline-flex;
@@ -14,6 +18,12 @@
   background-color: white;
   height: 100vh;
   margin-top: -6px;
+}
+
+.main-window {
+  position: relative;
+  flex: 4;
+  justify-content: right;
 }
 
 .tab {
@@ -28,11 +38,11 @@
   background-color: inherit;
 }
 .tab:hover {
-  background-color: #cccccc;
+  background-color: #dcdbdb;
 }
 .active,
 .active:hover {
-  background: #d36d18;
+  background: #f3a971;
 }
 
 
@@ -49,8 +59,8 @@ h1 {
   display: none;
   position: absolute;
   box-shadow: 0 0 7px black;
-  width: 40em;
-  height: 80%;
+  width: 37%;
+  height: 60%;
   top: 47%;
   left: 50%;
   transform: translate(-50%, -50%);

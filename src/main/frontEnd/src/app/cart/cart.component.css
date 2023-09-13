@@ -134,20 +134,19 @@ h4 {
 
 
 .error-container {
+  display: flex;
+  flex-direction: column;
   position: relative;
-  align-items: center;
-  justify-content: center;
-  gap: 100px;
-  top: 200px;
+  /*align-items: center;*/
+  /*justify-content: center;*/
+  /*gap: 100px;*/
+  top: 100px;
 }
 
 .error-image img {
-  border-radius: 50%;
-}
-
-.error-image img {
-  width: 52%;
-  margin-left: 460px;
+  /*border-radius: 50%;*/
+  width: 50%;
+  margin-left: 25%;
 }
 
 .error-text {

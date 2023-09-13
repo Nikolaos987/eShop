@@ -7,23 +7,17 @@ a img {
 .navbar {
   /*position: sticky;*/
   /*top: 0;*/
-  display: inline-block;
-  overflow-block: scroll;
-  width: 100%;
-  position: relative;
-  background-color: #d3acac;
-  border-bottom: #333 1px solid;
-  max-height: 72px;
-  z-index: 1;
-}
-.flex-box {
   display: flex;
   flex-wrap: nowrap;
   flex-flow: nowrap;
-  overflow: scroll;
+  position: relative;
+  height: 72px;
+  background-color: #d3acac;
+  border-bottom: #333 1px solid;
+  z-index: 1;
 }
 
-.navbar a {
+.navbar a:not(.logo) {
   min-width: 110px;
   display: inline-block;
   color: #d3acac;
@@ -40,7 +34,7 @@ a img {
 }
 
 /* Change the color of links on hover */
-.navbar a:not(.links-hidden):hover,
+.navbar a:not(.links-hidden, .logo):hover,
 .flexible:hover {
   background-color: #ddd;
   color: black;
@@ -111,10 +105,12 @@ a img {
 }
 
 .logo {
+  display: inline-block;
   color: #000;
+  text-decoration: none;
   font-weight: bold;
   font-size: 50px;
-  padding-top: 20px;
+  padding-top: 30px;
   margin-right: 50px;
   font-family: Comic Sans MS, Comic Sans, cursive;
 }
@@ -123,7 +119,7 @@ a img {
 }
 
 /* for the link texts ( HOME, PROFILE, CART, CREATE ) */
-a span {
+a span:not(.logo, .logo-span) {
   position: absolute;
   padding: 15px;
 }
@@ -134,4 +130,19 @@ a span {
 
 .right {
   /*flex-grow: 1;*/
+}
+
+@media screen and (max-width: 985px) {
+  .navbar a {
+    min-width: 10px;
+  }
+  .navbar a span {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 704px) {
+  .logo {
+    display: none;
+  }
 }

@@ -17,7 +17,7 @@ export class ProfileComponent implements OnInit {
     password: undefined
   }
 
-  isActive1: boolean = false;
+  isActive1: boolean = true;
   isActive2: boolean = false;
   isActive3: boolean = false;
   isActiveProfile: boolean = true;
