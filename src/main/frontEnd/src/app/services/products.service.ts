@@ -16,9 +16,9 @@ export class ProductsService {
   constructor(private http: HttpClient) {
   }
 
-  public fetchTotalProducts(): Observable<{ rows: number }> {
+  public fetchTotalProducts(): Observable<{ totalProducts: number }> {
     return this.http
-      .get<{ rows: number }>("/api/product/count", {responseType: "json"})
+      .get<{ totalProducts: number }>("/api/product/count", {responseType: "json"})
       .pipe(
         catchError(this.handleError))
   }
@@ -39,7 +39,9 @@ export class ProductsService {
   }
 
   public fetchProduct(pid: string | null | undefined): Observable<Product> {
-    return this.http.get<Product>('/api/product/' + pid, {responseType: "json"})
+    return this.http
+      .get<Product>
+    ('/api/product/' + pid, {responseType: "json"})
       .pipe(
         catchError(this.handleError));
   }
@@ -49,7 +51,6 @@ export class ProductsService {
       .post<{
         pid: string,
         name: string,
-        // image: string,
         description: string,
         price: number,
         quantity: number,
@@ -102,12 +103,12 @@ export class ProductsService {
     //                  <[Product]>
   }
 
-  public fetchTotalSearchedProducts(filter: string): Observable<{ rows: number }> {
+  public fetchTotalSearchedProducts(filter: string): Observable<{ totalProducts: number }> {
     filter = filter.trim().toLowerCase();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
     return this.http
-      .get<{ rows: number }>("/api/product/search/count", {
+      .get<{ totalProducts: number }>("/api/product/search/count", {
         params: {
           regex: filter
         }, responseType: "json"
