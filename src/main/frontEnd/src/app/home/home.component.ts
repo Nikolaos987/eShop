@@ -41,8 +41,8 @@ export class HomeComponent implements OnInit {
     this.productsService.fetchTotalProducts()
       .subscribe({
         next: (result) => {
-          this.totalProducts = result.rows;
-          this.totalPages = Math.ceil(result.rows / Number(this.range))
+          this.totalProducts = result.totalProducts;
+          this.totalPages = Math.ceil(result.totalProducts / Number(this.range))
           for (let i = 1; i <= this.totalPages; i++) {
             this.pages?.push(i);
           }
@@ -118,8 +118,8 @@ export class HomeComponent implements OnInit {
     this.productsService.fetchTotalSearchedProducts(text)
       .subscribe({
         next: (result) => {
-          this.totalProducts = result.rows;
-          this.totalPages = Math.ceil(result.rows / Number(this.range))
+          this.totalProducts = result.totalProducts;
+          this.totalPages = Math.ceil(result.totalProducts / Number(this.range))
           for (let i = 1; i <= this.totalPages; i++) {
             this.pages?.push(i);
           }
