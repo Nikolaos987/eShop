@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ProductsService} from "../services/products.service";
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {CartService} from "../services/cart.service";
 import {UsersService} from "../services/users.service";
@@ -15,20 +15,19 @@ import {User} from "../interfaces/user";
   providers: [ProductsService, CartService]
 })
 export class ProductDetailsComponent implements OnInit {
-  @Input() product: Product = {
-    pid: String(this.route.snapshot.paramMap.get('pid')),
+  currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
+
+  // @Input() product: Product = {
+  product: Product = {
+    // pid: String(this.route.snapshot.paramMap.get('pid')),
+    pid: undefined,
     name: undefined,
-    // image: undefined,
     description: undefined,
     price: undefined,
     quantity: undefined,
     brand: undefined,
     category: undefined,
   };
-
-  productExists: boolean = false;
-
-  // quantity: number = 1;
 
   addToCartForm = new FormGroup({
     quantity: new FormControl(1)
@@ -37,20 +36,26 @@ export class ProductDetailsComponent implements OnInit {
   formData: FormData = new FormData();
   errorMessage: string = '';
   successMessage: string = '';
-
-  currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
+  productExists: boolean = false;
 
   constructor(
     private productsService: ProductsService,
     private cartService: CartService,
     private route: ActivatedRoute,
     private location: Location,
-    private _usersService: UsersService
+    private _usersService: UsersService,
+    private _router: Router
   ) {
   }
 
   ngOnInit(): void {
-    this.getProduct();
+    this.route.paramMap
+      .subscribe({
+        next: value => {
+          this.product.pid = value.get('pid');
+          this.getProduct();
+        }
+      })
   }
 
   getProduct(): void {
