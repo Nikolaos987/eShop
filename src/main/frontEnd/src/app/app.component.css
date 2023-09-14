@@ -133,16 +133,16 @@ a span:not(.logo, .logo-span) {
 }
 
 @media screen and (max-width: 985px) {
-  .navbar a {
+  .navbar a:not(.logo) {
     min-width: 10px;
   }
-  .navbar a span {
+  .navbar a span:not(.logo, .logo-span) {
     display: none;
   }
 }
 
 @media screen and (max-width: 704px) {
-  .logo {
+  .logo, .logo-span {
     display: none;
   }
 }
