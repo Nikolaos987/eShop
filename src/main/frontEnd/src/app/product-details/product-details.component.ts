@@ -122,4 +122,8 @@ export class ProductDetailsComponent implements OnInit {
       console.log("form data: " + this.formData);
     }
   }
+
+  testClick() {
+    this._router.navigateByUrl('/details/4e323bc6-e034-40b5-a98c-8b48c9da3050');
+  }
 }
