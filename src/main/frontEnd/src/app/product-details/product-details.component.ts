@@ -75,18 +75,15 @@ export class ProductDetailsComponent implements OnInit {
 
   addToCart() {
     // if (this._usersService.user?.isLoggedIn) {
-      if (window.localStorage.getItem('user')) {
-        this.cartService.addToCart(this.currentUser.uid, this.product.pid, this.addToCartForm.value.quantity)
-          .subscribe(
-            x => {
-              console.log("next: " + x)
-              window.alert(this.product.name + ' has been added to your cart')
-            },
-            err => console.error(err),
-            () => console.log("complete")
-          )
-
-      // .subscribe((response) => window.alert(this.product.name + ' has been added to the cart'));
+    if (window.localStorage.getItem('user')) {
+      this.cartService.addToCart(this.currentUser.uid, this.product.pid, this.addToCartForm.value.quantity)
+        .subscribe({
+          next: item => {
+            console.log("cart ID: " + item.itemid)
+            window.alert(this.product.name + ' has been added to your cart')
+          },
+          error: err => console.error(err)
+        })
     } else
       window.alert('you are not logged in!');
   }
