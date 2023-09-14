@@ -9,6 +9,7 @@ import io.vertx.sqlclient.*;
 import com.itsaur.internship.productEntity.Category;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -58,7 +59,7 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
-    public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex, int from, int range) {
+    public Future<List<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex, int from, int range) {
         regex = "%" + regex + "%".toLowerCase();
         return pgPool
                 .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1 LIMIT $3 OFFSET $2;")
@@ -83,7 +84,7 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
-    public Future<ArrayList<ProductsQueryModel.ProductQueryModel>> findProducts(int from, int range) {
+    public Future<List<ProductsQueryModel.ProductQueryModel>> findProducts(int from, int range) {
         return pgPool
                 .preparedQuery("SELECT * FROM product LIMIT $2 OFFSET $1;")
                 .execute(Tuple.of(from, range))

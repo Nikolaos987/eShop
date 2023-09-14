@@ -9,6 +9,7 @@ import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public class CartQuery implements CartQueryModelStore {
         this.pgPool = pgPool;
     }
     @Override
-    public Future<ArrayList<CartQueryModel.CartItemQueryModel>> findByUserId(UUID uid) {
+    public Future<List<CartQueryModel.CartItemQueryModel>> findByUserId(UUID uid) {
         return pgPool
                 .preparedQuery(
                         "SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity, p.name, p.price " +

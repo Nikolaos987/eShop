@@ -6,6 +6,7 @@ import com.itsaur.internship.userEntity.UsersStore;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class CartService {
@@ -28,7 +29,7 @@ public class CartService {
                     if (user != null)
                         return cartsStore.findCart(uid)
                                 .compose(cart -> {
-                                    ArrayList<CartItem> items = cart.items();
+                                    List<CartItem> items = cart.items();
                                     if (items.stream().anyMatch(cartItem -> cartItem.pid().equals(pid))) {  // if the product already exists in your cart
                                         CartItem cartItem = cart.items().get(items.indexOf(new CartItem(    // find the item in the cart -->
                                                 items.stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId(), // the item id of the item with the given pid
@@ -95,7 +96,7 @@ public class CartService {
                 });
     }
 
-    public Future<Void> deleteNext(ArrayList<Cart> carts, int position, UUID pid) {
+    public Future<Void> deleteNext(List<Cart> carts, int position, UUID pid) {
         Cart cart = carts.get(position);
         UUID itemId = cart.items().stream().filter(item -> item.pid().equals(pid)).findAny().get().itemId();
         cart.items().add(new CartItem(itemId, pid, 0));

@@ -50,9 +50,19 @@ public class UserService {
     }
 
     public Future<Void> delete(UUID uid) {
-        return deleteCartItems(uid)
-                .compose(r -> this.cartsStore.deleteCart(uid)
-                        .compose(res -> userStore.deleteUser(uid)));
+        return userStore.findUser(uid)
+                .otherwiseEmpty()
+                        .compose(user -> {
+                            if (user == null) {
+                                return Future.failedFuture(new IllegalArgumentException("User not found!"));
+                            } else {
+                                return deleteCartItems(uid)
+                                        .compose(r -> this.cartsStore.deleteCart(uid)
+                                                .compose(res -> userStore.deleteUser(uid)));
+                            }
+                        });
+
+
 
 //        return userStore.findUser(uid)
 //                .otherwiseEmpty()

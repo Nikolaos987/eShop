@@ -4,6 +4,5 @@ public enum Category {
     watch,
     cellphone,
     smartphone,
-
     laptop
 }

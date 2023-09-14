@@ -8,6 +8,7 @@ import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class PostgresCartsStore implements CartsStore {
@@ -79,7 +80,7 @@ public class PostgresCartsStore implements CartsStore {
     }
 
     @Override
-    public Future<ArrayList<Cart>> findCarts() {
+    public Future<List<Cart>> findCarts() {
         return pgPool
                 .preparedQuery("SELECT * FROM cart;")
                 .execute()
@@ -125,14 +126,15 @@ public class PostgresCartsStore implements CartsStore {
                 .compose(r1 -> deleteNext(cart, 0)
                         .compose(r2 -> updateNext(cart, 0)
                                 .compose(r3 -> pgPool
-                                        .preparedQuery("SELECT itemid " +
+                                        .preparedQuery(
+                                                "SELECT itemid " +
                                                 "FROM cartitem JOIN cart c2 ON cartitem.cid = c2.cid " +
                                                 "WHERE uid = $1")
                                         .execute(Tuple.of(cart.uid()))
                                         .compose(records -> {
                                             try {
-                                                System.out.println("item: " + records.iterator().next().getUUID("itemid"));
-                                                return Future.succeededFuture(records.iterator().next().getUUID("itemid"));
+                                                System.out.println("cid: " + r1.iterator().next().getUUID("cid"));
+                                                return Future.succeededFuture(r1.iterator().next().getUUID("cid"));
                                             } catch (Exception e) {
                                                 return Future.succeededFuture(r1.iterator().next().getUUID("cid"));
                                             }

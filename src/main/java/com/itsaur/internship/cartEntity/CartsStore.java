@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public interface CartsStore {
@@ -12,7 +13,7 @@ public interface CartsStore {
 
     Future<Cart> findCart(UUID uid);
 
-    Future<ArrayList<Cart>> findCarts();
+    Future<List<Cart>> findCarts();
 
     Future<Void> deleteCart(UUID uid);
 
