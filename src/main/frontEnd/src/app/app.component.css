@@ -133,7 +133,7 @@ a span:not(.logo, .logo-span) {
 }
 
 @media screen and (max-width: 985px) {
-  .navbar a:not(.logo) {
+  .navbar a:not(.links-hidden, .logo) {
     min-width: 10px;
   }
   .navbar a span:not(.logo, .logo-span) {
