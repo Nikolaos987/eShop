@@ -1,13 +1,13 @@
 <div class="listing">
-  <img [src]="'/api/product/image/'+product.pid" class="listing-photo" alt="">
-  <a [title]="product.name + ' details'" [routerLink]="['/details', product.pid]">
+  <a [routerLink]="['/details', product.pid]"><img [src]="'/api/product/image/'+product.pid" class="listing-photo" alt=""></a>
+  <div [title]="product.name + ' details'">
     <div>
       <h2 class="listing-heading">{{product.name}}</h2>
-      <p class="listing-location">{{product.price}}<span></span>€ {{product.category}}
+      <p class="listing-price">{{product.price}}<span></span>€
       </p>
-      <p class="details-text">Details ></p>
+      <a [routerLink]="['/details', product.pid]" class="details-text">Details ></a>
     </div>
-  </a>
+  </div>
 
   <div *ngIf="quant !== undefined" class="quantity-display" class="remove-item" (click)="remove()">
     <input name="image" type="image" src="/assets/icons8-delete-60.png" alt="X" width="40px" height="40px">
