@@ -49,8 +49,9 @@ export class CartComponent implements OnInit {
       .addToCart(this.currentUser.uid, event.p.pid, event.q)
       .subscribe({
         next: result => {
-          console.log("updated: ")
-          this.fetchCart()
+          console.log("updated: ");
+          this.fetchCart();
+          this.fetchTotalPrice();
         }
       })
   }
