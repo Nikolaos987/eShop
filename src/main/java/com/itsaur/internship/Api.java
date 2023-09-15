@@ -176,7 +176,7 @@ public class Api extends AbstractVerticle {
             Objects.requireNonNull(params.get("from"));
             Objects.requireNonNull(params.get("range"));
             if (Integer.parseInt(params.get("range")) > 50) {
-                ctx.response().setStatusCode(400).end("Range too large");
+                ctx.response().setStatusCode(500).end("Range too large");
                 return;
             }
             String regex = params.get("regex");
@@ -225,7 +225,7 @@ public class Api extends AbstractVerticle {
             int from = Integer.parseInt(params.get("from"));
             int range = Integer.parseInt(params.get("range"));
             if (range > 50) {
-                ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end("Range too large");
+                ctx.response().setStatusCode(500).setStatusMessage("Bad Request").end("Range too large");
                 throw new IllegalArgumentException("range too large");
             }
 
