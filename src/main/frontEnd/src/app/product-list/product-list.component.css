@@ -21,6 +21,12 @@
   padding-left: 100px;
 }
 
+@media screen and (max-width: 704px) {
+  .flex-box-listing {
+    margin-left: 0;
+  }
+}
+
 .listing p span {
 
 }

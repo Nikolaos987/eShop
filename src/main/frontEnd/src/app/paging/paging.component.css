@@ -13,7 +13,6 @@
   background-color: white;
   border-radius: 15px;
   padding: 8px 16px;
-  opacity: 80%;
 }
 
 .selector {
@@ -66,4 +65,21 @@
 }
 .unfocused:hover {
   background-color: #eaeaea;
+}
+
+@media screen and (max-width: 704px) {
+  .paging-container {
+    margin: 50px 35px;
+  }
+
+  .toBeShown {
+    box-shadow: 0 0 3px #3d3d3d;
+    font-size: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    margin: 0 100px;
+    background-color: white;
+    border-radius: 15px;
+    padding: 8px 16px;
+    opacity: 80%;
+  }
 }

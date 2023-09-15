@@ -1,9 +1,9 @@
 .cart-wrapper {
   display: flex;
   align-items: center;
-  justify-content: center;
   align-content: center;
   justify-items: center;
+  justify-content: center;
 }
 
 .columns {
@@ -107,7 +107,7 @@ h4 {
   transition: .3s;
 }
 .quantity-btn:active {
-  transform: scale(.95);
+  transform: scale(.1);
   transition: .05s;
 }
 

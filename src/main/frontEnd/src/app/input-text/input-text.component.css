@@ -1,5 +1,9 @@
 .input_field {
+  background: white;
+}
 
+.label {
+  background: white;
 }
 
 .isActive {

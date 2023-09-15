@@ -6,6 +6,7 @@ a {
   /*border: 8px green solid;*/
   position: relative;
   box-shadow: 10px 5px 15px #888888;
+  border: 2px #b6b6b6 solid;
   background: var(--accent-color);
   width: 276px;
   height: 450px;
@@ -25,7 +26,8 @@ a {
   background-image:url('../../assets/no_image_placeholder.png');
 }
 .listing-price {
-  color: #06a83c;
+  /*color: #06a83c;*/
+  color: #414141;
   font-weight: bold;
   font-size: 35px;
   padding: 10px 20px 20px 20px;
