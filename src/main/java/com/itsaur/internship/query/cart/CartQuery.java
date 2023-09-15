@@ -21,14 +21,15 @@ public class CartQuery implements CartQueryModelStore {
     public CartQuery(PgPool pgPool) {
         this.pgPool = pgPool;
     }
+
     @Override
     public Future<List<CartQueryModel.CartItemQueryModel>> findByUserId(UUID uid) {
         return pgPool
                 .preparedQuery(
                         "SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity, p.name, p.price " +
-                        "FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid " +
-                        "WHERE uid = $1 " +
-                        "ORDER BY ci.itemid;")
+                                "FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid " +
+                                "WHERE uid = $1 " +
+                                "ORDER BY ci.itemid;")
                 .execute(Tuple.of(uid))
                 .compose(records -> {
                     ArrayList<CartQueryModel.CartItemQueryModel> items = new ArrayList<>();
@@ -51,6 +52,23 @@ public class CartQuery implements CartQueryModelStore {
 //                    else return Future.succeededFuture(new ArrayList<>());
 //                    CartQueryModel cart = new CartQueryModel(items);
                     return Future.succeededFuture(items);
+                });
+    }
+
+    @Override
+    public Future<Double> totalPrice(UUID uid) {
+        return pgPool
+                .preparedQuery("SELECT sum(p.price * ci.quantity) " +
+                        "FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid " +
+                        "WHERE c.uid=$1")
+                .execute(Tuple.of(uid))
+                .compose(record -> {
+                    try {
+                        double totalPrice = record.iterator().next().getDouble("sum");
+                        return Future.succeededFuture(totalPrice);
+                    } catch (NoSuchElementException e) {
+                        return Future.failedFuture(new IllegalArgumentException("there are no products in cart"));
+                    }
                 });
     }
 }

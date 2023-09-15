@@ -32,6 +32,14 @@ export class CartService {
         catchError(this.handleError));
   }
 
+  getTotalPrice(uid: string): Observable<{total_price: number}> {
+    return this.http
+      .get<{total_price: number}>('/api/user/' + uid +'/cart/total_price',
+        {responseType: "json"})
+      .pipe(
+        catchError(this.handleError))
+  }
+
   updateCart(itemid: string, quantity: number) {
     // is done by addToCart
   }

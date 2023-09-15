@@ -15,6 +15,7 @@ import {User} from "../interfaces/user";
 })
 export class CartComponent implements OnInit {
 
+  totalPrice: number | undefined;
   items: Item[] | undefined;
   currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
 
@@ -25,6 +26,7 @@ export class CartComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchCart();
+    this.fetchTotalPrice();
   }
 
   fetchCart(): void {
@@ -32,6 +34,14 @@ export class CartComponent implements OnInit {
       .subscribe({
         next: response => this.items = response
       });
+  }
+
+  fetchTotalPrice() {
+    this._cartService.getTotalPrice(this.currentUser.uid)
+      .subscribe({
+        next: totalPriceJson => this.totalPrice = totalPriceJson.total_price,
+        error: err => console.error(err)
+      })
   }
 
   update(event: { p: Product, q: number }) {

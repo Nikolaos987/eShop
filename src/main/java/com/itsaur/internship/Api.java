@@ -176,8 +176,8 @@ public class Api extends AbstractVerticle {
             Objects.requireNonNull(params.get("from"));
             Objects.requireNonNull(params.get("range"));
             if (Integer.parseInt(params.get("range")) > 50) {
-                ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end("Range too large");
-                throw new IllegalArgumentException("range too large");
+                ctx.response().setStatusCode(400).end("Range too large");
+                return;
             }
             String regex = params.get("regex");
             int from = Integer.parseInt(params.get("from"));
@@ -331,6 +331,7 @@ public class Api extends AbstractVerticle {
 
         /* CART ENTITY */
 
+        // fetch cart products
         router.get("/user/:uid/cart").handler(ctx -> {
             Objects.requireNonNull(ctx.pathParam("uid"));
             this.cartQueryModelStore
@@ -350,6 +351,7 @@ public class Api extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
+        // add or remove from cart
         router.put("/user/:uid/product/:pid/:quantity").handler(ctx -> {
             Objects.requireNonNull(ctx.pathParam("uid"));
             Objects.requireNonNull(ctx.pathParam("pid"));
@@ -364,6 +366,19 @@ public class Api extends AbstractVerticle {
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(cid_json.toBuffer());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
+        // fetch total price of the cart products
+        router.get("/user/:uid/cart/total_price").handler(ctx -> {
+            Objects.requireNonNull(ctx.pathParam("uid"));
+            this.cartQueryModelStore
+                    .totalPrice(UUID.fromString(ctx.pathParam("uid")))
+                    .onSuccess(v -> {
+                        JsonObject totalPriceJson = new JsonObject();
+                        totalPriceJson.put("total_price", v);
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(totalPriceJson.toBuffer());
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("OK").end());
         });
 
 //        router.delete("/user/:uid/cart").handler(ctx -> this.cartService
