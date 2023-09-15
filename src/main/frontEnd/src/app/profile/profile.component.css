@@ -11,22 +11,25 @@
   flex: 1;
   /*justify-content: left;*/
   /*align-self: stretch;*/
-
+  padding: 20px;
   border-right: #3b3434 2px solid;
   display: inline-flex;
   flex-direction: column;
-  background-color: white;
+  background-color: #f1f1f1;
   height: 100vh;
-  margin-top: -6px;
+  flex-grow: 1;
+  /*margin-top: -6px;*/
 }
 
 .main-window {
   position: relative;
-  flex: 4;
+  flex-grow: 6;
   justify-content: right;
 }
 
 .tab {
+  margin-bottom: 7px;
+  border-radius: 10px;
   position: relative;
   cursor: pointer;
   padding: 60px 30px;
@@ -44,7 +47,6 @@
 .active:hover {
   background: #f3a971;
 }
-
 
 
 h1 {
@@ -128,6 +130,30 @@ h1 {
   background: #0ed24f;
 }
 
+.copy-btn {
+  background: #f1f1f1;
+  border-radius: 5px;
+  outline: black 1px solid;
+  position: absolute;
+  margin-left: 40px;
+  top: -12px;
+  cursor: copy;
+  padding: 7px;
+}
+
+.copy-message {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 20px;
+  /*animation: hideAnimation 0s ease-in-out 2s;*/
+  /*animation-fill-mode: both;*/
+}
+/*@keyframes hideAnimation {*/
+/*  to {*/
+/*    visibility: hidden;*/
+/*  }*/
+/*}*/
+
 .buttons {
   display: flex;
   justify-content: space-between;
@@ -194,6 +220,7 @@ h1 {
   font-weight: bold;
 }
 #uid {
+  position: relative;
   margin-top: 20px;
   font-size: 21px;
 }

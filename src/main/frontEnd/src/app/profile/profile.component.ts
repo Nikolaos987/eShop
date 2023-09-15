@@ -5,6 +5,7 @@ import {Router} from "@angular/router";
 import {passwordMatchesValidator} from "../passwordMatchesValidator";
 import {Profile} from "../interfaces/profile";
 import {User} from "../interfaces/user";
+import {interval} from "rxjs";
 
 @Component({
   selector: 'app-profile',
@@ -17,6 +18,7 @@ export class ProfileComponent implements OnInit {
     password: undefined
   }
 
+  copyMessage: boolean = false;
   isActive1: boolean = true;
   isActive2: boolean = false;
   isActive3: boolean = false;
@@ -129,5 +131,17 @@ export class ProfileComponent implements OnInit {
     this.isActiveProfile = false;
     this.isActivePassword = false;
     this.isActiveDelete = true;
+  }
+
+  copy(uid: string) {
+    this.copyMessage = true;
+    navigator.clipboard.writeText(uid);
+    this.scheduleCopyTextFalse();
+  }
+
+  scheduleCopyTextFalse() {
+    setTimeout(() => {
+      this.copyMessage = false;
+    }, 3000);
   }
 }
