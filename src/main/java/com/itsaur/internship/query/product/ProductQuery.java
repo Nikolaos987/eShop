@@ -39,6 +39,14 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
+    public Future<Integer> productsCategoryCount(String category) {
+        return pgPool
+                .preparedQuery("SELECT COUNT(pid) FROM product WHERE category = $1")
+                .execute(Tuple.of(category))
+                .compose(records -> Future.succeededFuture(records.iterator().next().getInteger(0)));
+    }
+
+    @Override
     public Future<ProductsQueryModel.ProductQueryModel> findProductById(UUID pid) {
         return pgPool
                 .preparedQuery("SELECT * FROM product WHERE pid = $1;")
@@ -79,6 +87,28 @@ public class ProductQuery implements ProductQueryModelStore {
                         products.add(product);
                     });
 //                        ProductsQueryModel productList = new ProductsQueryModel(products);
+                    return Future.succeededFuture(products);
+                });
+    }
+
+    @Override
+    public Future<List<ProductsQueryModel.ProductQueryModel>> findProductsByCategory(String category, int from, int range) {
+        return pgPool
+                .preparedQuery("SELECT * FROM product WHERE category = $3 LIMIT $2 OFFSET $1;")
+                .execute(Tuple.of(from, range, category))
+                .compose(rows -> {
+                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
+                    rows.forEach(row -> {
+                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+                                row.getUUID("pid"),
+                                row.getString("name"),
+                                row.getString("description"),
+                                row.getDouble("price"),
+                                row.getInteger("quantity"),
+                                row.getString("brand"),
+                                Category.valueOf(row.getString("category")));
+                        products.add(product);
+                    });
                     return Future.succeededFuture(products);
                 });
     }

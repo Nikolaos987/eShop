@@ -4,9 +4,7 @@ import com.itsaur.internship.cartEntity.CartService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.FileUpload;
@@ -324,6 +322,66 @@ public class Api extends AbstractVerticle {
                     })
                     .onFailure(v ->
                             ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
+        router.get("/product/categories/all").handler(ctx -> {
+            Category[] c = Category.values();
+            Category watch = c[0];
+            Category cellphone = c[1];
+            Category smartphone = c[2];
+            Category laptop = c[3];
+
+            JsonArray categoriesArray = new JsonArray();
+            Arrays.stream(c).forEach(category -> {
+                JsonObject categoriesJson = new JsonObject();
+                categoriesJson.put("category", category);
+                categoriesArray.add(categoriesJson);
+            });
+
+//            ArrayList<Category> categoriesList = new ArrayList<>();
+//            Arrays.stream(c)
+            ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(categoriesArray.toBuffer()));
+        });
+
+        router.get("/products/:category/count").handler(ctx -> {
+            Objects.requireNonNull(ctx.pathParam("category"));
+            Category category = Category.valueOf(ctx.pathParam("category"));
+            productQueryModelStore.productsCategoryCount(String.valueOf(category))
+                    .onSuccess(v -> {
+                        JsonObject totalProductsJson = new JsonObject();
+                        totalProductsJson.put("totalProducts", v);
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(totalProductsJson.toBuffer());
+                    });
+        });
+
+        router.get("/products/:category").handler(ctx -> {
+            MultiMap params = ctx.queryParams();
+            Objects.requireNonNull(params.get("from"));
+            Objects.requireNonNull(params.get("range"));
+            Objects.requireNonNull(ctx.pathParam("category"));
+
+            int from = Integer.parseInt(params.get("from"));
+            int range = Integer.parseInt(params.get("range"));
+
+            String category = ctx.pathParam("category");
+            this.productQueryModelStore.findProductsByCategory(category, from, range)
+                    .onSuccess(v -> {
+                        JsonArray products_jsonArray = new JsonArray();
+                        v.forEach(product -> {
+                            JsonObject product_json = new JsonObject();
+                            product_json.put("pid", product.pid());
+                            product_json.put("name", product.name());
+                            product_json.put("description", product.description());
+                            product_json.put("price", product.price());
+                            product_json.put("quantity", product.quantity());
+                            product_json.put("brand", product.brand());
+                            product_json.put("category", product.category());
+                            products_jsonArray.add(product_json);
+                        });
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(products_jsonArray.toBuffer());
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request")
+                            .end(v.getMessage()));
         });
 
 
