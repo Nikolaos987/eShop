@@ -15,6 +15,43 @@
   margin-left: 0;
 }
 
+.flex-box {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 50px;
+}
+
+  .categories-list {
+    justify-content: left;
+    align-self: stretch;
+    padding: 20px;
+    border-right: #3b3434 2px solid;
+    display: inline-flex;
+    flex-direction: column;
+    background-color: #f1f1f1;
+    height: auto;
+    flex-grow: 1;
+    /*margin-top: -6px;*/
+  }
+    .categories {
+      position: relative;
+      font-size: 30px;
+      padding: 12px;
+      line-height: 30px;
+    }
+    .categories input {
+      padding: 10px;
+      font-size: 18px;
+      color: #555555;
+    }
+
+  .products-list {
+    position: relative;
+    flex-grow: 3;
+    justify-content: right;
+  }
+
 input[type="text"] {
   background: #f5f2f2;
   border: solid 2px var(--primary-color);

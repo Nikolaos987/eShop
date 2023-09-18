@@ -3,6 +3,7 @@
     <label for="itemsShown">Choose number of items to be shown: </label>
     <select class="selector" name="itemsShown" id="itemsShown">
       <option [value]="range" selected>{{range}}</option>
+      <option *ngIf="range!=2" [value]="2" (click)="getRange(2)">2</option>
       <option *ngIf="range!=5" [value]="5" (click)="getRange(5)">5</option>
       <option *ngIf="range!=10" [value]="10" (click)="getRange(10)">10</option>
       <option *ngIf="range!=15" [value]="15" (click)="getRange(15)">15</option>

@@ -1,6 +1,17 @@
 <div class="main">
+
   <app-search-bar [help]="helpText" [total]="totalProducts" (result)="getFilteredProducts($event)"></app-search-bar>
-  <app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
+  <div class="flex-box">
+    <div class="categories-list">
+      Categories:
+      <div class="categories" *ngFor="let category of categoriesArray">
+        <input type="button" [value]="category" (click)="getCategoryProducts(category)">
+      </div>
+    </div>
+    <div class="products-list">
+      <app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
+    </div>
+  </div>
 
   <app-paging
     [range]="range"

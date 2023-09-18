@@ -7,6 +7,7 @@ import {Product} from "../interfaces/product";
 import {getXHRResponse} from "rxjs/internal/ajax/getXHRResponse";
 import {AbstractControl, FormControl, FormGroup, ɵFormGroupValue, ɵTypedOrUntyped} from "@angular/forms";
 import {Paging} from "../interfaces/paging";
+import {Category} from "../interfaces/category";
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class ProductsService {
         catchError(this.handleError))
   }
 
-  public fetchProducts(page: number | null | undefined, range: number | null | undefined): Observable<Product[]> {
+  public fetchProducts(page: number | null | undefined,
+                       range: number | null | undefined): Observable<Product[]> {
     // ((page - 1) * range)
     if (typeof page === "number" && typeof range === "number") {
       return this.http
@@ -41,7 +43,7 @@ export class ProductsService {
   public fetchProduct(pid: string | null | undefined): Observable<Product> {
     return this.http
       .get<Product>
-    ('/api/product/' + pid, {responseType: "json"})
+      ('/api/product/' + pid, {responseType: "json"})
       .pipe(
         catchError(this.handleError));
   }
@@ -72,7 +74,8 @@ export class ProductsService {
         catchError(this.handleError))
   }
 
-  public uploadImage(pid: string | null | undefined, formData: FormData): Observable<{ pid: string }> {
+  public uploadImage(pid: string | null | undefined,
+                     formData: FormData): Observable<{ pid: string }> {
     return this.http
       .post<{ pid: string }>
       ('/api/product/' + pid + '/image', formData,
@@ -81,7 +84,9 @@ export class ProductsService {
         catchError(this.handleError))
   }
 
-  public fetchFilteredProducts(filter: string, page: number | null | undefined, range: number | null | undefined): Observable<Product[]> {
+  public fetchFilteredProducts(filter: string,
+                               page: number | null | undefined,
+                               range: number | null | undefined): Observable<Product[]> {
     filter = filter.trim().toLowerCase();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
@@ -115,6 +120,38 @@ export class ProductsService {
       })
       .pipe(
         catchError(this.handleError))
+  }
+
+  public fetchAllCategories(): Observable<Category[]> {
+    return this.http
+      .get<Category[]>("/api/product/categories/all",
+        {responseType: "json"})
+      .pipe(
+        catchError(this.handleError))
+  }
+
+  public fetchTotalProductsByCategory(category: string): Observable<{ totalProducts: number }> {
+    return this.http
+      .get<{ totalProducts: number }>('/api/products/' + category + '/count',
+        {responseType: "json"})
+      .pipe(
+        catchError(this.handleError))
+  }
+
+  public fetchProductsByCategory(category: string,
+                                 page: number | null | undefined,
+                                 range: number | null | undefined): Observable<Product[]> {
+    if (typeof page === "number" && typeof range === "number") {
+      return this.http
+        .get<[Product]>('/api/products/' + category + '/', {
+          params: {
+            from: ((page - 1) * range),
+            range: range
+          }, responseType: "json"
+        })
+        .pipe(
+          catchError(this.handleError))
+    } else return new Observable<Product[]>();
   }
 
   private handleError(error: HttpErrorResponse) {
