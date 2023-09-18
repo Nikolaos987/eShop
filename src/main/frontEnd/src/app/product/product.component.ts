@@ -36,7 +36,10 @@ export class ProductComponent implements OnInit {
   // TODO: wait for a few seconds before sending the request
   updateQuantity(quantity: number) {
     this.updateItem.emit({p: this.product, q: quantity}) // this at the end
-    console.log("this.product.price: " + this.product.price + "\nthis.product.quantity: " + this.product.quantity + "\nquant: " + this.quant + "\nquantity: " + quantity)
+    console.log("this.product.price: " + this.product.price +
+      "\nthis.product.quantity: " + this.product.quantity +
+      "\nquant: " + this.quant +
+      "\nquantity: " + quantity)
     console.log("update: " + "this.product.price = (" + this.product.price + "/(" + (quantity + 1) + ")) * " + quantity)
     // this.product.price = (this.product.price/(quantity+1)) * quantity;
   }

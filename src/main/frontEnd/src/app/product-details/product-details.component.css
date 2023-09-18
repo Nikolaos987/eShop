@@ -27,6 +27,8 @@
   }
 
     .image img {
+      border-radius: 20px;
+      border: 1px #e6e6e6 solid;
       top: 20px;
       width: 650px;
       height: 650px;

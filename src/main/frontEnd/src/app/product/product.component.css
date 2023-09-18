@@ -5,7 +5,7 @@ a {
   overflow: hidden;
   /*border: 8px green solid;*/
   position: relative;
-  box-shadow: 10px 5px 15px #888888;
+  box-shadow: 5px 5px 5px #888888;
   border: 2px #b6b6b6 solid;
   background: var(--accent-color);
   width: 276px;
