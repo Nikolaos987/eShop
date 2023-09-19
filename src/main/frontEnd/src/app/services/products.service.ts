@@ -139,12 +139,13 @@ export class ProductsService {
   }
 
   public fetchTotalProductsByCategories(categories: Array<string>): Observable<{ totalProducts: number }> {
+    let categoriesString: string = categories.toString();
     console.log("categories: " + categories)
     return this.http
       .get<{ totalProducts: number }>('/api/products/categories/counts',
         {
           params: {
-            category: categories
+            category: categoriesString
           }, responseType: "json"
         })
       .pipe(
@@ -171,12 +172,13 @@ export class ProductsService {
                                    page: number | null | undefined,
                                    range: number | null | undefined): Observable<Product[]> {
     console.log("categories: " + categories);
+    let categoriesString: string = categories.toString();
     if (typeof page === "number" && typeof range === "number") {
       return this.http
         .get<[Product]>('/api/products/multiple',
           {
             params: {
-              category: categories,
+              category: categoriesString,
               from: ((page - 1) * range),
               range: range
             }, responseType: "json"

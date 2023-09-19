@@ -361,13 +361,9 @@ public class Api extends AbstractVerticle {
         router.get("/products/categories/counts").handler(ctx -> {
             MultiMap params = ctx.queryParams();
             String categories = params.get("category");
-            params.forEach(param -> {
-                System.out.println("from counts: " + param.getValue());
-            });
-
 //            categories = categories.substring(1, categories.length() - 1);
             List<String> convertedCategoryArray = Arrays.asList(categories.split(","));
-//            System.out.println(convertedCategoryArray);
+            System.out.println("count: " + convertedCategoryArray);
             String[] array = new String[convertedCategoryArray.size()];
 
             for (int i=0; i< array.length; i++) {
