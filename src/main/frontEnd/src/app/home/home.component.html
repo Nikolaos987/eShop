@@ -4,8 +4,9 @@
   <div class="flex-box">
     <div class="categories-list">
       Categories:
-      <div class="categories" *ngFor="let category of categoriesArray">
-        <input type="button" [value]="category" (click)="getCategoryProducts(category)">
+      <div class="categories" *ngFor="let category of categoriesArray;let indexOfElement=index;">
+        <input type="checkbox" [id]="category" [name]="category" [value]="category" (click)="getCategoryProducts(category)" #checkbox>
+        <label [for]="category">{{category}}</label>
       </div>
     </div>
     <div class="products-list">

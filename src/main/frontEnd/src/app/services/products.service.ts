@@ -138,6 +138,19 @@ export class ProductsService {
         catchError(this.handleError))
   }
 
+  public fetchTotalProductsByCategories(categories: Array<string>): Observable<{ totalProducts: number }> {
+    console.log("categories: " + categories)
+    return this.http
+      .get<{ totalProducts: number }>('/api/products/categories/counts',
+        {
+          params: {
+            category: categories
+          }, responseType: "json"
+        })
+      .pipe(
+        catchError(this.handleError))
+  }
+
   public fetchProductsByCategory(category: string,
                                  page: number | null | undefined,
                                  range: number | null | undefined): Observable<Product[]> {
@@ -149,6 +162,25 @@ export class ProductsService {
             range: range
           }, responseType: "json"
         })
+        .pipe(
+          catchError(this.handleError))
+    } else return new Observable<Product[]>();
+  }
+
+  public fetchProductsByCategories(categories: Array<string>,
+                                   page: number | null | undefined,
+                                   range: number | null | undefined): Observable<Product[]> {
+    console.log("categories: " + categories);
+    if (typeof page === "number" && typeof range === "number") {
+      return this.http
+        .get<[Product]>('/api/products/multiple',
+          {
+            params: {
+              category: categories,
+              from: ((page - 1) * range),
+              range: range
+            }, responseType: "json"
+          })
         .pipe(
           catchError(this.handleError))
     } else return new Observable<Product[]>();

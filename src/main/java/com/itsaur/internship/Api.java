@@ -7,6 +7,7 @@ import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.parsetools.JsonParser;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -17,6 +18,8 @@ import com.itsaur.internship.query.product.ProductQueryModelStore;
 import com.itsaur.internship.query.user.UserQueryModelStore;
 import com.itsaur.internship.userEntity.UserService;
 
+import javax.net.ssl.SSLContext;
+import java.sql.Array;
 import java.util.*;
 
 public class Api extends AbstractVerticle {
@@ -351,7 +354,112 @@ public class Api extends AbstractVerticle {
                         JsonObject totalProductsJson = new JsonObject();
                         totalProductsJson.put("totalProducts", v);
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(totalProductsJson.toBuffer());
-                    });
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(500).setStatusMessage("OK").end("Something went very wrong"));
+        });
+
+        router.get("/products/categories/counts").handler(ctx -> {
+            MultiMap params = ctx.queryParams();
+            String categories = params.get("category");
+            params.forEach(param -> {
+                System.out.println("from counts: " + param.getValue());
+            });
+
+//            categories = categories.substring(1, categories.length() - 1);
+            List<String> convertedCategoryArray = Arrays.asList(categories.split(","));
+//            System.out.println(convertedCategoryArray);
+            String[] array = new String[convertedCategoryArray.size()];
+
+            for (int i=0; i< array.length; i++) {
+                array[i] = convertedCategoryArray.get(i);
+            }
+
+            this.productQueryModelStore.productsCategoriesCount(array)
+                    .onSuccess(v -> {
+                        JsonObject totalProductsJson = new JsonObject();
+                        totalProductsJson.put("totalProducts", v);
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(totalProductsJson.toBuffer());
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(500).setStatusMessage("OK").end("Something went wrong"));
+
+//            final JsonObject body = ctx.body().asJsonObject();
+//            JsonArray categoriesArray = body.getJsonArray("category");
+//            String[] array = new String[categoriesArray.size()];
+////
+//            System.out.println(categoriesArray);
+//            for (int i=0; i< array.length; i++) {
+//                array[i] = categoriesArray.getString(i);
+//            }
+//            this.productQueryModelStore.productsCategoriesCount(params.get("category"))
+//                    .onSuccess(v -> {
+//                        JsonObject totalProductsJson = new JsonObject();
+//                        totalProductsJson.put("totalProducts", v);
+//                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(totalProductsJson.toBuffer());
+//                    })
+//                    .onFailure(v -> ctx.response().setStatusCode(500).setStatusMessage("OK").end("Something went wrong"));
+        });
+
+        router.get("/products/multiple").handler(ctx -> {
+            MultiMap params = ctx.queryParams();
+            int from = Integer.parseInt(params.get("from"));
+            int range = Integer.parseInt(params.get("range"));
+            String categories = params.get("category");
+            System.out.println(categories);
+            List<String> convertedCategoryArray = Arrays.asList(categories.split(","));
+//            System.out.println(convertedCategoryArray);
+            String[] array = new String[convertedCategoryArray.size()];
+
+            for (int i=0; i< array.length; i++) {
+                array[i] = convertedCategoryArray.get(i);
+            }
+            this.productQueryModelStore.findProductsByCategories(array, from, range)
+                    .onSuccess(v -> {
+                        JsonArray products_jsonArray = new JsonArray();
+                        v.forEach(product -> {
+                            JsonObject product_json = new JsonObject();
+                            product_json.put("pid", product.pid());
+                            product_json.put("name", product.name());
+                            product_json.put("description", product.description());
+                            product_json.put("price", product.price());
+                            product_json.put("quantity", product.quantity());
+                            product_json.put("brand", product.brand());
+                            product_json.put("category", product.category());
+                            products_jsonArray.add(product_json);
+                        });
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(products_jsonArray.toBuffer());
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request")
+                            .end(v.getMessage()));
+
+//            MultiMap params = ctx.queryParams();
+//            int from = Integer.parseInt(params.get("from"));
+//            int range = Integer.parseInt(params.get("range"));
+//            final JsonObject body = ctx.body().asJsonObject();
+//            JsonArray categoriesArray = body.getJsonArray("category");
+//            String[] array = new String[categoriesArray.size()];
+////
+//            System.out.println(categoriesArray);
+//            for (int i=0; i< array.length; i++) {
+//                array[i] = categoriesArray.getString(i);
+//            }
+//            this.productQueryModelStore.findProductsByCategories(array, from, range)
+//                    .onSuccess(v -> {
+//                        JsonArray products_jsonArray = new JsonArray();
+//                        v.forEach(product -> {
+//                            JsonObject product_json = new JsonObject();
+//                            product_json.put("pid", product.pid());
+//                            product_json.put("name", product.name());
+//                            product_json.put("description", product.description());
+//                            product_json.put("price", product.price());
+//                            product_json.put("quantity", product.quantity());
+//                            product_json.put("brand", product.brand());
+//                            product_json.put("category", product.category());
+//                            products_jsonArray.add(product_json);
+//                        });
+//                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(products_jsonArray.toBuffer());
+//                    })
+//                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request")
+//                            .end(v.getMessage()));
         });
 
         router.get("/products/:category").handler(ctx -> {

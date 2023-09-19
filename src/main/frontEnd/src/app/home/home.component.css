@@ -45,6 +45,10 @@
       font-size: 18px;
       color: #555555;
     }
+    .categories label {
+      font-size: 20px;
+      margin-left: 20px;
+    }
 
   .products-list {
     position: relative;
