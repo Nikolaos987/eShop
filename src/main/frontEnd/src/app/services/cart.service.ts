@@ -15,9 +15,9 @@ export class CartService {
   constructor(private http: HttpClient, private _usersService: UsersService) {
   }
 
-  getCart(uid: string | null): Observable<Item[]> {
+  getCart(uid: string | null): Observable<{ cartItems: Item[], totalPrice: number }> {
     return this.http
-      .get<Item[]>('/api/user/' + uid + '/cart', {responseType: "json"})
+      .get<{ cartItems: Item[], totalPrice: number }>('/api/user/' + uid + '/cart', {responseType: "json"})
       .pipe(
         catchError(this.handleError));
   }
@@ -32,9 +32,9 @@ export class CartService {
         catchError(this.handleError));
   }
 
-  getTotalPrice(uid: string): Observable<{total_price: number}> {
+  getTotalPrice(uid: string): Observable<{ total_price: number }> {
     return this.http
-      .get<{total_price: number}>('/api/user/' + uid +'/cart/total_price',
+      .get<{ total_price: number }>('/api/user/' + uid + '/cart/total_price',
         {responseType: "json"})
       .pipe(
         catchError(this.handleError))

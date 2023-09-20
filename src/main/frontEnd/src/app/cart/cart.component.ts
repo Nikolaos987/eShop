@@ -26,13 +26,16 @@ export class CartComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchCart();
-    this.fetchTotalPrice();
+    // this.fetchTotalPrice();
   }
 
   fetchCart(): void {
     this._cartService.getCart(this.currentUser.uid)
       .subscribe({
-        next: response => this.items = response
+        next: response => {
+          this.items = response.cartItems;
+          this.totalPrice = response.totalPrice;
+        }
       });
   }
 
@@ -51,7 +54,7 @@ export class CartComponent implements OnInit {
         next: result => {
           console.log("updated: ");
           this.fetchCart();
-          this.fetchTotalPrice();
+          // this.fetchTotalPrice();
         }
       })
   }
@@ -62,7 +65,8 @@ export class CartComponent implements OnInit {
       .subscribe({
         next: result => {
           console.log("diagrafi: " + result)
-          this.fetchCart()
+          this.fetchCart();
+          // this.fetchTotalPrice();
         }
       });
   }

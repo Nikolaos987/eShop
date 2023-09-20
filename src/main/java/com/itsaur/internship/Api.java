@@ -559,16 +559,25 @@ public class Api extends AbstractVerticle {
             this.cartQueryModelStore
                     .findByUserId(UUID.fromString(ctx.pathParam("uid")))
                     .onSuccess(v -> {
-                        JsonArray items_jsonArray = new JsonArray();
-                        v.forEach(item -> {
-                            JsonObject item_json = new JsonObject();
-                            item_json.put("pid", item.pid());
-                            item_json.put("name", item.name());
-                            item_json.put("price", item.price());
-                            item_json.put("quantity", item.quantity());
-                            items_jsonArray.add(item_json);
-                        });
-                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(items_jsonArray.toBuffer());
+                        this.cartQueryModelStore
+                                .totalPrice(UUID.fromString(ctx.pathParam("uid")))
+                                .onSuccess(v2 -> {
+                                    JsonArray items_jsonArray = new JsonArray();
+                                    v.forEach(item -> {
+                                        JsonObject item_json = new JsonObject();
+                                        item_json.put("pid", item.pid());
+                                        item_json.put("name", item.name());
+                                        item_json.put("price", item.price());
+                                        item_json.put("quantity", item.quantity());
+                                        items_jsonArray.add(item_json);
+                                    });
+
+                                    JsonObject cartJson = new JsonObject();
+                                    cartJson.put("cartItems", items_jsonArray);
+                                    cartJson.put("totalPrice", v2);
+                                    ctx.response().setStatusCode(200).setStatusMessage("OK").end(cartJson.toBuffer());
+                                })
+                                .onFailure(v2 -> ctx.response().setStatusCode(400).setStatusMessage("OK").end());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
