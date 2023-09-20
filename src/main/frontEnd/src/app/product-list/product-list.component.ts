@@ -19,7 +19,7 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.homeComponent.getProducts(1);
+    this.homeComponent.getProducts(); //TODO: (1), REMOVE
 
     // this.productsService.fetchProducts()
     //   .pipe(take(1))

@@ -359,7 +359,6 @@ public class Api extends AbstractVerticle {
         });
 
         router.get("/products/filtered/categories/count").handler(ctx -> {
-            System.out.println("YESSSSSSSSSS");
             MultiMap params = ctx.queryParams();
             Objects.requireNonNull(params.get("regex"));
             Objects.requireNonNull(params.get("category"));

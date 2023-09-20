@@ -88,7 +88,7 @@ export class ProductsService {
                                            categories: Array<string>,
                                            page: number | null | undefined,
                                            range: number | null | undefined): Observable<Product[]> {
-    let categoriesString: string = categories.toString();
+    let categoriesString: string = categories.join(",");
     filter = filter.trim().toLowerCase();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};

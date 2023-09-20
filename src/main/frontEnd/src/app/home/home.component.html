@@ -1,6 +1,6 @@
 <div class="main">
 
-  <app-search-bar [help]="helpText" [total]="totalProducts" (result)="getFilteredProducts($event)"></app-search-bar> <!-- TODO: save the filtered text & call getProducts -->
+  <app-search-bar [help]="helpText" [total]="totalProducts" (result)="setText($event)" (click)="getProducts()"></app-search-bar> <!-- TODO: save the filtered text & call getProducts -->
   <div class="flex-box">
     <div class="categories-list">
       Categories:
@@ -18,8 +18,8 @@
     [range]="range"
     [pages]="pages"
     [page]="page"
-    (rangeOutput)="changeRange($event)"
-    (pageOutput)="getProducts($event)">
+    (rangeOutput)="setRange($event)"
+    (pageOutput)="setPage($event)">
   </app-paging>
 
 </div>
