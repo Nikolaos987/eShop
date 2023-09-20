@@ -358,6 +358,32 @@ public class Api extends AbstractVerticle {
                     .onFailure(v -> ctx.response().setStatusCode(500).setStatusMessage("OK").end("Something went very wrong"));
         });
 
+        router.get("/products/filtered/categories/count").handler(ctx -> {
+            System.out.println("YESSSSSSSSSS");
+            MultiMap params = ctx.queryParams();
+            Objects.requireNonNull(params.get("regex"));
+            Objects.requireNonNull(params.get("category"));
+            String regex = params.get("regex");
+            String categories = params.get("category");
+
+            List<String> convertedCategoryArray = Arrays.asList(categories.split(","));
+            System.out.println("count: " + convertedCategoryArray);
+            String[] array = new String[convertedCategoryArray.size()];
+
+            for (int i=0; i< array.length; i++) {
+                array[i] = convertedCategoryArray.get(i);
+                System.out.println(array[i]);
+            }
+
+            this.productQueryModelStore.productsFilteredCategoriesCount(regex, array)
+                    .onSuccess(v -> {
+                        JsonObject count_json = new JsonObject().put("totalProducts", v);
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(count_json.toBuffer());
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request")
+                            .end(v.getMessage()));
+        });
+
         router.get("/products/categories/counts").handler(ctx -> {
             MultiMap params = ctx.queryParams();
             String categories = params.get("category");
@@ -368,6 +394,7 @@ public class Api extends AbstractVerticle {
 
             for (int i=0; i< array.length; i++) {
                 array[i] = convertedCategoryArray.get(i);
+                System.out.println(array[i]);
             }
 
             this.productQueryModelStore.productsCategoriesCount(array)
@@ -393,6 +420,40 @@ public class Api extends AbstractVerticle {
 //                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(totalProductsJson.toBuffer());
 //                    })
 //                    .onFailure(v -> ctx.response().setStatusCode(500).setStatusMessage("OK").end("Something went wrong"));
+        });
+
+        router.get("/products/filtered/categories").handler(ctx -> {
+            MultiMap params = ctx.queryParams();
+            int from = Integer.parseInt(params.get("from"));
+            int range = Integer.parseInt(params.get("range"));
+            String regex = params.get("regex");
+            String categories = params.get("category");
+
+            List<String> convertedCategoryArray = Arrays.asList(categories.split(","));
+//            System.out.println(convertedCategoryArray);
+            String[] array = new String[convertedCategoryArray.size()];
+
+            for (int i=0; i< array.length; i++) {
+                array[i] = convertedCategoryArray.get(i);
+            }
+            this.productQueryModelStore.findFilteredProductsByCategories(regex, array, from, range)
+                    .onSuccess(v -> {
+                        JsonArray products_jsonArray = new JsonArray();
+                        v.forEach(product -> {
+                            JsonObject product_json = new JsonObject();
+                            product_json.put("pid", product.pid());
+                            product_json.put("name", product.name());
+                            product_json.put("description", product.description());
+                            product_json.put("price", product.price());
+                            product_json.put("quantity", product.quantity());
+                            product_json.put("brand", product.brand());
+                            product_json.put("category", product.category());
+                            products_jsonArray.add(product_json);
+                        });
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(products_jsonArray.toBuffer());
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request")
+                            .end(v.getMessage()));
         });
 
         router.get("/products/multiple").handler(ctx -> {

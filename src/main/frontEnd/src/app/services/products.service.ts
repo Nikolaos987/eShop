@@ -84,6 +84,30 @@ export class ProductsService {
         catchError(this.handleError))
   }
 
+  public fetchFilteredProductsByCategories(filter: string,
+                                           categories: Array<string>,
+                                           page: number | null | undefined,
+                                           range: number | null | undefined): Observable<Product[]> {
+    let categoriesString: string = categories.toString();
+    filter = filter.trim().toLowerCase();
+    const options = filter ?
+      {params: new HttpParams().set('name', filter)} : {};
+    if (typeof page === "number" && typeof range === "number") {
+      return this.http
+        .get<[Product]>('/api/products/filtered/categories',
+          {
+            params: {
+              regex: filter,
+              category: categoriesString,
+              from: ((page - 1) * range),
+              range: range
+            }, responseType: "json"
+          })
+        .pipe(
+          catchError(this.handleError))
+    } else return new Observable<Product[]>();
+  }
+
   public fetchFilteredProducts(filter: string,
                                page: number | null | undefined,
                                range: number | null | undefined): Observable<Product[]> {
@@ -136,6 +160,20 @@ export class ProductsService {
         {responseType: "json"})
       .pipe(
         catchError(this.handleError))
+  }
+
+  public fetchTotalFilteredProductsByCategories(categories: Array<string>, filter: string): Observable<{ totalProducts: number }> {
+    let categoriesString: string = categories.toString();
+    filter = filter.trim().toLowerCase();
+    const options = filter ?
+      {params: new HttpParams().set('name', filter)} : {};
+    return this.http
+      .get<{ totalProducts: number }>('/api/products/filtered/categories/count',
+        {
+          params: {
+            regex: filter,
+            category: categoriesString
+          }, responseType: "json"})
   }
 
   public fetchTotalProductsByCategories(categories: Array<string>): Observable<{ totalProducts: number }> {

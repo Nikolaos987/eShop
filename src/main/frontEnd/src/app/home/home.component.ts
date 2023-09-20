@@ -13,8 +13,7 @@ import {Category} from "../interfaces/category";
   styleUrls: ['./home.component.css'],
   providers: [ProductsService]
 })
-export class HomeComponent implements OnInit, AfterViewInit {
-  @ViewChild('checkbox') checkElement: ElementRef | undefined;
+export class HomeComponent implements OnInit {
 
   filterText: string = '';
   categorySelected: string = '';
@@ -40,18 +39,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
               private _usersService: UsersService,
               private cdr: ChangeDetectorRef,
               private _pagingService: PagingService) {
-  }
-
-  ngAfterViewInit() {
-    this.checkElement?.nativeElement.addEventListener('click', this.check.bind(this));
-    this.checkElement?.nativeElement.addEventListener('unchecked', this.uncheck.bind(this));
-  }
-
-  public check(event: any) {
-
-  }
-  public uncheck(event: any) {
-
   }
 
   ngOnInit(): void {
@@ -96,7 +83,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.page = page;
     console.log("from getProducts(): page = " + this.page)
     if (this.filterText == '') {
-      if (this.categorySelected == '') {
+      if (this.categoriesChecked.length == 0) {
         this.productsService.fetchProducts(page, this.range)
           .subscribe({
             next: value => {
@@ -109,9 +96,13 @@ export class HomeComponent implements OnInit, AfterViewInit {
           this.categorizedProducts(this.page, this.range);
       }
     } else {
-      // kai edw:  (this.categorySelected == '')... else
-      if (this.range)
-        this.filteredProducts(this.filterText, this.page, this.range)
+      if (this.categoriesChecked.length == 0) {
+        if (this.range)
+          this.filteredProducts(this.filterText, this.page, this.range)
+      } else {
+        this.getTotalFilteredProductsByCategories();
+        this.getFilteredProductsByCategories();
+      }
     }
   }
 
@@ -162,24 +153,29 @@ export class HomeComponent implements OnInit, AfterViewInit {
       for (let i = 1; i <= this.totalPages; i++) {
         this.pages?.pop();
       }
-    this.productsService.fetchTotalSearchedProducts(text)
-      .subscribe({
-        next: (result) => {
-          this.totalProducts = result.totalProducts;
-          this.totalPages = Math.ceil(result.totalProducts / Number(this.range))
-          for (let i = 1; i <= this.totalPages; i++) {
-            this.pages?.push(i);
+    if (this.categoriesChecked.length == 0) {
+      this.productsService.fetchTotalSearchedProducts(text)
+        .subscribe({
+          next: (result) => {
+            this.totalProducts = result.totalProducts;
+            this.totalPages = Math.ceil(result.totalProducts / Number(this.range))
+            for (let i = 1; i <= this.totalPages; i++) {
+              this.pages?.push(i);
+            }
+          },
+          error: (error: Error) => {
+            console.error(error);
+          },
+          complete: () => {
+            this.page = 1;
+            if (this.range)
+              this.filteredProducts(text, this.page, this.range)
           }
-        },
-        error: (error: Error) => {
-          console.error(error);
-        },
-        complete: () => {
-          this.page = 1;
-          if (this.range)
-            this.filteredProducts(text, this.page, this.range)
-        }
-      })
+        })
+    } else {
+      this.getTotalFilteredProductsByCategories();
+      this.getFilteredProductsByCategories();
+    }
   }
 
   public filteredProducts(text: string, page: number, range: number) {
@@ -235,6 +231,43 @@ export class HomeComponent implements OnInit, AfterViewInit {
     // }
   }
 
+  public getTotalFilteredProductsByCategories() {
+    this.productsService.fetchTotalFilteredProductsByCategories(this.categoriesChecked, this.filterText)
+      .subscribe({
+        next: (value) => {
+          console.log("value: " + value.totalProducts);
+          this.totalProducts = value.totalProducts;
+          this.totalPages = Math.ceil(value.totalProducts / Number(this.range))
+          for (let i = 1; i <= this.totalPages; i++) {
+            this.pages?.push(i);
+          }
+        },
+        error: err => console.error(err),
+        complete: () => {
+          this.page = 1;
+          if (this.range) {
+            // if (this.categoriesChecked.length > 0) {
+            //   this.categorizedProducts(this.page, this.range)
+            // } else {
+              this.getProducts(this.page);
+            // }
+          }
+        }
+      })
+  }
+
+  public getFilteredProductsByCategories() {
+    this.productsService.fetchFilteredProductsByCategories(this.filterText, this.categoriesChecked, this.page, this.range)
+      .subscribe({
+        next: value => {
+          this.productList = value;
+        },
+        error: (error: Error) => {
+          console.error(error)
+        }
+      })
+  }
+
   public categorizedProducts(page: number, range: number) {
     this.productsService.fetchProductsByCategories(this.categoriesChecked, this.page, this.range) // TODO
       .subscribe({
@@ -249,7 +282,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   public checkArray(category: string) {
     let flag: boolean = false;
-    for (let i=0; i<this.categoriesChecked.length; i++) {
+    for (let i = 0; i < this.categoriesChecked.length; i++) {
       if (this.categoriesChecked[i] == category) {
         this.categoriesChecked.splice(i, 1);
         flag = true;
