@@ -18,7 +18,7 @@ public class ProductService {
 
 
     public Future<Product> addProduct(String name, String description,
-                                   double price, int quantity, String brand, Category category) {
+                                   double price, int quantity, String brand, String category) {
         return productsStore.findProduct(name)
                 .otherwiseEmpty()
                 .compose(product -> {
@@ -42,7 +42,7 @@ public class ProductService {
                 });
     }
 
-    public Future<Void> updateProduct(UUID pid, String name, String image, String description, double price, int quantity, String brand, Category category) {
+    public Future<Void> updateProduct(UUID pid, String name, String image, String description, double price, int quantity, String brand, String category) {
         return productsStore.findProduct(pid)
                 .otherwiseEmpty()
                 .compose(product -> {

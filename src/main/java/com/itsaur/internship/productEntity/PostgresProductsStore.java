@@ -43,7 +43,7 @@ public class PostgresProductsStore implements ProductsStore {
                                         row.getUUID("pid"), row.getString("name"),
                                         row.getString("description"),
                                         row.getDouble("price"), row.getInteger("quantity"),
-                                        row.getString("brand"), Category.valueOf(row.getString("category")));
+                                        row.getString("brand"), row.getString("category"));
                                 return Future.succeededFuture(newProduct);
                             } catch (Exception e) {
                                 return Future.failedFuture(new IllegalArgumentException("error"));
@@ -65,7 +65,7 @@ public class PostgresProductsStore implements ProductsStore {
                             row.getDouble("price"),
                             row.getInteger("quantity"),
                             row.getString("brand"),
-                            Category.valueOf(row.getString("category")));
+                            row.getString("category"));
                     return Future.succeededFuture(product);
                 })
                 .otherwiseEmpty();
@@ -86,7 +86,7 @@ public class PostgresProductsStore implements ProductsStore {
                             row.getDouble("price"),
                             row.getInteger("quantity"),
                             row.getString("brand"),
-                            Category.valueOf(row.getString("category")));
+                            row.getString("category"));
                     return Future.succeededFuture(product);
                 })
                 .otherwiseEmpty();

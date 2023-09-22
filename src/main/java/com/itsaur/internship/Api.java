@@ -1,7 +1,6 @@
 package com.itsaur.internship;
 
 import com.itsaur.internship.cartEntity.CartService;
-import com.itsaur.internship.query.product.ProductsQueryModel;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
@@ -11,7 +10,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import com.itsaur.internship.productEntity.Category;
 import com.itsaur.internship.productEntity.ProductService;
 import com.itsaur.internship.query.cart.CartQueryModelStore;
 import com.itsaur.internship.query.product.ProductQueryModelStore;
@@ -226,8 +224,8 @@ public class Api extends AbstractVerticle {
                     .findProducts(from, range)
                     .onSuccess(v -> {
                         JsonObject jsonObject = new JsonObject();
-                        jsonObject.put("products", v.getProducts());
-                        jsonObject.put("totalCount", v.getCount());
+                        jsonObject.put("products", v.products());
+                        jsonObject.put("totalCount", v.count());
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(jsonObject.toBuffer());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
@@ -276,8 +274,8 @@ public class Api extends AbstractVerticle {
             this.productQueryModelStore.findProductsByName(regex, from, range)
                     .onSuccess(v -> {
                         JsonObject jsonObject = new JsonObject();
-                        jsonObject.put("products", v.getProducts());
-                        jsonObject.put("totalCount", v.getCount());
+                        jsonObject.put("products", v.products());
+                        jsonObject.put("totalCount", v.count());
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(jsonObject.toBuffer());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
@@ -298,8 +296,8 @@ public class Api extends AbstractVerticle {
             this.productQueryModelStore.findProductsByCategories(array, from, range)
                     .onSuccess(v -> {
                         JsonObject jsonObject = new JsonObject();
-                        jsonObject.put("products", v.getProducts());
-                        jsonObject.put("totalCount", v.getCount());
+                        jsonObject.put("products", v.products());
+                        jsonObject.put("totalCount", v.count());
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(jsonObject.toBuffer());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
@@ -350,8 +348,8 @@ public class Api extends AbstractVerticle {
             this.productQueryModelStore.findFilteredProductsByCategories(regex, array, from, range)
                     .onSuccess(v -> {
                         JsonObject jsonObject = new JsonObject();
-                        jsonObject.put("products", v.getProducts());
-                        jsonObject.put("totalCount", v.getCount());
+                        jsonObject.put("products", v.products());
+                        jsonObject.put("totalCount", v.count());
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(jsonObject.toBuffer());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
@@ -362,19 +360,18 @@ public class Api extends AbstractVerticle {
         // TODO: Improve JSON returned
         // get all category names
         router.get("/product/categories/names").handler(ctx -> {
-            Category[] c = Category.values();
-            Category watch = c[0];
-            Category cellphone = c[1];
-            Category smartphone = c[2];
-            Category laptop = c[3];
-
-            JsonArray categoriesArray = new JsonArray();
-            Arrays.stream(c).forEach(category -> {
-                JsonObject categoriesJson = new JsonObject();
-                categoriesJson.put("category", category);
-                categoriesArray.add(categoriesJson);
-            });
-            ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(categoriesArray.toBuffer()));
+            this.productQueryModelStore
+                    .fetchCategories()
+                    .onSuccess(v -> {
+                        JsonObject categories = new JsonObject();
+                        categories.put("categories", v.category());
+//                        JsonArray categoryList = new JsonArray();
+//                        v.category().forEach(category -> {
+//                            categoryList.add(category.category());
+//                        });
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(String.valueOf(categories.toBuffer()));
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
         // get product by ID
@@ -429,7 +426,7 @@ public class Api extends AbstractVerticle {
                                 body.getDouble("price"),
                                 body.getInteger("quantity"),
                                 body.getString("brand"),
-                                Category.valueOf(body.getString("category")))
+                                body.getString("category"))
                         .onSuccess(v -> {
                             JsonObject product_json = new JsonObject();
                             product_json.put("pid", v.pid());
@@ -536,37 +533,11 @@ public class Api extends AbstractVerticle {
                     .findByUserId(UUID.fromString(ctx.pathParam("uid")))
                     .onSuccess(v -> {
                         JsonObject jsonObject = new JsonObject();
-//                        cartItems
-//                        totalPrice
-                        jsonObject.put("cartItems", v.getItems());
-                        jsonObject.put("totalPrice", v.getTotalPrice());
+                        jsonObject.put("cartItems", v.cartItem());
+                        jsonObject.put("totalPrice", v.totalPrice());
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(jsonObject.toBuffer());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
-//            this.cartQueryModelStore
-//                    .findByUserId(UUID.fromString(ctx.pathParam("uid")))
-//                    .onSuccess(v -> {
-//                        this.cartQueryModelStore
-//                                .totalPrice(UUID.fromString(ctx.pathParam("uid")))
-//                                .onSuccess(v2 -> {
-//                                    JsonArray items_jsonArray = new JsonArray();
-//                                    v.forEach(item -> {
-//                                        JsonObject item_json = new JsonObject();
-//                                        item_json.put("pid", item.pid());
-//                                        item_json.put("name", item.name());
-//                                        item_json.put("price", item.price());
-//                                        item_json.put("quantity", item.quantity());
-//                                        items_jsonArray.add(item_json);
-//                                    });
-//
-//                                    JsonObject cartJson = new JsonObject();
-//                                    cartJson.put("cartItems", items_jsonArray);
-//                                    cartJson.put("totalPrice", v2);
-//                                    ctx.response().setStatusCode(200).setStatusMessage("OK").end(cartJson.toBuffer());
-//                                })
-//                                .onFailure(v2 -> ctx.response().setStatusCode(400).setStatusMessage("OK").end());
-//                    })
-//                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
         // add or remove from cart
