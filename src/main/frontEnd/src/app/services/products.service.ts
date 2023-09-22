@@ -8,6 +8,7 @@ import {getXHRResponse} from "rxjs/internal/ajax/getXHRResponse";
 import {AbstractControl, FormControl, FormGroup, ɵFormGroupValue, ɵTypedOrUntyped} from "@angular/forms";
 import {Paging} from "../interfaces/paging";
 import {Category} from "../interfaces/category";
+import {Item} from "../interfaces/item";
 
 @Injectable({
   providedIn: 'root'
@@ -25,11 +26,11 @@ export class ProductsService {
   }
 
   public fetchProducts(page: number | null | undefined,
-                       range: number | null | undefined): Observable<Product[]> {
+                       range: number | null | undefined): Observable<{ products: Product[], totalCount: number }> {
     // ((page - 1) * range)
     if (typeof page === "number" && typeof range === "number") {
       return this.http
-        .get<[Product]>('/api/products/', {
+        .get<{ products: Product[], totalCount: number }>('/api/products/', {
           params: {
             from: ((page - 1) * range),
             range: range
@@ -37,7 +38,7 @@ export class ProductsService {
         })
         .pipe(
           catchError(this.handleError))
-    } else return new Observable<Product[]>();
+    } else return new Observable<{ products: Product[], totalCount: number }>();
   }
 
   public fetchProduct(pid: string | null | undefined): Observable<Product> {
@@ -87,14 +88,14 @@ export class ProductsService {
   public fetchFilteredProductsByCategories(filter: string,
                                            categories: Array<string>,
                                            page: number | null | undefined,
-                                           range: number | null | undefined): Observable<Product[]> {
+                                           range: number | null | undefined): Observable<{ products: Product[], totalCount: number }> {
     let categoriesString: string = categories.join(",");
     filter = filter.trim().toLowerCase();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
     if (typeof page === "number" && typeof range === "number") {
       return this.http
-        .get<[Product]>('/api/products/filtered/categories',
+        .get<{ products: Product[], totalCount: number }>('/api/products/filtered/categories',
           {
             params: {
               regex: filter,
@@ -105,12 +106,12 @@ export class ProductsService {
           })
         .pipe(
           catchError(this.handleError))
-    } else return new Observable<Product[]>();
+    } else return new Observable<{ products: Product[], totalCount: number }>();
   }
 
   public fetchFilteredProducts(filter: string,
                                page: number | null | undefined,
-                               range: number | null | undefined): Observable<Product[]> {
+                               range: number | null | undefined): Observable<{ products: Product[], totalCount: number }> {
     filter = filter.trim().toLowerCase();
     const options = filter ?
       {params: new HttpParams().set('name', filter)} : {};
@@ -119,7 +120,7 @@ export class ProductsService {
     // }
     if (page && range) {
       return this.http
-        .get<Product[]>('/api/products/search', {
+        .get<{ products: Product[], totalCount: number }>('/api/products/search', {
           params: {
             regex: filter,
             from: ((page - 1) * range),
@@ -128,7 +129,7 @@ export class ProductsService {
         }) // , options
         .pipe(
           catchError(this.handleError));
-    } else return new Observable<Product[]>();
+    } else return new Observable<{ products: Product[], totalCount: number }>();
     //                  <[Product]>
   }
 
@@ -148,7 +149,7 @@ export class ProductsService {
 
   public fetchAllCategories(): Observable<Category[]> {
     return this.http
-      .get<Category[]>("/api/product/categories/all",
+      .get<Category[]>("/api/product/categories/names",
         {responseType: "json"})
       .pipe(
         catchError(this.handleError))
@@ -173,7 +174,8 @@ export class ProductsService {
           params: {
             regex: filter,
             category: categoriesString
-          }, responseType: "json"})
+          }, responseType: "json"
+        })
   }
 
   public fetchTotalProductsByCategories(categories: Array<string>): Observable<{ totalProducts: number }> {
@@ -208,12 +210,12 @@ export class ProductsService {
 
   public fetchProductsByCategories(categories: Array<string>,
                                    page: number | null | undefined,
-                                   range: number | null | undefined): Observable<Product[]> {
+                                   range: number | null | undefined): Observable<{ products: Product[], totalCount: number }> {
     console.log("categories: " + categories);
     let categoriesString: string = categories.toString();
     if (typeof page === "number" && typeof range === "number") {
       return this.http
-        .get<[Product]>('/api/products/multiple',
+        .get<{ products: Product[], totalCount: number }>('/api/products/categories',
           {
             params: {
               category: categoriesString,
@@ -223,7 +225,7 @@ export class ProductsService {
           })
         .pipe(
           catchError(this.handleError))
-    } else return new Observable<Product[]>();
+    } else return new Observable<{ products: Product[], totalCount: number }>();
   }
 
   private handleError(error: HttpErrorResponse) {

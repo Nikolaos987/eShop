@@ -47,7 +47,6 @@ export class HomeComponent implements OnInit {
     this.productsService.fetchAllCategories()
       .subscribe({
         next: value => {
-          this.popPages();
           this.categoriesJson = value;
           this.categoriesJson.forEach(category => {
             this.categoriesArray?.push(category.category);
@@ -55,27 +54,11 @@ export class HomeComponent implements OnInit {
         },
         error: err => console.error(err),
         complete: () => {
-          this.popPages();
-          this.productsService.fetchTotalProducts()
-            .subscribe({
-              next: (result) => {
-                this.totalProducts = result.totalProducts;
-                this.totalPages = Math.ceil(result.totalProducts / Number(this.range))
-                for (let i = 1; i <= this.totalPages; i++) {
-                  this.pages?.push(i);
-                }
-              },
-              error: (error: Error) => {
-                console.error(error)
-              },
-              complete: () => {
-                // this.getProducts() //TODO: (this.page)
-                this.range = this._pagingService.page?.range;
-                this.getProducts();
-              }
-            });
+          // this.productsService.fetchTotalProducts()
+          this.range = this._pagingService.page?.range;
+          this.getAllProducts(); // todo: 1st call
         }
-      })
+      });
   }
 
   // public getProducts(page: number) {
@@ -241,11 +224,15 @@ export class HomeComponent implements OnInit {
 
   public setText(text: string) {
     this.filterText = text;
+    this.page = 1;
+    this.getProducts();
   }
+
   public setPage(page: number) {
     this.page = page;
     this.getProducts();
   }
+
   public setRange(range: number) {
     this.range = range;
     this.getProducts();
@@ -271,14 +258,23 @@ export class HomeComponent implements OnInit {
   }
 
   public popPages() {
-    if (this.totalPages)
-      for (let i = 1; i <= this.totalPages; i++) {
+    if (this.totalPages) {
+      console.log("popping pages...")
+      for (let i = 1; i <= this.totalPages; i++) { // TODO: for (let i = 1; i <= this.totalPages; i++)
         this.pages?.pop();
       }
+    }
+  }
+
+  public pushPages() {
+    if (this.totalPages) {
+      for (let i = 1; i <= this.totalPages; i++) {
+        this.pages?.push(i);
+      }
+    }
   }
 
   public getProducts() {
-    // this.page = page;
     this.popPages(); // TODO: put this at the start of getProducts()
     if (this.filterText != '') {
       if (this.categoriesChecked.length == 0) {
@@ -296,115 +292,56 @@ export class HomeComponent implements OnInit {
   }
 
   public getAllProducts() {
-    this.productsService.fetchTotalProducts()
+    this.popPages();
+    this.productsService.fetchProducts(this.page, this.range)
       .subscribe({
         next: (value) => {
-          console.log("value: " + value.totalProducts);
-          this.totalProducts = value.totalProducts;
-          this.totalPages = Math.ceil(value.totalProducts / Number(this.range))
-          for (let i = 1; i <= this.totalPages; i++) {
-            this.pages?.push(i);
-          }
-          // if the total pages become less after the range is changed, move to the last possible page
-          if (this.pages && this.page > this.pages.length) {
-            this.page = this.pages.length;
-          }
+          this.totalProducts = value.totalCount;
+          this.totalPages = Math.ceil(value.totalCount / Number(this.range));
+          this.pushPages();
+          this.productList = value.products;
         },
-        error: err => console.error(err),
-        complete: () => {
-          this.productsService.fetchProducts(this.page, this.range)
-            .subscribe({
-              next: value => {
-                this.productList = value;
-              },
-              error: err => console.error(err)
-            });
-        }
-      })
-
+        error: err => console.error(err)
+      });
   }
 
   public getFilteredProducts() {
-    this.productsService.fetchTotalSearchedProducts(this.filterText) // TODO: rename to fetchTotalFilteredProducts
+    this.productsService.fetchFilteredProducts(this.filterText, this.page, this.range) // TODO: rename to fetchTotalFilteredProducts
       .subscribe({
         next: (value) => {
-          console.log("value: " + value.totalProducts);
-          this.totalProducts = value.totalProducts;
-          this.totalPages = Math.ceil(value.totalProducts / Number(this.range))
-          for (let i = 1; i <= this.totalPages; i++) {
-            this.pages?.push(i);
-          }
-          // if the total pages become less after the range is changed, move to the last possible page
-          if (this.pages && this.page > this.pages.length) {
-            this.page = this.pages.length;
-          }
+          this.totalProducts = value.totalCount;
+          this.totalPages = Math.ceil(value.totalCount / Number(this.range))
+          console.log("totalPages: " + this.totalPages);
+          this.pushPages();
+          this.productList = value.products;
         },
-        error: err => console.error(err),
-        complete: () => {
-          this.productsService.fetchFilteredProducts(this.filterText, this.page, this.range)
-            .subscribe({
-              next: value => {
-                this.productList = value;
-              },
-              error: err => console.error(err)
-            });
-        }
+        error: err => console.error(err)
       });
   }
 
   public getFilteredProductsByCategories() {
-    this.productsService.fetchTotalFilteredProductsByCategories(this.categoriesChecked, this.filterText) // TODO: rename to fetchTotalFilteredProducts
+    this.productsService.fetchFilteredProductsByCategories(this.filterText, this.categoriesChecked, this.page, this.range)
       .subscribe({
         next: (value) => {
-          console.log("value: " + value.totalProducts);
-          this.totalProducts = value.totalProducts;
-          this.totalPages = Math.ceil(value.totalProducts / Number(this.range))
-          for (let i = 1; i <= this.totalPages; i++) {
-            this.pages?.push(i);
-          }
-          // if the total pages become less after the range is changed, move to the last possible page
-          if (this.pages && this.page > this.pages.length) {
-            this.page = this.pages.length;
-          }
+          this.totalProducts = value.totalCount;
+          this.totalPages = Math.ceil(value.totalCount / Number(this.range))
+          this.pushPages();
+          this.productList = value.products;
         },
-        error: err => console.error(err),
-        complete: () => {
-          this.productsService.fetchFilteredProductsByCategories(this.filterText, this.categoriesChecked, this.page, this.range)
-            .subscribe({
-              next: value => {
-                this.productList = value;
-              },
-              error: err => console.error(err)
-            });
-        }
+        error: err => console.error(err)
       });
   }
 
   public getProductsByCategories() {
-    this.productsService.fetchTotalProductsByCategories(this.categoriesChecked) // TODO: rename to fetchTotalFilteredProducts
+    this.productsService.fetchProductsByCategories(this.categoriesChecked, this.page, this.range) // TODO: rename to fetchTotalFilteredProducts
       .subscribe({
         next: (value) => {
-          console.log("value: " + value.totalProducts);
-          this.totalProducts = value.totalProducts;
-          this.totalPages = Math.ceil(value.totalProducts / Number(this.range))
-          for (let i = 1; i <= this.totalPages; i++) {
-            this.pages?.push(i);
-          }
-          // if the total pages become less after the range is changed, move to the last possible page
-          if (this.pages && this.page > this.pages.length) {
-            this.page = this.pages.length;
-          }
+          this.totalProducts = value.totalCount;
+          this.totalPages = Math.ceil(value.totalCount / Number(this.range))
+          this.pushPages();
+          this.productList = value.products;
         },
-        error: err => console.error(err),
-        complete: () => {
-          this.productsService.fetchProductsByCategories(this.categoriesChecked, this.page, this.range)
-            .subscribe({
-              next: value => {
-                this.productList = value;
-              },
-              error: err => console.error(err)
-            });
-        }
+        error: err => console.error(err)
       });
   }
 
