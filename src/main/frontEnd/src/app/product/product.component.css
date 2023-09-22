@@ -8,8 +8,8 @@ a {
   /*box-shadow: 5px 5px 5px #888888;*/
   border: 2px #b6b6b6 solid;
   background: var(--accent-color);
-  width: 276px;
-  height: 450px;
+  width: 215px;
+  height: 370px;
   border-radius: 5px;
   padding-bottom: 30px;
   /*margin: 50px auto;*/
@@ -19,8 +19,8 @@ a {
   padding: 10px 20px 0 20px;
 }
 .listing-photo {
-  width: 275px;
-  height: 275px;
+  width: 215px;
+  height: 215px;
   object-fit: fill;
   border-radius: 5px 5px 0 0;
   background-image:url('../../assets/no_image_placeholder.png');
