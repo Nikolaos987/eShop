@@ -62,9 +62,9 @@ public class CartQuery implements CartQueryModelStore {
     public Future<CartQueryModel> findByUserId(UUID uid) {
         return pgPool
                 .preparedQuery("SELECT c.cid, c.uid, c.datecreated, ci.itemid, ci.pid, ci.quantity, p.name, p.price " +
-                                "FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid " +
-                                "WHERE uid = $1 " +
-                                "ORDER BY ci.itemid;")
+                        "FROM cart c LEFT JOIN cartitem ci ON c.cid = ci.cid JOIN product p on p.pid = ci.pid " +
+                        "WHERE uid = $1 " +
+                        "ORDER BY ci.itemid;")
                 .execute(Tuple.of(uid))
                 .compose(cartItemsRecords -> pgPool
                         .preparedQuery("SELECT sum(p.price * ci.quantity) " +
@@ -72,23 +72,23 @@ public class CartQuery implements CartQueryModelStore {
                                 "WHERE c.uid=$1")
                         .execute(Tuple.of(uid))
                         .compose(record -> {
-                            CartQueryModel cartQueryModel = new CartQueryModel();
                             List<CartQueryModel.CartItemQueryModel> cartItemsList = new ArrayList<>();
+                            CartQueryModel cartQueryModel;
                             try {
                                 double totalPrice = record.iterator().next().getDouble("sum");
-//                                ArrayList<CartQueryModel.CartItemQueryModel> items = new ArrayList<>();
                                 cartItemsRecords.forEach(row -> {
-                                    CartQueryModel.CartItemQueryModel item = new CartQueryModel.CartItemQueryModel(
-                                            row.getUUID("pid"),
-                                            row.getString("name"),
-                                            row.getInteger("price") * row.getInteger("quantity"),
-                                            row.getInteger("quantity"));
-                                    cartItemsList.add(item);
+                                    UUID pid = row.getUUID("pid");
+                                    String name = row.getString("name");
+                                    double price = row.getDouble("price");
+                                    int quantity = row.getInteger("quantity");
+
+                                    CartQueryModel.CartItemQueryModel cartItemQueryModel = new CartQueryModel
+                                            .CartItemQueryModel(pid, name, price * quantity, quantity);
+                                    cartItemsList.add(cartItemQueryModel);
                                 });
-                                cartQueryModel.setItems(cartItemsList);
-                                cartQueryModel.setTotalPrice(totalPrice);
-                            } catch (NullPointerException e) {
-                                return Future.succeededFuture(new CartQueryModel());
+                                cartQueryModel = new CartQueryModel(cartItemsList, totalPrice);
+                            } catch (Exception e) {
+                                return Future.succeededFuture(new CartQueryModel(new ArrayList<>(), 0.0));
                             }
                             return Future.succeededFuture(cartQueryModel);
                         }));
