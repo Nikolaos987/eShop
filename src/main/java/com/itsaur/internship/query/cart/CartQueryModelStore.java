@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface CartQueryModelStore {
 //    Future<List<CartQueryModel.CartItemQueryModel>> findByUserId(UUID uid);
-    Future<JsonObject> findByUserId(UUID uid);
+    Future<CartQueryModel> findByUserId(UUID uid);
 
     Future<Double> totalPrice(UUID uid);
 }

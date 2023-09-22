@@ -3,16 +3,11 @@ package com.itsaur.internship.query.product;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.*;
 import com.itsaur.internship.productEntity.Category;
 
-import java.sql.Array;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 public class ProductQuery implements ProductQueryModelStore {
     Vertx vertx = Vertx.vertx();
@@ -85,27 +80,58 @@ public class ProductQuery implements ProductQueryModelStore {
     }
 
     @Override
-    public Future<List<ProductsQueryModel.ProductQueryModel>> findProductsByName(String regex, int from, int range) {
+    public Future<ProductsQueryModel> findProductsByName(String regex, int from, int range) {
         regex = "%" + regex + "%".toLowerCase();
+        String finalRegex = regex;
         return pgPool
                 .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1 LIMIT $3 OFFSET $2;")
-                .execute(Tuple.of(regex, from, range))
-                .compose(rows -> {
-                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
-                    rows.forEach(row -> {
-                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                row.getUUID("pid"),
-                                row.getString("name"),
-//                                row.getString("image"),
-                                row.getString("description"),
-                                row.getDouble("price"),
-                                row.getInteger("quantity"),
-                                row.getString("brand"),
-                                Category.valueOf(row.getString("category")));
-                        products.add(product);
-                    });
-//                        ProductsQueryModel productList = new ProductsQueryModel(products);
-                    return Future.succeededFuture(products);
+                .execute(Tuple.of(finalRegex, from, range))
+                .compose(productsRecords -> {
+                    return pgPool
+                            .preparedQuery("SELECT COUNT(pid) FROM product WHERE LOWER(name) LIKE $1")
+                            .execute(Tuple.of(finalRegex))
+                            .compose(countRecord -> {
+                                ProductsQueryModel productsQueryModel = new ProductsQueryModel();
+                                List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
+                                try {
+                                    int count = countRecord.iterator().next().getInteger(0);
+                                    productsRecords.forEach(row -> {
+                                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+                                                row.getUUID("pid"),
+                                                row.getString("name"),
+                                                row.getString("description"),
+                                                row.getDouble("price"),
+                                                row.getInteger("quantity"),
+                                                row.getString("brand"),
+                                                Category.valueOf(row.getString("category")));
+                                        productsList.add(product);
+                                    });
+                                    productsQueryModel.setProducts(productsList);
+                                    productsQueryModel.setCount(count);
+                                } catch (Exception e) {
+                                    return Future.succeededFuture(new ProductsQueryModel());
+                                }
+                                return Future.succeededFuture(productsQueryModel);
+                            });
+//                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
+//                    try {
+//                        rows.forEach(row -> {
+//                            ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+//                                    row.getUUID("pid"),
+//                                    row.getString("name"),
+////                                row.getString("image"),
+//                                    row.getString("description"),
+//                                    row.getDouble("price"),
+//                                    row.getInteger("quantity"),
+//                                    row.getString("brand"),
+//                                    Category.valueOf(row.getString("category")));
+//                            products.add(product);
+//                        });
+////                        ProductsQueryModel productList = new ProductsQueryModel(products);
+//                    } catch (NoSuchElementException e) {
+//                        return Future.succeededFuture(new ArrayList<>());
+//                    }
+//                    return Future.succeededFuture(products);
                 });
     }
 
@@ -116,97 +142,192 @@ public class ProductQuery implements ProductQueryModelStore {
                 .execute(Tuple.of(from, range, category))
                 .compose(rows -> {
                     ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
-                    rows.forEach(row -> {
-                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                row.getUUID("pid"),
-                                row.getString("name"),
-                                row.getString("description"),
-                                row.getDouble("price"),
-                                row.getInteger("quantity"),
-                                row.getString("brand"),
-                                Category.valueOf(row.getString("category")));
-                        products.add(product);
-                    });
+                    try {
+                        rows.forEach(row -> {
+                            ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+                                    row.getUUID("pid"),
+                                    row.getString("name"),
+                                    row.getString("description"),
+                                    row.getDouble("price"),
+                                    row.getInteger("quantity"),
+                                    row.getString("brand"),
+                                    Category.valueOf(row.getString("category")));
+                            products.add(product);
+                        });
+                    } catch (NoSuchElementException e) {
+                        return Future.succeededFuture(new ArrayList<>());
+                    }
                     return Future.succeededFuture(products);
                 });
     }
 
     @Override
-    public Future<List<ProductsQueryModel.ProductQueryModel>> findProductsByCategories(String[] category, int from, int range) {
+    public Future<ProductsQueryModel> findProductsByCategories(String[] category, int from, int range) {
         return pgPool
                 .preparedQuery("SELECT * FROM product WHERE category = any ($3) LIMIT $2 OFFSET $1;")
                 .execute(Tuple.of(from, range, category))
-                .compose(rows -> {
-                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
-                    rows.forEach(row -> {
-                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                row.getUUID("pid"),
-                                row.getString("name"),
-                                row.getString("description"),
-                                row.getDouble("price"),
-                                row.getInteger("quantity"),
-                                row.getString("brand"),
-                                Category.valueOf(row.getString("category")));
-                        products.add(product);
-                    });
-                    return Future.succeededFuture(products);
+                .compose(productsRecords -> {
+                    return pgPool
+                            .preparedQuery("SELECT COUNT(pid) FROM product WHERE category = any ($1)")
+                            .execute(Tuple.of(category))
+                            .compose(countRecord -> {
+                                ProductsQueryModel productsQueryModel = new ProductsQueryModel();
+                                List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
+                                try {
+                                    int count = countRecord.iterator().next().getInteger(0);
+                                    productsRecords.forEach(row -> {
+                                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+                                                row.getUUID("pid"),
+                                                row.getString("name"),
+                                                row.getString("description"),
+                                                row.getDouble("price"),
+                                                row.getInteger("quantity"),
+                                                row.getString("brand"),
+                                                Category.valueOf(row.getString("category")));
+                                        productsList.add(product);
+                                    });
+                                    productsQueryModel.setProducts(productsList);
+                                    productsQueryModel.setCount(count);
+                                } catch (Exception e) {
+                                    return Future.succeededFuture(new ProductsQueryModel());
+                                }
+                                return Future.succeededFuture(productsQueryModel);
+                            });
+//                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
+//                    try {
+//                        rows.forEach(row -> {
+//                            ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+//                                    row.getUUID("pid"),
+//                                    row.getString("name"),
+//                                    row.getString("description"),
+//                                    row.getDouble("price"),
+//                                    row.getInteger("quantity"),
+//                                    row.getString("brand"),
+//                                    Category.valueOf(row.getString("category")));
+//                            products.add(product);
+//                        });
+//                    } catch (NoSuchElementException e) {
+//                        return Future.succeededFuture(new ArrayList<>());
+//                    }
+//                    return Future.succeededFuture(products);
                 });
     }
 
     @Override
-    public Future<List<ProductsQueryModel.ProductQueryModel>> findFilteredProductsByCategories(String regex, String[] category, int from, int range) {
+    public Future<ProductsQueryModel> findFilteredProductsByCategories(String regex, String[] category, int from, int range) {
         regex = "%" + regex + "%".toLowerCase();
+        String finalRegex = regex;
         return pgPool
                 .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $2 AND category = any ($1) LIMIT $4 OFFSET $3;")
-                .execute(Tuple.of(category, regex, from, range))
-                .compose(rows -> {
-                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
-                    rows.forEach(row -> {
-                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                row.getUUID("pid"),
-                                row.getString("name"),
-                                row.getString("description"),
-                                row.getDouble("price"),
-                                row.getInteger("quantity"),
-                                row.getString("brand"),
-                                Category.valueOf(row.getString("category")));
-                        products.add(product);
-                    });
-                    return Future.succeededFuture(products);
+                .execute(Tuple.of(category, finalRegex, from, range))
+                .compose(productsRecords -> {
+                    return pgPool
+                            .preparedQuery("SELECT COUNT(pid) FROM product WHERE LOWER(name) LIKE $2 AND category = any ($1);")
+                            .execute(Tuple.of(category, finalRegex))
+                            .compose(countRecord -> {
+                                ProductsQueryModel productsQueryModel = new ProductsQueryModel();
+                                List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
+                                try {
+                                    int count = countRecord.iterator().next().getInteger(0);
+                                    productsRecords.forEach(row -> {
+                                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+                                                row.getUUID("pid"),
+                                                row.getString("name"),
+                                                row.getString("description"),
+                                                row.getDouble("price"),
+                                                row.getInteger("quantity"),
+                                                row.getString("brand"),
+                                                Category.valueOf(row.getString("category")));
+                                        productsList.add(product);
+                                    });
+                                    productsQueryModel.setProducts(productsList);
+                                    productsQueryModel.setCount(count);
+                                } catch (Exception e) {
+                                    return Future.succeededFuture(new ProductsQueryModel());
+                                }
+                                return Future.succeededFuture(productsQueryModel);
+                            });
+//                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
+//                    try {
+//                        rows.forEach(row -> {
+//                            ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+//                                    row.getUUID("pid"),
+//                                    row.getString("name"),
+//                                    row.getString("description"),
+//                                    row.getDouble("price"),
+//                                    row.getInteger("quantity"),
+//                                    row.getString("brand"),
+//                                    Category.valueOf(row.getString("category")));
+//                            products.add(product);
+//                        });
+//                    } catch (NoSuchElementException e) {
+//                        return Future.succeededFuture(new ArrayList<>());
+//                    }
+//                    return Future.succeededFuture(products);
                 });
     }
 
     @Override
-    public Future<List<ProductsQueryModel.ProductQueryModel>> findProducts(int from, int range) {
+    public Future<ProductsQueryModel> findProducts(int from, int range) {
         return pgPool
                 .preparedQuery("SELECT * FROM product LIMIT $2 OFFSET $1;")
                 .execute(Tuple.of(from, range))
-                .compose(rows -> {
-                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
-                    rows.forEach(row -> {
-                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
-                                row.getUUID("pid"),
-                                row.getString("name"),
-//                                row.getString("image"),
-                                row.getString("description"),
-                                row.getDouble("price"),
-                                row.getInteger("quantity"),
-                                row.getString("brand"),
-                                Category.valueOf(row.getString("category")));
-                        products.add(product);
-                    });
-//                    ProductsQueryModel productList = new ProductsQueryModel(products);
-                    return Future.succeededFuture(products);
+                .compose(productsRecords -> {
+                    return pgPool
+                            .query("SELECT COUNT(pid) FROM product")
+                            .execute()
+                            .compose(countRecord -> {
+                                ProductsQueryModel productsQueryModel = new ProductsQueryModel();
+                                List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
+                                try {
+                                    int count = countRecord.iterator().next().getInteger(0);
+                                    productsRecords.forEach(row -> {
+                                        ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+                                                row.getUUID("pid"),
+                                                row.getString("name"),
+                                                row.getString("description"),
+                                                row.getDouble("price"),
+                                                row.getInteger("quantity"),
+                                                row.getString("brand"),
+                                                Category.valueOf(row.getString("category")));
+                                        productsList.add(product);
+                                    });
+                                    productsQueryModel.setProducts(productsList);
+                                    productsQueryModel.setCount(count);
+                                } catch (Exception e) {
+                                    return Future.succeededFuture(new ProductsQueryModel());
+                                }
+                                return Future.succeededFuture(productsQueryModel);
+                            });
+//                    ArrayList<ProductsQueryModel.ProductQueryModel> products = new ArrayList<>();
+//                    try {
+//                        rows.forEach(row -> {
+//                            ProductsQueryModel.ProductQueryModel product = new ProductsQueryModel.ProductQueryModel(
+//                                    row.getUUID("pid"),
+//                                    row.getString("name"),
+////                                row.getString("image"),
+//                                    row.getString("description"),
+//                                    row.getDouble("price"),
+//                                    row.getInteger("quantity"),
+//                                    row.getString("brand"),
+//                                    Category.valueOf(row.getString("category")));
+//                            products.add(product);
+//                        });
+////                    ProductsQueryModel productList = new ProductsQueryModel(products);
+//                    } catch (NoSuchElementException e) {
+//                        return Future.succeededFuture(new ArrayList<>());
+//                    }
+//                    return Future.succeededFuture(products);
                 });
     }
 
     @Override
     public Future<Buffer> findImageById(UUID pid) {
-                    return vertx.fileSystem().readFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg")
-                            .compose(file -> {
-                                Buffer buffer = Buffer.buffer(file.getBytes());
-                                return Future.succeededFuture(buffer);
-                            });
+        return vertx.fileSystem().readFile("/home/souloukos@ad.itsaur.com/IdeaProjects/EshopAPI/src/main/resources/assets/" + pid + ".jpeg")
+                .compose(file -> {
+                    Buffer buffer = Buffer.buffer(file.getBytes());
+                    return Future.succeededFuture(buffer);
+                });
 
 //                    return Future.succeededFuture(records.iterator().next().getString("image"));
     }
