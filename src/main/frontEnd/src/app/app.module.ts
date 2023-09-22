@@ -27,6 +27,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 import { PagingComponent } from './paging/paging.component';
 import { InputTextComponent } from './input-text/input-text.component';
 import { SubFootComponent } from './sub-foot/sub-foot.component';
+import { ProductsNotFoundComponent } from './error/products-not-found/products-not-found.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { SubFootComponent } from './sub-foot/sub-foot.component';
     PagingComponent,
     InputTextComponent,
     SubFootComponent,
+    ProductsNotFoundComponent,
     // PaginatorComponent,
   ],
   imports: [

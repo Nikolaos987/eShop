@@ -5,14 +5,14 @@ a {
   overflow: hidden;
   /*border: 8px green solid;*/
   position: relative;
-  box-shadow: 5px 5px 5px #888888;
+  /*box-shadow: 5px 5px 5px #888888;*/
   border: 2px #b6b6b6 solid;
   background: var(--accent-color);
   width: 276px;
   height: 450px;
-  border-radius: 30px;
+  border-radius: 5px;
   padding-bottom: 30px;
-  margin: 50px auto;
+  /*margin: 50px auto;*/
 }
 .listing-heading {
   color: var(--primary-color);
@@ -22,7 +22,7 @@ a {
   width: 275px;
   height: 275px;
   object-fit: fill;
-  border-radius: 30px 30px 0 0;
+  border-radius: 5px 5px 0 0;
   background-image:url('../../assets/no_image_placeholder.png');
 }
 .listing-price {
@@ -44,8 +44,8 @@ a {
 
 .quantity-display {
   position: absolute;
-  top: ;
-  left: ;
+  /*top: ;*/
+  /*left: ;*/
   right: 5px;
   bottom: 20px;
   /*border: red 1px solid;*/

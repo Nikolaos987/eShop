@@ -1,6 +1,12 @@
 <div class="main">
 
-  <app-search-bar [help]="helpText" [total]="totalProducts" (result)="setText($event)" (click)="getProducts()"></app-search-bar> <!-- TODO: save the filtered text & call getProducts -->
+  <div *ngIf="totalProducts && totalProducts > 0">
+
+  </div>
+
+  <app-search-bar [help]="helpText" [total]="totalProducts" (result)="setText($event)"></app-search-bar>
+  <!-- TODO: save the filtered text -->
+
   <div class="flex-box">
     <div class="categories-list">
       Categories:
@@ -9,12 +15,16 @@
         <label [for]="category">{{category}}</label>
       </div>
     </div>
-    <div class="products-list">
+    <div *ngIf="totalProducts && totalProducts > 0" class="products-list">
       <app-product-list [products]="productList"></app-product-list>  <!--[image]="image"-->
+    </div>
+    <div *ngIf="productList && productList.length == 0" class="products-not-found">
+      <app-products-not-found></app-products-not-found>
     </div>
   </div>
 
-  <app-paging
+
+  <app-paging *ngIf="totalProducts && totalProducts > 0"
     [range]="range"
     [pages]="pages"
     [page]="page"
@@ -22,4 +32,6 @@
     (pageOutput)="setPage($event)">
   </app-paging>
 
+
 </div>
+

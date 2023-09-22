@@ -6,7 +6,10 @@
 
 body {
   /*background: #eedfde;*/
-  background: #FFFFF1;
+
+  /*background: #FFFFF1;*/
+  background: #f0f0f0;
+
   /*background-image: url("/assets/background.png");*/
   /*font-family: 'Be Vietnam Pro', sans-serif;*/
 }
