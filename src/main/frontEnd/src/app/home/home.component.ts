@@ -84,6 +84,7 @@ export class HomeComponent implements OnInit {
 
   public getCategoryProducts(category: string) {
     this.checkArray(category);
+    this.page = 1;
     this.getProducts();
   }
 
