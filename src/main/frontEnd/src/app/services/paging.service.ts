@@ -5,13 +5,18 @@ import {Page} from "../interfaces/page";
   providedIn: 'root'
 })
 export class PagingService {
-  public page: Page | undefined = {range: 5};
+  // public page: Page | undefined = {range: 5};
+  public range: number | undefined = 5;
+  public page: number | undefined = 1;
 
   constructor() {
   }
 
   public newRange(r: number) {
-    this.page = {range: r}
+    this.range = r;
+  }
+  public newPage(p: number) {
+    this.page = p;
   }
 
 }

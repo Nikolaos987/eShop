@@ -23,7 +23,8 @@ export class PagingComponent implements OnInit {
 
   ngOnInit() {
     // this.rangeOutput.emit(5)
-    this.range = this._pagingService.page?.range;
+    this.range = this._pagingService.range;
+    this.page = this._pagingService.page;
   }
 
   getPage(page: number) {
