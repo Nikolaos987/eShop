@@ -147,9 +147,9 @@ export class ProductsService {
         catchError(this.handleError))
   }
 
-  public fetchAllCategories(): Observable<Category[]> {
+  public fetchAllCategories(): Observable<{ categories: Array<Category> }> {
     return this.http
-      .get<Category[]>("/api/product/categories/names",
+      .get<{ categories: Array<Category> }>("/api/product/categories/names",
         {responseType: "json"})
       .pipe(
         catchError(this.handleError))

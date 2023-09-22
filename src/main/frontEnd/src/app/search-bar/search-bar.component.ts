@@ -31,6 +31,7 @@ export class SearchBarComponent implements OnInit {
 
   clearText(text: string) {
     this.txt='';
+    this.result.emit(this.txt);
     // this.filter(this.txt);
   }
 

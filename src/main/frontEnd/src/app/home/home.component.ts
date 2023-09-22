@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
     this.productsService.fetchAllCategories()
       .subscribe({
         next: value => {
-          this.categoriesJson = value;
+          this.categoriesJson = value.categories;
           this.categoriesJson.forEach(category => {
             this.categoriesArray?.push(category.category);
           })
@@ -177,7 +177,7 @@ export class HomeComponent implements OnInit {
   }
 
   public getProductsByCategories() {
-    this.productsService.fetchProductsByCategories(this.categoriesChecked, this.page, this.range) // TODO: rename to fetchTotalFilteredProducts
+    this.productsService.fetchProductsByCategories(this.categoriesChecked, this.page, this.range)
       .subscribe({
         next: (value) => {
           this.totalProducts = value.totalCount;
