@@ -15,7 +15,7 @@ CREATE TABLE users (
 /* create table product*/
 DROP TABLE IF EXISTS product CASCADE;
 CREATE TABLE product (
-    pid uuid DEFAULT uuid_generate_v4(),  /* gen_random_uuid () */
+    pid uuid /*DEFAULT uuid_generate_v4()*/,  /* gen_random_uuid () */
     name varchar(50) NOT NULL,
 --     image varchar(250),
     description VARCHAR(500),
