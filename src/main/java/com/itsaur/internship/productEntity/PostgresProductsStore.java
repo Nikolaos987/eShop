@@ -15,6 +15,7 @@ import io.vertx.sqlclient.Tuple;
 
 import javax.swing.text.html.FormSubmitEvent;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class PostgresProductsStore implements ProductsStore {
@@ -133,7 +134,7 @@ public class PostgresProductsStore implements ProductsStore {
 //                .execute(Tuple.of())
 //                .compose(records -> Future.succeededFuture());
 
-        return updateNext(items, 0)
+        return updateNextItem(items, 0)
                 .compose(result -> Future.succeededFuture());
     }
 
@@ -153,14 +154,32 @@ public class PostgresProductsStore implements ProductsStore {
                 .compose(res -> Future.succeededFuture());
     }
 
-    public Future<Void> updateNext(ArrayList<CartItem> items, int position) {
+    @Override
+    public Future<UUID> addRelatedProduct(UUID r_pid, UUID to_pid) {
+        return pgPool
+                .preparedQuery("INSERT INTO related_products (r_pid, to_pid) VALUES ($1, $2)")
+                .execute(Tuple.of(r_pid, to_pid))
+                .compose(records -> Future.succeededFuture(r_pid));
+    }
+
+    @Override
+    public Future<UUID> findRelatedProduct(UUID r_pid, UUID to_pid) {
+        return pgPool
+                .preparedQuery("SELECT * FROM related_products WHERE r_pid = $1 AND to_pid = $2")
+                .execute(Tuple.of(r_pid, to_pid))
+                .compose(records -> Future.succeededFuture(r_pid))
+                .otherwiseEmpty();
+    }
+
+    public Future<Void> updateNextItem(ArrayList<CartItem> items, int position) {
         return inStock(items.get(position).pid(), items.get(position).quantity())
                 .compose(result -> pgPool
                         .preparedQuery("UPDATE product SET quantity = quantity - $1 WHERE pid = $2")
                         .execute(Tuple.of(items.get(position).quantity(), items.get(position).pid()))
                         .compose(records2 -> {
-                            if (position + 1 < items.size())
-                                return updateNext(items, position + 1);
+                            if (position + 1 < items.size()) {
+                                return updateNextItem(items, position + 1);
+                            }
                             return Future.succeededFuture();
                         }));
     }

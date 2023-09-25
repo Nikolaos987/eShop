@@ -5,6 +5,7 @@ import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public interface ProductsStore {
@@ -25,4 +26,7 @@ public interface ProductsStore {
 
     Future<Void> updateProducts(UUID uid);
 
+    Future<UUID> addRelatedProduct(UUID r_pid, UUID to_pid);
+
+    Future<UUID> findRelatedProduct(UUID r_pid, UUID to_pid);
 }

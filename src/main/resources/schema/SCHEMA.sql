@@ -12,7 +12,7 @@ CREATE TABLE users (
 );
 
 
-/* create table product*/
+/* create table product */
 DROP TABLE IF EXISTS product CASCADE;
 CREATE TABLE product (
     pid uuid /*DEFAULT uuid_generate_v4()*/,  /* gen_random_uuid () */
@@ -27,7 +27,7 @@ CREATE TABLE product (
 );
 
 
-/* create table cart*/
+/* create table cart */
 DROP TABLE IF EXISTS cart CASCADE;
 CREATE TABLE cart (
     cid uuid DEFAULT uuid_generate_v4(),
@@ -48,6 +48,17 @@ CREATE TABLE cartItem (
     PRIMARY KEY (itemid),
     FOREIGN KEY (cid) REFERENCES cart(cid),
     FOREIGN KEY (pid) REFERENCES product(pid)
+);
+
+/* create table related_products */
+DROP TABLE IF EXISTS related_products CASCADE;
+CREATE TABLE related_products (
+    id uuid DEFAULT uuid_generate_v4(),
+    r_pid uuid,
+    to_pid uuid /*DEFAULT uuid_generate_v4()*/,  /* gen_random_uuid () */
+    PRIMARY KEY (id),
+    FOREIGN KEY (r_pid) REFERENCES product(pid),
+    FOREIGN KEY (to_pid) REFERENCES product(pid)
 );
 
 

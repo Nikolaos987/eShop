@@ -62,4 +62,15 @@ public class ProductService {
                 });
     }
 
+    public Future<UUID> relateProduct(UUID r_pid, UUID to_pid) {
+        return productsStore.findRelatedProduct(r_pid, to_pid)
+                .otherwiseEmpty()
+                .compose(pid -> {
+                    if (pid == null) {
+                        return productsStore.addRelatedProduct(r_pid, to_pid);
+                    }
+                    return Future.failedFuture(new IllegalArgumentException("relation already exists"));
+                });
+    }
+
 }
