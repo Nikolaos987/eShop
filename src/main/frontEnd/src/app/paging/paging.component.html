@@ -1,6 +1,6 @@
 <div class="paging-container">
   <div class="toBeShown">
-    <label for="itemsShown">Choose number of items to be shown: </label>
+    <label for="itemsShown">Number of Items to be Shown: </label>
     <select class="selector" name="itemsShown" id="itemsShown">
       <option [value]="range" selected>{{range}}</option>
       <option *ngIf="range!=2" [value]="2" (click)="getRange(2)">2</option>

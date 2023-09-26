@@ -164,6 +164,6 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   testClick() {
-    this._router.navigateByUrl('/details/4e323bc6-e034-40b5-a98c-8b48c9da3050');
+    this._router.navigateByUrl('/details/a5979c00-f262-4d2f-a14d-60b6dbeb1310');
   }
 }

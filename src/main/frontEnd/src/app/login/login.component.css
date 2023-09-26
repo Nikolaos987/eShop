@@ -11,7 +11,8 @@
   padding: 20px;
   border-radius: 10px;
   overflow: scroll;
-  box-shadow: 0 0 10px black;
+  /*box-shadow: 0 0 10px black;*/
+  outline: 2px #c3c3c3 solid;
 }
 
 .center h1 {
