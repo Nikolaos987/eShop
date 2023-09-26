@@ -6,6 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface RelatedProductsQueryModelStore {
-//    Future<RelatedProductsQueryModel> addRelation(UUID pid, List<UUID> pids);
-//    Future<> getRelation(UUID pid);
+    Future<RelatedProductsQueryModel> getRelatedProducts(UUID r_pid);
 }

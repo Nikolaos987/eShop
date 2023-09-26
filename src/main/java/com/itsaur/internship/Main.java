@@ -5,6 +5,7 @@ import com.itsaur.internship.cartEntity.PostgresCartsStore;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.itsaur.internship.productEntity.Product;
+import com.itsaur.internship.query.relatedProducts.RelatedProductsQuery;
 import io.vertx.core.Vertx;
 import com.itsaur.internship.productEntity.PostgresProductsStore;
 import com.itsaur.internship.productEntity.ProductService;
@@ -58,7 +59,8 @@ public class Main {
                                 cartService,
                                 new CartQuery(pgPool),
                                 new ProductQuery(pgPool),
-                                new UserQuery(pgPool)));
+                                new UserQuery(pgPool),
+                                new RelatedProductsQuery(pgPool)));
                     }
                 }
 //                case "console" -> {

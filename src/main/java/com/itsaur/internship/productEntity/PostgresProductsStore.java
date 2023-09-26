@@ -167,7 +167,10 @@ public class PostgresProductsStore implements ProductsStore {
         return pgPool
                 .preparedQuery("SELECT * FROM related_products WHERE r_pid = $1 AND to_pid = $2")
                 .execute(Tuple.of(r_pid, to_pid))
-                .compose(records -> Future.succeededFuture(r_pid))
+                .compose(records -> {
+                    UUID id = records.iterator().next().getUUID("id");
+                    return Future.succeededFuture(id);
+                })
                 .otherwiseEmpty();
     }
 

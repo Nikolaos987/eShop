@@ -1,6 +1,7 @@
 package com.itsaur.internship;
 
 import com.itsaur.internship.cartEntity.CartService;
+import com.itsaur.internship.query.relatedProducts.RelatedProductsQueryModelStore;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Promise;
@@ -27,15 +28,18 @@ public class Api extends AbstractVerticle {
     private final ProductQueryModelStore productQueryModelStore;
     private final UserQueryModelStore userQueryModelStore;
 
+    private final RelatedProductsQueryModelStore relatedProductsQueryModelStore;
+
     public Api(UserService userService, ProductService productService, CartService cartService,
                CartQueryModelStore cartQueryModelStore, ProductQueryModelStore productQueryModelStore,
-               UserQueryModelStore userQueryModelStore) {
+               UserQueryModelStore userQueryModelStore, RelatedProductsQueryModelStore relatedProductsQueryModelStore) {
         this.userService = userService;
         this.productService = productService;
         this.cartService = cartService;
         this.cartQueryModelStore = cartQueryModelStore;
         this.productQueryModelStore = productQueryModelStore;
         this.userQueryModelStore = userQueryModelStore;
+        this.relatedProductsQueryModelStore = relatedProductsQueryModelStore;
     }
 
     @Override
@@ -238,7 +242,7 @@ public class Api extends AbstractVerticle {
                     .relateProduct(r_pid, to_pid)
                     .onSuccess(v -> {
                         JsonObject pidJson = new JsonObject();
-                        pidJson.put("r_pid", v);
+                        pidJson.put("id", v);
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(pidJson.toBuffer());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
@@ -332,6 +336,24 @@ public class Api extends AbstractVerticle {
                     })
                     .onFailure(v ->
                             ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
+
+
+
+        /* RELATED PRODUCTS ENTITY */
+
+        router.get("/related_products/:r_pid").handler(ctx -> {
+            Objects.requireNonNull(ctx.pathParam("r_pid"));
+            UUID r_pid = UUID.fromString(ctx.pathParam("r_pid"));
+            this.relatedProductsQueryModelStore
+                    .getRelatedProducts(r_pid)
+                    .onSuccess(v -> {
+                        JsonObject productsJson = new JsonObject();
+                        productsJson.put("products", v.products());
+                        ctx.response().setStatusCode(200).setStatusMessage("OK").end(productsJson.toBuffer());
+                    })
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
 

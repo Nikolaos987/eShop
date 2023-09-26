@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {ProductsService} from "../services/products.service";
 import {ActivatedRoute, Router} from '@angular/router';
 import {Location} from '@angular/common';
@@ -7,6 +7,7 @@ import {UsersService} from "../services/users.service";
 import {FormControl, FormGroup} from "@angular/forms";
 import {Product} from "../interfaces/product";
 import {User} from "../interfaces/user";
+import {Pid} from "../interfaces/pid";
 
 @Component({
   selector: 'app-product-details',
@@ -16,6 +17,10 @@ import {User} from "../interfaces/user";
 })
 export class ProductDetailsComponent implements OnInit {
   currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
+
+  pid: Pid = {
+    to_pid: undefined
+  }
 
   // @Input() product: Product = {
   product: Product = {
@@ -29,14 +34,22 @@ export class ProductDetailsComponent implements OnInit {
     category: undefined,
   };
 
+  relatedProducts: Product[] = [];
+
   addToCartForm = new FormGroup({
     quantity: new FormControl(1)
+  })
+
+  relationForm = new FormGroup({
+    to_pidInput: new FormControl('')
   })
 
   formData: FormData = new FormData();
   errorMessage: string = '';
   successMessage: string = '';
   productExists: boolean = false;
+  relationButtonClicked: boolean = false;
+  to_pidInput: string = '';
 
   constructor(
     private productsService: ProductsService,
@@ -53,9 +66,20 @@ export class ProductDetailsComponent implements OnInit {
       .subscribe({
         next: value => {
           this.product.pid = value.get('pid');
+          console.log("1st: " + this.product.pid)
           this.getProduct();
-        }
-      })
+          this.productsService
+            .fetchRelatedProducts(this.product.pid)
+            .subscribe({
+              next: value => {
+                console.log("2nd: " + this.product.pid);
+                this.relatedProducts = value.products
+              },
+              error: err => console.error(err)
+            })
+        },
+        error: err => console.error(err)
+      });
   }
 
   getProduct(): void {
@@ -123,6 +147,20 @@ export class ProductDetailsComponent implements OnInit {
       this.formData.append('file', file);
       console.log("form data: " + this.formData);
     }
+  }
+
+  relationButton() {
+    this.pid = {
+      to_pid: this.relationForm.value.to_pidInput
+    }
+    console.log('this.to_pidInput = ' + this.relationForm.get('to_pidInput'));
+    // this.relationButtonClicked = true;
+    this.productsService
+      .postProductRelation(this.product.pid, this.pid)
+      .subscribe({
+        next: value => console.log('id: ' + value.id),
+        error: err => console.error(err)
+      })
   }
 
   testClick() {

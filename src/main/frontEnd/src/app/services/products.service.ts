@@ -9,6 +9,7 @@ import {AbstractControl, FormControl, FormGroup, ɵFormGroupValue, ɵTypedOrUnty
 import {Paging} from "../interfaces/paging";
 import {Category} from "../interfaces/category";
 import {Item} from "../interfaces/item";
+import {Pid} from "../interfaces/pid";
 
 @Injectable({
   providedIn: 'root'
@@ -226,6 +227,23 @@ export class ProductsService {
         .pipe(
           catchError(this.handleError))
     } else return new Observable<{ products: Product[], totalCount: number }>();
+  }
+
+  public postProductRelation(r_pid: string | null | undefined, data: Pid): Observable<{ id: string }> {
+    return this.http
+      .post<{ id: string }> ('/api/product/' + r_pid + '/relate/' + data.to_pid,
+        {},
+        {responseType: "json"})
+      .pipe(
+        catchError(this.handleError));
+  }
+
+  public fetchRelatedProducts(r_pid: string | null | undefined): Observable<{ products: Product[] }> {
+    return this.http
+      .get<{ products: Product[] }> ('/api/related_products/' + r_pid,
+        {responseType: "json"})
+      .pipe(
+        catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {
