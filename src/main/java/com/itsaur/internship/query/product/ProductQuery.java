@@ -41,72 +41,62 @@ public class ProductQuery implements ProductQueryModelStore {
         regex = "%" + regex + "%".toLowerCase();
         String finalRegex = regex;
         return pgPool
-                .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $1 LIMIT $3 OFFSET $2;")
+                .preparedQuery("SELECT * , COUNT(*) OVER() as totalcount FROM product WHERE LOWER(name) LIKE $1 LIMIT $3 OFFSET $2;")
                 .execute(Tuple.of(finalRegex, from, range))
                 .compose(productsRecords -> {
-                    return pgPool
-                            .preparedQuery("SELECT COUNT(pid) FROM product WHERE LOWER(name) LIKE $1")
-                            .execute(Tuple.of(finalRegex))
-                            .compose(countRecord -> {
-                                List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
-                                ProductsQueryModel productsQueryModel;
-                                try {
-                                    int count = countRecord.iterator().next().getInteger(0);
-                                    productsRecords.forEach(row -> {
-                                        UUID pid = row.getUUID("pid");
-                                        String name = row.getString("name");
-                                        String description = row.getString("description");
-                                        double price = row.getDouble("price");
-                                        int quantity = row.getInteger("quantity");
-                                        String brand = row.getString("brand");
-                                        String category = row.getString("category");
+                    List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
+                    ProductsQueryModel productsQueryModel;
+                    try {
+                        int count = productsRecords.iterator().next().getInteger("totalcount");
+                        productsRecords.forEach(row -> {
+                            UUID pid = row.getUUID("pid");
+                            String name = row.getString("name");
+                            String description = row.getString("description");
+                            double price = row.getDouble("price");
+                            int quantity = row.getInteger("quantity");
+                            String brand = row.getString("brand");
+                            String category = row.getString("category");
 
-                                        ProductsQueryModel.ProductQueryModel productQueryModel = new ProductsQueryModel
-                                                .ProductQueryModel(pid, name, description, price, quantity, brand, category);
-                                        productsList.add(productQueryModel);
-                                    });
-                                    productsQueryModel = new ProductsQueryModel(productsList, count);
-                                } catch (Exception e) {
-                                    return Future.succeededFuture(new ProductsQueryModel(new ArrayList<>(), 0));
-                                }
-                                return Future.succeededFuture(productsQueryModel);
-                            });
+                            ProductsQueryModel.ProductQueryModel productQueryModel = new ProductsQueryModel
+                                    .ProductQueryModel(pid, name, description, price, quantity, brand, category);
+                            productsList.add(productQueryModel);
+                        });
+                        productsQueryModel = new ProductsQueryModel(productsList, count);
+                    } catch (Exception e) {
+                        return Future.succeededFuture(new ProductsQueryModel(new ArrayList<>(), 0));
+                    }
+                    return Future.succeededFuture(productsQueryModel);
                 });
     }
 
     @Override
     public Future<ProductsQueryModel> findProductsByCategories(String[] category, int from, int range) {
         return pgPool
-                .preparedQuery("SELECT * FROM product WHERE category = any ($3) LIMIT $2 OFFSET $1;")
+                .preparedQuery("SELECT * , COUNT(*) OVER() as totalcount FROM product WHERE category = any ($3) LIMIT $2 OFFSET $1;")
                 .execute(Tuple.of(from, range, category))
                 .compose(productsRecords -> {
-                    return pgPool
-                            .preparedQuery("SELECT COUNT(pid) FROM product WHERE category = any ($1)")
-                            .execute(Tuple.of(category))
-                            .compose(countRecord -> {
-                                List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
-                                ProductsQueryModel productsQueryModel;
-                                try {
-                                    int count = countRecord.iterator().next().getInteger(0);
-                                    productsRecords.forEach(row -> {
-                                        UUID pid = row.getUUID("pid");
-                                        String name = row.getString("name");
-                                        String description = row.getString("description");
-                                        double price = row.getDouble("price");
-                                        int quantity = row.getInteger("quantity");
-                                        String brand = row.getString("brand");
-                                        String category2 = row.getString("category");
+                    List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
+                    ProductsQueryModel productsQueryModel;
+                    try {
+                        int count = productsRecords.iterator().next().getInteger("totalcount");
+                        productsRecords.forEach(row -> {
+                            UUID pid = row.getUUID("pid");
+                            String name = row.getString("name");
+                            String description = row.getString("description");
+                            double price = row.getDouble("price");
+                            int quantity = row.getInteger("quantity");
+                            String brand = row.getString("brand");
+                            String category2 = row.getString("category");
 
-                                        ProductsQueryModel.ProductQueryModel productQueryModel = new ProductsQueryModel
-                                                .ProductQueryModel(pid, name, description, price, quantity, brand, category2);
-                                        productsList.add(productQueryModel);
-                                    });
-                                    productsQueryModel = new ProductsQueryModel(productsList, count);
-                                } catch (Exception e) {
-                                    return Future.succeededFuture(new ProductsQueryModel(new ArrayList<>(), 0));
-                                }
-                                return Future.succeededFuture(productsQueryModel);
-                            });
+                            ProductsQueryModel.ProductQueryModel productQueryModel = new ProductsQueryModel
+                                    .ProductQueryModel(pid, name, description, price, quantity, brand, category2);
+                            productsList.add(productQueryModel);
+                        });
+                        productsQueryModel = new ProductsQueryModel(productsList, count);
+                    } catch (Exception e) {
+                        return Future.succeededFuture(new ProductsQueryModel(new ArrayList<>(), 0));
+                    }
+                    return Future.succeededFuture(productsQueryModel);
                 });
     }
 
@@ -115,72 +105,62 @@ public class ProductQuery implements ProductQueryModelStore {
         regex = "%" + regex + "%".toLowerCase();
         String finalRegex = regex;
         return pgPool
-                .preparedQuery("SELECT * FROM product WHERE LOWER(name) LIKE $2 AND category = any ($1) LIMIT $4 OFFSET $3;")
+                .preparedQuery("SELECT * , COUNT(*) OVER() as totalcount FROM product WHERE LOWER(name) LIKE $2 AND category = any ($1) LIMIT $4 OFFSET $3;")
                 .execute(Tuple.of(category, finalRegex, from, range))
                 .compose(productsRecords -> {
-                    return pgPool
-                            .preparedQuery("SELECT COUNT(pid) FROM product WHERE LOWER(name) LIKE $2 AND category = any ($1);")
-                            .execute(Tuple.of(category, finalRegex))
-                            .compose(countRecord -> {
-                                List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
-                                ProductsQueryModel productsQueryModel;
-                                try {
-                                    int count = countRecord.iterator().next().getInteger(0);
-                                    productsRecords.forEach(row -> {
-                                        UUID pid = row.getUUID("pid");
-                                        String name = row.getString("name");
-                                        String description = row.getString("description");
-                                        double price = row.getDouble("price");
-                                        int quantity = row.getInteger("quantity");
-                                        String brand = row.getString("brand");
-                                        String category2 = row.getString("category");
+                    List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
+                    ProductsQueryModel productsQueryModel;
+                    try {
+                        int count = productsRecords.iterator().next().getInteger("totalcount");
+                        productsRecords.forEach(row -> {
+                            UUID pid = row.getUUID("pid");
+                            String name = row.getString("name");
+                            String description = row.getString("description");
+                            double price = row.getDouble("price");
+                            int quantity = row.getInteger("quantity");
+                            String brand = row.getString("brand");
+                            String category2 = row.getString("category");
 
-                                        ProductsQueryModel.ProductQueryModel productQueryModel = new ProductsQueryModel
-                                                .ProductQueryModel(pid, name, description, price, quantity, brand, category2);
-                                        productsList.add(productQueryModel);
-                                    });
-                                    productsQueryModel = new ProductsQueryModel(productsList, count);
-                                } catch (Exception e) {
-                                    return Future.succeededFuture(new ProductsQueryModel(new ArrayList<>(), 0));
-                                }
-                                return Future.succeededFuture(productsQueryModel);
-                            });
+                            ProductsQueryModel.ProductQueryModel productQueryModel = new ProductsQueryModel
+                                    .ProductQueryModel(pid, name, description, price, quantity, brand, category2);
+                            productsList.add(productQueryModel);
+                        });
+                        productsQueryModel = new ProductsQueryModel(productsList, count);
+                    } catch (Exception e) {
+                        return Future.succeededFuture(new ProductsQueryModel(new ArrayList<>(), 0));
+                    }
+                    return Future.succeededFuture(productsQueryModel);
                 });
     }
 
     @Override
     public Future<ProductsQueryModel> findProducts(int from, int range) {
         return pgPool
-                .preparedQuery("SELECT * FROM product LIMIT $2 OFFSET $1;")
+                .preparedQuery("SELECT * , COUNT(*) OVER() as totalcount FROM product LIMIT $2 OFFSET $1;")
                 .execute(Tuple.of(from, range))
                 .compose(productsRecords -> {
-                    return pgPool
-                            .query("SELECT COUNT(pid) FROM product")
-                            .execute()
-                            .compose(countRecord -> {
-                                List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
-                                ProductsQueryModel productsQueryModel;
-                                try {
-                                    int count = countRecord.iterator().next().getInteger(0);
-                                    productsRecords.forEach(row -> {
-                                        UUID pid = row.getUUID("pid");
-                                        String name = row.getString("name");
-                                        String description = row.getString("description");
-                                        double price = row.getDouble("price");
-                                        int quantity = row.getInteger("quantity");
-                                        String brand = row.getString("brand");
-                                        String category = row.getString("category");
+                    List<ProductsQueryModel.ProductQueryModel> productsList = new ArrayList<>();
+                    ProductsQueryModel productsQueryModel;
+                    try {
+                        int count = productsRecords.iterator().next().getInteger("totalcount");
+                        productsRecords.forEach(row -> {
+                            UUID pid = row.getUUID("pid");
+                            String name = row.getString("name");
+                            String description = row.getString("description");
+                            double price = row.getDouble("price");
+                            int quantity = row.getInteger("quantity");
+                            String brand = row.getString("brand");
+                            String category = row.getString("category");
 
-                                        ProductsQueryModel.ProductQueryModel productQueryModel = new ProductsQueryModel
-                                                .ProductQueryModel(pid, name, description, price, quantity, brand, category);
-                                        productsList.add(productQueryModel);
-                                    });
-                                    productsQueryModel = new ProductsQueryModel(productsList, count);
-                                } catch (Exception e) {
-                                    return Future.succeededFuture(new ProductsQueryModel(new ArrayList<>(), 0));
-                                }
-                                return Future.succeededFuture(productsQueryModel);
-                            });
+                            ProductsQueryModel.ProductQueryModel productQueryModel = new ProductsQueryModel
+                                    .ProductQueryModel(pid, name, description, price, quantity, brand, category);
+                            productsList.add(productQueryModel);
+                        });
+                        productsQueryModel = new ProductsQueryModel(productsList, count);
+                    } catch (Exception e) {
+                        return Future.succeededFuture(new ProductsQueryModel(new ArrayList<>(), 0));
+                    }
+                    return Future.succeededFuture(productsQueryModel);
                 });
     }
 
