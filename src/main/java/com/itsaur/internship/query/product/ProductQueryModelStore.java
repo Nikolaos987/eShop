@@ -1,5 +1,7 @@
 package com.itsaur.internship.query.product;
 
+import com.itsaur.internship.productEntity.Product;
+import com.itsaur.internship.query.relatedProducts.RelatedProductsQueryModel;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
@@ -13,4 +15,5 @@ public interface ProductQueryModelStore {
     Future<ProductsQueryModel> findProducts(int from, int range);
     Future<Buffer> findImageById(UUID pid);
     Future<CategoriesQueryModel> fetchCategories();
+    Future<List<Product>> getRelatedProducts(UUID r_pid);
 }

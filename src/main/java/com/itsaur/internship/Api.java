@@ -346,11 +346,11 @@ public class Api extends AbstractVerticle {
         router.get("/related_products/:r_pid").handler(ctx -> {
             Objects.requireNonNull(ctx.pathParam("r_pid"));
             UUID r_pid = UUID.fromString(ctx.pathParam("r_pid"));
-            this.relatedProductsQueryModelStore
+            this.productQueryModelStore
                     .getRelatedProducts(r_pid)
                     .onSuccess(v -> {
                         JsonObject productsJson = new JsonObject();
-                        productsJson.put("products", v.products());
+                        productsJson.put("products", v);
                         ctx.response().setStatusCode(200).setStatusMessage("OK").end(productsJson.toBuffer());
                     })
                     .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
