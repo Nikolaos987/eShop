@@ -10,7 +10,7 @@ a img {
   display: flex;
   flex-wrap: nowrap;
   flex-flow: nowrap;
-  /*position: relative;*/
+  position: relative;
   height: 72px;
   background-color: #d3acac;
   border-bottom: #333 1px solid;
@@ -125,7 +125,7 @@ a span:not(.logo, .logo-span) {
 }
 
 .left {
-  flex-grow: 1; /* TODO: HOW? */
+  flex-grow: 1;
 }
 
 .right {
