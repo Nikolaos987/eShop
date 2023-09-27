@@ -43,7 +43,7 @@
 
 .page-buttons {
 }
-.page-buttons input[type="button"] {
+.page-buttons input[type="button"], #more, #less {
   /*border-radius: 50%;*/
   font-size: 20px;
   box-shadow: none;

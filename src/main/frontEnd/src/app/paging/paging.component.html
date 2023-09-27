@@ -10,9 +10,16 @@
       <option *ngIf="range!=50" [value]="50" (click)="getRange(50)">50</option>
     </select>
   </div>
+
+<!--  <input class="prev-next-buttons" type="button" value="<<" (click)="prevGroup()">-->
   <input class="prev-next-buttons" type="button" value="Previous" (click)="prevPage()">
+
+  <input *ngIf="groupIndex >= 1" type="button" id="less" value="..." (click)="prevGroup()">
   <div class="page-buttons" *ngFor="let num of pages">
     <input type="button" id="pageNum" [value]="num" [class.focused]="page==num" (click)="getPage(num)">
   </div>
+  <input *ngIf="groupIndex < pagesGroup.length - 1" type="button" id="more" value="..." (click)="nextGroup()">
+
   <input class="prev-next-buttons" type="button" value="Next" (click)="nextPage()">
+<!--  <input class="prev-next-buttons" type="button" value=">>" (click)="nextGroup()">-->
 </div>

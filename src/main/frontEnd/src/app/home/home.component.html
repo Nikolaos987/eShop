@@ -28,8 +28,12 @@
     [range]="range"
     [pages]="pages"
     [page]="page"
+    [groupIndex]="pagesGroupIndex"
+    [groupLength]="groupLength"
+    [pagesGroup]="pagesList"
     (rangeOutput)="setRange($event)"
-    (pageOutput)="setPage($event)">
+    (pageOutput)="setPage($event)"
+    (groupIndexOutput)="setPageGroupIndex($event)">
   </app-paging>
 
 

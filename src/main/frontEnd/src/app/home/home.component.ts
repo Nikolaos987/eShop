@@ -23,11 +23,17 @@ export class HomeComponent implements OnInit {
 
   totalProducts: number | null | undefined;
   totalPages: number | null | undefined;
-  pages: number[] | null | undefined = [];
+  pages: number[] = [];
+
+  pagesList: Array<Array<number>> = [];
+  groupLength: number = 4;
+  pagesGroupIndex: number = 0;
 
   from: number = 0;
   page: number | undefined = this._pagingService.page;
   range: number | undefined = this._pagingService.range;
+
+  flag: boolean = false;
 
   productList: Product[] | undefined;
   helpText = "Search any product...";
@@ -40,6 +46,8 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.flag = true;
+    this.pagesGroupIndex = this._pagingService.pageGroup;
     this.range = this._pagingService.range;
     this.page = this._pagingService.page;
     const userData: User = JSON.parse(window.localStorage.getItem('user') || '{}')
@@ -57,14 +65,16 @@ export class HomeComponent implements OnInit {
         complete: () => {
           // this.productsService.fetchTotalProducts()
           this.range = this._pagingService.range;
-
           this.getAllProducts(); // todo: 1st call
         }
       });
   }
 
   public setText(text: string) {
+    this.flag = true;
     this.filterText = text;
+    this.pagesGroupIndex = 0;
+    this._pagingService.newPageGroup(this.pagesGroupIndex);
     this.page = 1;
     this.getProducts();
   }
@@ -75,15 +85,29 @@ export class HomeComponent implements OnInit {
     this._pagingService.newPage(page);
   }
 
+  public setPageGroupIndex(index: number) {
+    this.pagesGroupIndex = index;
+    this._pagingService.newPageGroup(this.pagesGroupIndex);
+    // this.page = this.pagesList[this.pagesGroupIndex].length;
+    this.page = this.pagesList[this.pagesGroupIndex][0];
+    this.getProducts();
+  }
+
   public setRange(range: number) {
+    this.flag = true;
     this.range = range;
+    this.pagesGroupIndex = 0;
+    this._pagingService.newPageGroup(this.pagesGroupIndex);
     this.page = 1;
     this.getProducts();
     this._pagingService.newRange(range);
   }
 
   public getCategoryProducts(category: string) {
+    this.flag = true;
     this.checkArray(category);
+    this.pagesGroupIndex = 0;
+    this._pagingService.newPageGroup(this.pagesGroupIndex);
     this.page = 1;
     this.getProducts();
   }
@@ -103,23 +127,50 @@ export class HomeComponent implements OnInit {
 
   public popPages() {
     if (this.totalPages) {
-      console.log("popping pages...")
-      for (let i = 1; i <= this.totalPages; i++) { // TODO: for (let i = 1; i <= this.totalPages; i++)
-        this.pages?.pop();
+      // for (let i = 1; i <= this.totalPages; i++) { // TODO: for (let i = 1; i <= this.totalPages; i++)
+      //   this.pages?.pop();
+      // }
+      for (let i = 0; i < this.pagesList.length; i++) {
+        for (let j = 0; j < this.pagesList[i].length; j++) {
+          this.pages?.pop(); // at().at();
+        }
       }
+    }
+  }
+
+  public dividePages() {
+    if (this.totalPages) {
+      let shares: number = Math.ceil(this.totalPages / this.groupLength);
+      for (let i = 0; i < shares; i++) {
+        let foo: number[] = [];
+        for (let j = 1; j <= this.groupLength; j++) { //todo: here
+          if (i * this.groupLength + j <= this.totalPages) {
+            foo.push(i * this.groupLength + j);
+          }
+        }
+        this.pagesList.push(foo);
+        // this.pagesList[i] = this.pages;
+      }
+      // for (let i = 0; i < this.pagesList[this.pagesGroupIndex].length; i++) {
+      //   this.pages?.push(this.pagesList[this.pagesGroupIndex][i]); // at().at();
+      // }
+      // this.page = this.pages[0];
     }
   }
 
   public pushPages() {
     if (this.totalPages) {
-      for (let i = 1; i <= this.totalPages; i++) {
-        this.pages?.push(i);
+      for (let i = 0; i < this.pagesList[this.pagesGroupIndex].length; i++) {
+        this.pages?.push(this.pagesList[this.pagesGroupIndex][i]); // at().at();
       }
+      //   for (let i = 1; i <= this.totalPages; i++) {
+      //     this.pages?.push(i);
+      //   }
     }
   }
 
   public getProducts() {
-    this.popPages(); // TODO: put this at the start of getProducts()
+    this.popPages(); // TODO: put this at the start of getProducts() FAULTYYYYYYYYY
     if (this.filterText != '') {
       if (this.categoriesChecked.length == 0) {
         this.getFilteredProducts();
@@ -133,6 +184,7 @@ export class HomeComponent implements OnInit {
         this.getProductsByCategories();
       }
     }
+    this.flag = false;
   }
 
   public getAllProducts() {
@@ -142,6 +194,8 @@ export class HomeComponent implements OnInit {
         next: (value) => {
           this.totalProducts = value.totalCount;
           this.totalPages = Math.ceil(value.totalCount / Number(this.range));
+          this.pagesList = [];
+          this.dividePages();
           this.pushPages();
           this.productList = value.products;
         },
@@ -155,7 +209,8 @@ export class HomeComponent implements OnInit {
         next: (value) => {
           this.totalProducts = value.totalCount;
           this.totalPages = Math.ceil(value.totalCount / Number(this.range))
-          console.log("totalPages: " + this.totalPages);
+          this.pagesList = [];
+          this.dividePages();
           this.pushPages();
           this.productList = value.products;
         },
@@ -169,6 +224,8 @@ export class HomeComponent implements OnInit {
         next: (value) => {
           this.totalProducts = value.totalCount;
           this.totalPages = Math.ceil(value.totalCount / Number(this.range))
+          this.pagesList = [];
+          this.dividePages();
           this.pushPages();
           this.productList = value.products;
         },
@@ -182,6 +239,8 @@ export class HomeComponent implements OnInit {
         next: (value) => {
           this.totalProducts = value.totalCount;
           this.totalPages = Math.ceil(value.totalCount / Number(this.range))
+          this.pagesList = [];
+          this.dividePages();
           this.pushPages();
           this.productList = value.products;
         },
