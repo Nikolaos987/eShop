@@ -8,6 +8,7 @@ import {FormControl, FormGroup} from "@angular/forms";
 import {Product} from "../interfaces/product";
 import {User} from "../interfaces/user";
 import {Pid} from "../interfaces/pid";
+import {ManagementComponent} from "../management/management.component";
 
 @Component({
   selector: 'app-product-details',
@@ -15,8 +16,15 @@ import {Pid} from "../interfaces/pid";
   styleUrls: ['./product-details.component.css'],
   providers: [ProductsService, CartService]
 })
-export class ProductDetailsComponent implements OnInit {
+export class ProductDetailsComponent implements OnInit, AfterViewInit {
+  @ViewChild('inputText') inputElement: ElementRef | undefined;
+
+  focused: boolean = false;
+  searchValue: string = '';
   currentUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
+  productList: Product[] = [];
+  // names: string[] = [];
+  names: [{ pid: string | null | undefined, name: string | null | undefined }] = [{pid: undefined, name: undefined}];
 
   pid: Pid = {
     to_pid: undefined
@@ -44,9 +52,14 @@ export class ProductDetailsComponent implements OnInit {
     to_pidInput: new FormControl('')
   })
 
+  // showRelatedProducts: boolean = false;
+
   formData: FormData = new FormData();
   errorMessage: string = '';
   successMessage: string = '';
+  relateSuccessMessage: boolean = false;
+  relateErrorMessage: boolean = false;
+  relateNotifMessage: string = '';
   productExists: boolean = false;
   relationButtonClicked: boolean = false;
   to_pidInput: string = '';
@@ -68,18 +81,42 @@ export class ProductDetailsComponent implements OnInit {
           this.product.pid = value.get('pid');
           console.log("1st: " + this.product.pid)
           this.getProduct();
-          this.productsService
-            .fetchRelatedProducts(this.product.pid)
-            .subscribe({
-              next: value => {
-                console.log("2nd: " + this.product.pid);
-                this.relatedProducts = value.products
-              },
-              error: err => console.error(err)
-            })
+          this.getRelatedProducts();
         },
         error: err => console.error(err)
       });
+  }
+
+  ngAfterViewInit() {
+    this.inputElement?.nativeElement.addEventListener('focus', this.focus.bind(this));
+  }
+
+  focus(event: ManagementComponent) {
+    this.focused = true;
+  }
+
+  activate() {
+    if (this.searchValue != '') {
+      this.names.splice(0);
+      this.productsService.fetchFilteredProducts(this.searchValue, 1, 5)
+        .subscribe({
+          next: (value) => {
+            if (value.totalCount == 0) {
+              this.relateNotifMessage = '...';
+            } else {
+              this.relateNotifMessage = '';
+            }
+            this.productList = value.products;
+            this.productList.forEach(product => {
+              if (product.name && product.name != this.product.name) {
+                this.names.push({pid: product.pid, name: product.name});
+              }
+            });
+            console.log(this.names);
+          },
+          error: err => console.error(err)
+        })
+    }
   }
 
   getProduct(): void {
@@ -94,7 +131,7 @@ export class ProductDetailsComponent implements OnInit {
           this.productExists = false;
           console.error(err);
         }
-      })
+      });
   }
 
   addToCart() {
@@ -149,21 +186,39 @@ export class ProductDetailsComponent implements OnInit {
     }
   }
 
-  relationButton() {
-    this.pid = {
-      to_pid: this.relationForm.value.to_pidInput
-    }
-    console.log('this.to_pidInput = ' + this.relationForm.get('to_pidInput'));
-    // this.relationButtonClicked = true;
+  private getRelatedProducts() {
     this.productsService
-      .postProductRelation(this.product.pid, this.pid)
+      .fetchRelatedProducts(this.product.pid)
       .subscribe({
-        next: value => console.log('id: ' + value.id),
+        next: value => {
+          console.log("2nd: " + this.product.pid);
+          this.relatedProducts = value.products
+        },
         error: err => console.error(err)
+      })
+  }
+
+  relationButton(pid: string | null | undefined) {
+    this.productsService
+      .postProductRelation(this.product.pid, pid)
+      .subscribe({
+        next: value => {
+          this.relateSuccessMessage = true;
+          this.relateErrorMessage = false;
+          this.relateNotifMessage = 'Relation added';
+          this.getRelatedProducts();
+        },
+        error: err => {
+          this.relateSuccessMessage = false;
+          this.relateErrorMessage = true;
+          this.relateNotifMessage = 'Relation Already Exists';
+          console.error(err)
+        }
       })
   }
 
   testClick() {
     this._router.navigateByUrl('/details/a5979c00-f262-4d2f-a14d-60b6dbeb1310');
   }
+
 }

@@ -41,9 +41,13 @@
           <input class="quantity-plus" type="button" (click)="stepUp()" value="+">
         </div>
         <div class="relation">
-          <form [formGroup]="relationForm" (ngSubmit)="relationButton()">
-            <input type="submit" value="Create Relation">
-            <input type="text" name="pid" formControlName="to_pidInput">
+          <form [formGroup]="relationForm">
+            <input type="text" name="inputText" id="inputText" placeholder="relate {{product.name}} with another product..." (input)="activate()"
+                   #inputText formControlName="to_pidInput" [(ngModel)]="searchValue">
+            <div class="hidden-menu" [ngClass]="{'menu-show' : searchValue != ''}">
+              <input *ngFor="let name of names" type="button" (click)="relationButton(name.pid)" value="{{name.name}}">
+              <div class="relate-notif" [class.relate-success-notif]="relateSuccessMessage" [class.relate-error-notif]="relateErrorMessage">{{relateNotifMessage}}</div>
+            </div>
           </form>
         </div>
         <div class="cart-wrapper">

@@ -165,7 +165,9 @@ public class PostgresProductsStore implements ProductsStore {
     @Override
     public Future<UUID> findRelatedProduct(UUID r_pid, UUID to_pid) {
         return pgPool
-                .preparedQuery("SELECT * FROM related_products WHERE r_pid = $1 AND to_pid = $2")
+                .preparedQuery("SELECT * FROM related_products WHERE r_pid = $1 AND to_pid = $2 " +
+                        "UNION " +
+                        "SELECT * FROM related_products WHERE r_pid = $2 AND to_pid = $1")
                 .execute(Tuple.of(r_pid, to_pid))
                 .compose(records -> {
                     UUID id = records.iterator().next().getUUID("id");

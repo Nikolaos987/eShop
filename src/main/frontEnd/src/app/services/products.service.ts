@@ -229,9 +229,9 @@ export class ProductsService {
     } else return new Observable<{ products: Product[], totalCount: number }>();
   }
 
-  public postProductRelation(r_pid: string | null | undefined, data: Pid): Observable<{ id: string }> {
+  public postProductRelation(r_pid: string | null | undefined, to_pid: string | null | undefined): Observable<{ id: string }> {
     return this.http
-      .post<{ id: string }> ('/api/product/' + r_pid + '/relate/' + data.to_pid,
+      .post<{ id: string }> ('/api/product/' + r_pid + '/relate/' + to_pid,
         {},
         {responseType: "json"})
       .pipe(

@@ -170,11 +170,60 @@
     }
 
     .relation {
+      display: inherit;
       margin-top: 50px;
     }
     .relation input {
       padding: 12px;
       font-size: 18px;
+    }
+
+    .hidden-menu {
+      min-width: 250px;
+      display: none;
+      position: absolute;
+      /*top: 100%;*/
+      padding: 15px;
+      box-shadow: 0 0 4px black;
+      z-index: 1;
+    }
+
+    .relate-notif {
+      text-align: center;
+      font-size: 18px;
+    }
+    .relate-success-notif {
+      color: green;
+    }
+    .relate-error-notif {
+      color: red;
+    }
+
+    /*.relation form input[type="text"]:hover .hidden-menu {*/
+    /*  display: block;*/
+    /*}*/
+
+    #inputText {
+      width: 450px;
+      background: inherit;
+      border: 1px black solid;
+    }
+    .menu-show {
+      display: block;
+      background: white;
+      position: absolute;
+      /*top: 100%;*/
+      padding: 10px;
+      box-shadow: 0 0 4px black;
+      z-index: 2;
+    }
+    .menu-show input {
+      min-width: 250px;
+      display: block;
+      position: relative;
+      border-bottom: 1px #cecece solid;
+      border-right: 1px #cecece solid;
+      margin-bottom: 20px;
     }
 
     .cart-wrapper {
