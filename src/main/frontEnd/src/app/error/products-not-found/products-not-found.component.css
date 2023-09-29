@@ -1,0 +1,16 @@
+.wrapper {
+  position: relative;
+}
+
+.img {
+  outline: #c3c3c3 1px solid;
+}
+
+.text {
+  font-family: serif;
+  position: absolute;
+  bottom: 30px;
+  left: 11%;
+  font-size: 30px;
+  text-align: center;
+}
