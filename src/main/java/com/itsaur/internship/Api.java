@@ -285,6 +285,14 @@ public class Api extends AbstractVerticle {
             }
         });
 
+        // fake data
+        router.post("/product/fake/data/:size").handler(ctx -> {
+            int size = Integer.parseInt(ctx.pathParam("size"));
+            this.productService.addFakeProducts(size)
+                    .onSuccess(v -> ctx.response().setStatusCode(200).setStatusMessage("OK").end("Products created"))
+                    .onFailure(v -> ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
+        });
+
         // post new product
         router.post("/product/insert").handler(ctx -> {
             try {
@@ -338,11 +346,7 @@ public class Api extends AbstractVerticle {
                             ctx.response().setStatusCode(400).setStatusMessage("Bad Request").end(v.getMessage()));
         });
 
-
-
-
-        /* RELATED PRODUCTS ENTITY */
-
+        // Related Products
         router.get("/related_products/:r_pid").handler(ctx -> {
             Objects.requireNonNull(ctx.pathParam("r_pid"));
             UUID r_pid = UUID.fromString(ctx.pathParam("r_pid"));

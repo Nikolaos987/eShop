@@ -31,6 +31,10 @@ public class ProductService {
                 });
     }
 
+    public Future<Void> addFakeProducts(int size) {
+        return productsStore.insertMultiple(size);
+    }
+
     public Future<Void> deleteProduct(UUID pid) {
         return productsStore.findProduct(pid)
                 .otherwiseEmpty()

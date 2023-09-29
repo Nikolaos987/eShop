@@ -12,6 +12,7 @@ import io.vertx.sqlclient.PoolOptions;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
+import net.datafaker.Faker;
 
 import javax.swing.text.html.FormSubmitEvent;
 import java.util.ArrayList;
@@ -25,6 +26,38 @@ public class PostgresProductsStore implements ProductsStore {
 
     public PostgresProductsStore(PgPool pgPool) {
         this.pgPool = pgPool;
+    }
+
+    @Override
+    public Future<Void> insertMultiple(int size) {
+        List<Integer> products = new ArrayList<>();
+        return insertNextProduct(size, 1)
+                .compose(result -> Future.succeededFuture());
+    }
+
+    public Future<Void> insertNextProduct(int size, int position) {
+        Faker faker = new Faker();
+        UUID pid = UUID.randomUUID();
+        String name = faker.funnyName().name();
+        String description = faker.famousLastWords().lastWords();
+        int range = (2000 - 10) + 1;
+        double price = (int) (((Math.random() * ((2000 - 10) + 1)) + 10) * 100) / 100.0;
+        int quantity = (int) (Math.random() * ((200 - 1) + 1)) + 1;
+        String brand = faker.brand().car();
+        String category = faker.cat().breed();
+        return pgPool
+                .preparedQuery("INSERT INTO product (pid, name, description, price, quantity, brand, category) " +
+                        "VALUES ($1, $2, $3, $4, $5, $6, $7);")
+                .execute(Tuple.of(pid, name, description, price, quantity, brand, category))
+                .compose(records2 -> {
+                    if (position < size) {
+                        if (position % 1000 == 0) {
+                            System.out.println("products created: " + position + "...");
+                        }
+                        return insertNextProduct(size, position + 1);
+                    }
+                    return Future.succeededFuture();
+                });
     }
 
     @Override

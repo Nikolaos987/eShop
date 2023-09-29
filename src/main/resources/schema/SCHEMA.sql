@@ -16,13 +16,13 @@ CREATE TABLE users (
 DROP TABLE IF EXISTS product CASCADE;
 CREATE TABLE product (
     pid uuid /*DEFAULT uuid_generate_v4()*/,  /* gen_random_uuid () */
-    name varchar(50) NOT NULL,
+    name varchar(500) NOT NULL,
 --     image varchar(250),
-    description VARCHAR(500),
+    description VARCHAR(50000),
     price float8 NOT NULL,
     quantity int NOT NULL,
-    brand varchar(25) NOT NULL,
-    category varchar(25) NOT NULL,
+    brand varchar(2500) NOT NULL,
+    category varchar(2500) NOT NULL,
     PRIMARY KEY (pid)
 );
 
