@@ -42,12 +42,28 @@
         </div>
         <div class="relation">
           <form [formGroup]="relationForm">
+
+            <mat-form-field class="example-full-width">
+              <mat-label>relate {{product.name}} with another product...</mat-label>
+              <input type="text"
+                      placeholder="Pick One"
+                      aria-label="product"
+                      matInput
+                      [formControlName]="to_pidInput" [(ngModel)]="searchValue" [matAutocomplete]="auto">
+              <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let name of names" [value]="name.name">
+                  {{name.name}}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+
             <input type="text" name="inputText" id="inputText" placeholder="relate {{product.name}} with another product..." (input)="activate()"
                    #inputText formControlName="to_pidInput" [(ngModel)]="searchValue">
             <div class="hidden-menu" [ngClass]="{'menu-show' : searchValue != ''}">
               <input *ngFor="let name of names" type="button" (click)="relationButton(name.pid)" value="{{name.name}}">
               <div class="relate-notif" [class.relate-success-notif]="relateSuccessMessage" [class.relate-error-notif]="relateErrorMessage">{{relateNotifMessage}}</div>
             </div>
+
           </form>
         </div>
         <div class="cart-wrapper">

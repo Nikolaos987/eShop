@@ -33,6 +33,7 @@ import { ProductsNotFoundComponent } from './error/products-not-found/products-n
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import {MatInputModule} from "@angular/material/input";
     MatButtonToggleModule,
     MatFormFieldModule,
     MatInputModule,
+    MatAutocompleteModule,
   ],
   providers: [{provide: UsersService, useClass: UsersService}],
   bootstrap: [AppComponent]
