@@ -4,6 +4,8 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import {ReactiveFormsModule} from "@angular/forms";
 
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {ProductDetailsComponent} from './product-details/product-details.component';
@@ -28,6 +30,9 @@ import { PagingComponent } from './paging/paging.component';
 import { InputTextComponent } from './input-text/input-text.component';
 import { SubFootComponent } from './sub-foot/sub-foot.component';
 import { ProductsNotFoundComponent } from './error/products-not-found/products-not-found.component';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
 
 @NgModule({
   declarations: [
@@ -59,7 +64,11 @@ import { ProductsNotFoundComponent } from './error/products-not-found/products-n
     HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSlideToggleModule,
+    MatButtonToggleModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   providers: [{provide: UsersService, useClass: UsersService}],
   bootstrap: [AppComponent]

@@ -1,89 +1,132 @@
-#center {
-  width: 500px;
-  margin: 0 auto;
-  position: relative;
-  top: 80px;
-  background: white;
-  border: 2px #b6b6b6 solid;
-  padding: 46px;
-  border-radius: 20px;
-
-  /*position: absolute;*/
-  /*top: 50%;*/
-  /*left: 50%;*/
-  /*transform: translate(-50%, -50%);*/
-  /*width: 700px;*/
-  /*height: 50%;*/
-  /*background: antiquewhite;*/
-  /*padding: 20px;*/
-  /*border-radius: 10px;*/
-}
-
-* {
-  box-sizing: border-box;
-}
-
-label {
-  /*color: #757575;*/
-  /*font-weight: 100;*/
-  background: white;
-  padding-left: 6px;
-  position: relative;
-  top: 25px;
-  transition: all 0.2s ease-in-out;
-  /*cursor: text;*/
-}
-
-input {
-  border: red 1px solid;
-  /*background: #FFFFF1;*/
-  background: white;
-  width: 100%;
-  height: 40px;
-  outline: none;
-  font-size: 16px;
-  padding: 10px 40px 10px 0;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: 1px solid #aaa;
-}
-input:active,
-input:focus {
-  border-bottom: 5px solid #aaa;
-}
-
-.price-brand-quant-div {
-  display: grid;
-  grid-template-columns: 2fr 5fr 2fr;
-}
-
-/*.quantity_field  {*/
-/*  !*height: 50%;*!*/
-/*  border-left: 1px solid #aaa;*/
+/*#center {*/
+/*  width: 500px;*/
+/*  margin: 0 auto;*/
+/*  position: relative;*/
+/*  top: 80px;*/
+/*  background: white;*/
+/*  border: 2px #b6b6b6 solid;*/
+/*  padding: 46px;*/
+/*  border-radius: 20px;*/
 /*}*/
 
-.special_field  {
-  /*height: 50%;*/
-  border-right: 1px solid #aaa;
-}
+/** {*/
+/*  box-sizing: border-box;*/
+/*}*/
 
-textarea {
-  padding: 12px 20px;
-  border-radius: 15px;
-  font-size: 16px;
-  /*background: #FFFFF1;*/
-  background: white;
-  box-sizing: border-box;
-  outline: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: 1px solid #aaa;
-  resize: none;
-  width: 100%;
-  height: 100px;
-}
+/*label {*/
+/*  !*color: #757575;*!*/
+/*  !*font-weight: 100;*!*/
+/*  background: white;*/
+/*  padding-left: 6px;*/
+/*  position: relative;*/
+/*  top: 25px;*/
+/*  transition: all 0.2s ease-in-out;*/
+/*  !*cursor: text;*!*/
+/*}*/
+
+/*input {*/
+/*  border: red 1px solid;*/
+/*  !*background: #FFFFF1;*!*/
+/*  background: white;*/
+/*  width: 100%;*/
+/*  height: 40px;*/
+/*  outline: none;*/
+/*  font-size: 16px;*/
+/*  padding: 10px 40px 10px 0;*/
+/*  border-top: none;*/
+/*  border-left: none;*/
+/*  border-right: none;*/
+/*  border-bottom: 1px solid #aaa;*/
+/*}*/
+/*input:active,*/
+/*input:focus {*/
+/*  border-bottom: 5px solid #aaa;*/
+/*}*/
+
+/*.price-brand-quant-div {*/
+/*  display: grid;*/
+/*  grid-template-columns: 2fr 5fr 2fr;*/
+/*}*/
+
+/*.special_field  {*/
+/*  !*height: 50%;*!*/
+/*  border-right: 1px solid #aaa;*/
+/*}*/
+
+/*textarea {*/
+/*  padding: 12px 20px;*/
+/*  border-radius: 15px;*/
+/*  font-size: 16px;*/
+/*  !*background: #FFFFF1;*!*/
+/*  background: white;*/
+/*  box-sizing: border-box;*/
+/*  outline: none;*/
+/*  border-top: none;*/
+/*  border-left: none;*/
+/*  border-right: none;*/
+/*  border-bottom: 1px solid #aaa;*/
+/*  resize: none;*/
+/*  width: 100%;*/
+/*  height: 100px;*/
+/*}*/
+
+/*.isInvalid {*/
+
+/*}*/
+
+/*.submit {*/
+/*  border: 2px #2d80ff solid;*/
+/*  margin-top: 100px;*/
+/*  padding: 20px;*/
+/*  width: 100%;*/
+/*  cursor: pointer;*/
+/*  font-size: 24px;*/
+/*  font-weight: bold;*/
+/*  color: white;*/
+/*  background: #0068ff;*/
+/*  border-radius: 12px;*/
+/*  outline: none;*/
+/*}*/
+/*.submit:hover {*/
+/*  background: #2d80ff;*/
+/*  box-shadow: 5px 5px 7px black;*/
+/*  border: 2px #2d80ff solid;*/
+/*}*/
+/*.submit:active {*/
+/*  box-shadow: 2px 2px 4px black;*/
+/*  border: 2px #2d80ff solid;*/
+/*}*/
+
+/*!*notification messages*!*/
+/*.sub_foot {*/
+/*  font-weight: bold;*/
+/*  margin-top: 20px;*/
+/*  transition: all 0.2s ease-in-out;*/
+/*  color: indianred;*/
+/*}*/
+
+/*.success {*/
+/*  font-family: "Josefin S", sans-serif;*/
+/*  font-size: 1.3125rem;*/
+/*}*/
+
+/*#file button {*/
+/*  size: 300px;*/
+/*}*/
+
+/*.error-label {*/
+/*  margin: 50px 0;*/
+/*  text-align: center;*/
+/*  font-size: 24px;*/
+/*  color: indianred;*/
+/*}*/
+
+/*.success-label {*/
+/*  margin: 50px 0;*/
+/*  text-align: center;*/
+/*  font-size: 24px;*/
+/*  color: green;*/
+/*}*/
 
 /*.isActive {*/
 /*  color: blue;*/
@@ -97,8 +140,45 @@ textarea {
 /*  top: 5px;*/
 /*}*/
 
-.isInvalid {
+/*.invalid-border {*/
+/*  border-bottom: 3px solid red;*/
+/*}*/
 
+/*.valid-border {*/
+/*  color: green;*/
+/*  font-weight: bold;*/
+/*}*/
+
+
+
+
+
+.example-form {
+  display: block;
+  width: 500px;
+  margin: 0 auto;
+  position: relative;
+  top: 80px;
+}
+
+.block-wrapper {
+
+}
+
+.full-width-2 {
+  display: inline-block;
+}
+
+.small {
+  width: 150px;
+}
+
+.medium {
+  width: 166px;
+}
+
+.big {
+  width: 350px;
 }
 
 .submit {
@@ -117,38 +197,11 @@ textarea {
 .submit:hover {
   background: #2d80ff;
   box-shadow: 5px 5px 7px black;
-  /*outline: none;*/
   border: 2px #2d80ff solid;
 }
 .submit:active {
   box-shadow: 2px 2px 4px black;
-  /*outline: none;*/
   border: 2px #2d80ff solid;
-}
-
-/*notification messages*/
-.sub_foot {
-  font-weight: bold;
-  margin-top: 20px;
-  transition: all 0.2s ease-in-out;
-  color: indianred;
-}
-
-/*.invalid-border {*/
-/*  border-bottom: 5px solid red;*/
-/*}*/
-
-/*.valid-border {*/
-/*  border-bottom: 5px solid green;*/
-/*}*/
-
-.success {
-  font-family: "Josefin S", sans-serif;
-  font-size: 1.3125rem;
-}
-
-#file button {
-  size: 300px;
 }
 
 .error-label {
@@ -163,25 +216,4 @@ textarea {
   text-align: center;
   font-size: 24px;
   color: green;
-}
-
-.isActive {
-  color: blue;
-  font-size: 80%;
-  top: 5px;
-}
-
-.isInactive {
-  color: black;
-  font-size: 70%;
-  top: 5px;
-}
-
-.invalid-border {
-  border-bottom: 3px solid red;
-}
-
-.valid-border {
-  color: green;
-  font-weight: bold;
 }
