@@ -87,9 +87,17 @@ export class HomeComponent implements OnInit {
 
   public setPageGroupIndex(index: number) {
     this.pagesGroupIndex = index;
+    this.page = this.pagesList[this.pagesGroupIndex][0];
     this._pagingService.newPageGroup(this.pagesGroupIndex);
     // this.page = this.pagesList[this.pagesGroupIndex].length;
-    this.page = this.pagesList[this.pagesGroupIndex][0];
+    this.getProducts();
+  }
+
+  setPage_Index(event: { page: number; index: number }) {
+    this.page = event.page;
+    this.pagesGroupIndex = event.index;
+    this._pagingService.newPage(this.page);
+    this._pagingService.newPageGroup(this.pagesGroupIndex);
     this.getProducts();
   }
 

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, numberAttribute, OnInit, Output} from '@angular/core';
 import {PagingService} from "../services/paging.service";
 
 @Component({
@@ -7,6 +7,7 @@ import {PagingService} from "../services/paging.service";
   styleUrls: ['./paging.component.css']
 })
 export class PagingComponent implements OnInit {
+  input: number = 1;
   // @Input() totalProducts: number | null | undefined;
   // @Input() totalPages: any | null | undefined;
   @Input() pages: number[] | null | undefined = [];
@@ -21,6 +22,7 @@ export class PagingComponent implements OnInit {
   @Output() rangeOutput = new EventEmitter<number>();
   @Output() pageOutput = new EventEmitter<number>();
   @Output() groupIndexOutput = new EventEmitter<number>();
+  @Output() page_indexOutput = new EventEmitter<{ page: number, index: number }>();
 
   constructor(private _pagingService: PagingService) {
   }
@@ -47,7 +49,7 @@ export class PagingComponent implements OnInit {
         this.pageOutput.emit(this.page)
       } else if (this.groupIndex > 0 && this.page == this.pagesGroup[this.groupIndex][0]) {
         this.groupIndex--;
-        this.groupIndexOutput.emit(this.groupIndex);
+        this.page_indexOutput.emit({page: this.page - 1, index: this.groupIndex});
       }
   }
 
@@ -64,7 +66,7 @@ export class PagingComponent implements OnInit {
   }
 
   prevGroup() {
-    if (this.groupIndexOutput) {
+    if (this.groupIndexOutput && this.page) {
       if (this.groupIndex > 0) {
         this.groupIndex--;
         this.groupIndexOutput.emit(this.groupIndex);
@@ -81,4 +83,20 @@ export class PagingComponent implements OnInit {
     }
   }
 
+  changePage() {
+    if (this.pages?.length
+      && this.pagesGroup
+      && this.input <= (this.pagesGroup
+        [this.pagesGroup.length - 1]
+        [this.pagesGroup[this.pagesGroup.length - 1].length - 1])
+      && this.input > 0) {
+      // this.groupIndexOutput.emit(Math.ceil(this.input / this.groupLength) - 1);
+      // this.page = this.input;
+      this.page_indexOutput.emit({page: this.input, index: Math.ceil(this.input / this.groupLength) - 1})
+      // this.groupIndexOutput.emit(1);
+      // this.page_indexOutput.emit({page:1,index:2});
+      // this.pageOutput.emit(this.page);
+      // this.groupIndexOutput.emit(1);
+    }
+  }
 }
